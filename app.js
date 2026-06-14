@@ -1,0 +1,790 @@
+/* =========================================================
+   Dziennik Treningowy — vanilla PWA
+   Storage: localStorage. No backend, no framework.
+   ========================================================= */
+
+'use strict';
+
+/* ---------- Constants ---------- */
+const LOG_KEY = 'workout-log-v1';
+const SETTINGS_KEY = 'workout-settings-v1';
+const TOTAL_WEEKS = 12;
+const SAVE_DEBOUNCE_MS = 500;
+
+/* ---------- Plan (seed data, static) ---------- */
+const PLAN = [
+  {
+    id: 'push_a',
+    title: 'Dzień 1 — PUSH A · Klatka',
+    exercises: [
+      { id: 'push_a_1', name: 'Wyciskanie na maszynie (chest press)', sets: 3, reps: '8-10' },
+      { id: 'push_a_2', name: 'Wyciskanie hantle, skos dodatni', sets: 3, reps: '10-12' },
+      { id: 'push_a_3', name: 'Rozpiętki wyciąg / pec deck', sets: 3, reps: '12-15' },
+      { id: 'push_a_4', name: 'Wyciskanie barków na maszynie', sets: 3, reps: '10-12' },
+      { id: 'push_a_5', name: 'Wznosy bokiem (wyciąg)', sets: 3, reps: '12-15' },
+      { id: 'push_a_6', name: 'Pushdown triceps', sets: 3, reps: '12-15' }
+    ]
+  },
+  {
+    id: 'pull_a',
+    title: 'Dzień 2 — PULL A · Plecy (grubość)',
+    exercises: [
+      { id: 'pull_a_1', name: 'Wiosło Hammer z podparciem klatki (maszyna)', sets: 3, reps: '8-10' },
+      { id: 'pull_a_2', name: 'Wiosło wyciąg, siedząc', sets: 3, reps: '10-12' },
+      { id: 'pull_a_3', name: 'Ściąganie drążka szeroko', sets: 3, reps: '10-12' },
+      { id: 'pull_a_4', name: 'Odwrotne rozpiętki / rear delt', sets: 3, reps: '15' },
+      { id: 'pull_a_5', name: 'Uginania ramion (wyciąg / EZ)', sets: 3, reps: '10-12' },
+      { id: 'pull_a_6', name: 'Hammer curl', sets: 2, reps: '12' }
+    ]
+  },
+  {
+    id: 'legs',
+    title: 'Dzień 3 — NOGI · maszynowe (bez przysiadu / MC)',
+    exercises: [
+      { id: 'legs_1', name: 'Suwnica (leg press)', sets: 3, reps: '12-15', warning: true },
+      { id: 'legs_2', name: 'Hack / pendulum lub wykroki bułgarskie', sets: 3, reps: '10-12' },
+      { id: 'legs_3', name: 'Prostowniki nóg', sets: 3, reps: '12-15' },
+      { id: 'legs_4', name: 'Uginanie nóg (leżąc / siedząc)', sets: 3, reps: '12-15' },
+      { id: 'legs_5', name: 'Hip thrust maszyna', sets: 3, reps: '12', warning: true },
+      { id: 'legs_6', name: 'Łydki (stojąc / siedząc)', sets: 4, reps: '12-15' }
+    ]
+  },
+  {
+    id: 'push_b',
+    title: 'Dzień 4 — PUSH B · Barki',
+    exercises: [
+      { id: 'push_b_1', name: 'Wyciskanie barków hantle / maszyna', sets: 3, reps: '8-10' },
+      { id: 'push_b_2', name: 'Wyciskanie skos dodatni (maszyna / Smith)', sets: 3, reps: '10-12' },
+      { id: 'push_b_3', name: 'Wznosy bokiem (wyciąg)', sets: 4, reps: '12-15' },
+      { id: 'push_b_4', name: 'Rear delt fly', sets: 3, reps: '15' },
+      { id: 'push_b_5', name: 'Francuskie / wyciąg nad głowę triceps', sets: 3, reps: '12' },
+      { id: 'push_b_6', name: 'Pushdown', sets: 2, reps: '15' },
+      { id: 'push_b_7', name: 'Uginania na modlitewniku/maszyna (biceps)', sets: 2, reps: '12-15', supersetGroup: 'ssB' },
+      { id: 'push_b_8', name: 'Triceps pushdown, lina (triceps)', sets: 2, reps: '12-15', supersetGroup: 'ssB' }
+    ]
+  },
+  {
+    id: 'pull_b',
+    title: 'Dzień 5 — PULL B · Plecy (szerokość)',
+    exercises: [
+      { id: 'pull_b_1', name: 'Ściąganie drążka szeroko', sets: 3, reps: '8-10' },
+      { id: 'pull_b_2', name: 'Ściąganie wyciągu, chwyt neutralny (V-bar)', sets: 3, reps: '10-12' },
+      { id: 'pull_b_3', name: 'Wiosło jednorącz (wyciąg / maszyna)', sets: 3, reps: '10-12' },
+      { id: 'pull_b_4', name: 'Przyciąganie prostymi ramionami', sets: 3, reps: '15' },
+      { id: 'pull_b_5', name: 'Uginania skos (incline curl)', sets: 3, reps: '10-12' },
+      { id: 'pull_b_6', name: 'Uginania wyciąg', sets: 2, reps: '15' },
+      { id: 'pull_b_7', name: 'Uginania hantle stojąc (biceps)', sets: 2, reps: '12-15', supersetGroup: 'ssC' },
+      { id: 'pull_b_8', name: 'Wyciskanie francuskie / nad głowę (triceps)', sets: 2, reps: '12-15', supersetGroup: 'ssC' }
+    ]
+  }
+];
+
+const SUPERSET_LABELS = { ssB: 'Superseria', ssC: 'Superseria' };
+
+/* ---------- Storage helpers ---------- */
+function loadLog() {
+  try {
+    const raw = localStorage.getItem(LOG_KEY);
+    return raw ? JSON.parse(raw) : {};
+  } catch (e) {
+    console.error('Błąd odczytu logów', e);
+    return {};
+  }
+}
+
+function saveLog(log) {
+  try {
+    localStorage.setItem(LOG_KEY, JSON.stringify(log));
+  } catch (e) {
+    console.error('Błąd zapisu logów', e);
+    showToast('Błąd zapisu!');
+  }
+}
+
+function loadSettings() {
+  try {
+    const raw = localStorage.getItem(SETTINGS_KEY);
+    const s = raw ? JSON.parse(raw) : {};
+    return { currentWeek: clampWeek(s.currentWeek || 1) };
+  } catch (e) {
+    return { currentWeek: 1 };
+  }
+}
+
+function saveSettings(settings) {
+  try {
+    localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+  } catch (e) {
+    console.error('Błąd zapisu ustawień', e);
+  }
+}
+
+function clampWeek(w) {
+  w = parseInt(w, 10);
+  if (isNaN(w)) return 1;
+  return Math.min(TOTAL_WEEKS, Math.max(1, w));
+}
+
+/* ---------- App state ---------- */
+const state = {
+  view: 'start',          // 'start' | 'session' | 'progress'
+  week: 1,                // selected week 1..12
+  sessionId: null,        // currently open session
+  progressExerciseId: null,
+  log: {},
+  settings: { currentWeek: 1 }
+};
+
+let saveTimer = null;
+
+function scheduleSave() {
+  if (saveTimer) clearTimeout(saveTimer);
+  saveTimer = setTimeout(() => {
+    saveLog(state.log);
+    showToast('Zapisano');
+  }, SAVE_DEBOUNCE_MS);
+}
+
+/* ---------- Log accessors ---------- */
+function getExerciseLog(sessionId, week, exerciseId) {
+  const s = state.log[sessionId];
+  if (!s) return null;
+  const w = s[week];
+  if (!w) return null;
+  return w[exerciseId] || null;
+}
+
+function ensureExerciseLog(sessionId, week, exerciseId, defaultSets) {
+  if (!state.log[sessionId]) state.log[sessionId] = {};
+  if (!state.log[sessionId][week]) state.log[sessionId][week] = {};
+  if (!state.log[sessionId][week][exerciseId]) {
+    const sets = [];
+    for (let i = 0; i < defaultSets; i++) sets.push({ weight: null, reps: null });
+    state.log[sessionId][week][exerciseId] = { sets, note: '' };
+  }
+  return state.log[sessionId][week][exerciseId];
+}
+
+function sessionHasData(sessionId, week) {
+  const w = state.log[sessionId] && state.log[sessionId][week];
+  if (!w) return false;
+  return Object.values(w).some(ex =>
+    ex.sets && ex.sets.some(s => s.weight != null || s.reps != null) || (ex.note && ex.note.trim())
+  );
+}
+
+/* ---------- Rendering ---------- */
+const appEl = document.getElementById('app');
+const headerTitle = document.getElementById('header-title');
+
+function render() {
+  // nav active state
+  document.querySelectorAll('.nav-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.view === state.view);
+  });
+
+  if (state.view === 'start') renderStart();
+  else if (state.view === 'session') renderSession();
+  else if (state.view === 'progress') renderProgress();
+
+  window.scrollTo(0, 0);
+}
+
+/* ----- View: Start ----- */
+function renderStart() {
+  headerTitle.textContent = 'Dziennik Treningowy';
+  const frag = document.createElement('div');
+
+  frag.appendChild(weekBar());
+
+  const h = document.createElement('div');
+  h.className = 'section-h';
+  h.textContent = 'Wybierz sesję';
+  frag.appendChild(h);
+
+  PLAN.forEach(session => {
+    const tile = document.createElement('button');
+    tile.className = 'tile';
+    const done = sessionHasData(session.id, state.week);
+    tile.innerHTML = `
+      <div class="tile-title">${escapeHtml(session.title)}</div>
+      <div class="tile-sub">${session.exercises.length} ćwiczeń</div>
+      ${done ? '<div class="tile-done">✓ Masz wpisy w tym tygodniu</div>' : ''}
+    `;
+    tile.addEventListener('click', () => {
+      state.sessionId = session.id;
+      state.view = 'session';
+      render();
+    });
+    frag.appendChild(tile);
+  });
+
+  appEl.replaceChildren(frag);
+}
+
+function weekBar() {
+  const bar = document.createElement('div');
+  bar.className = 'week-bar';
+
+  const prev = document.createElement('button');
+  prev.className = 'step-btn';
+  prev.textContent = '‹';
+  prev.disabled = state.week <= 1;
+  prev.addEventListener('click', () => changeWeek(-1));
+
+  const mid = document.createElement('div');
+  mid.style.textAlign = 'center';
+  mid.innerHTML = `<div class="wlabel">Tydzień</div><div class="wvalue">${state.week} / ${TOTAL_WEEKS}</div>`;
+
+  const next = document.createElement('button');
+  next.className = 'step-btn';
+  next.textContent = '›';
+  next.disabled = state.week >= TOTAL_WEEKS;
+  next.addEventListener('click', () => changeWeek(1));
+
+  bar.append(prev, mid, next);
+  return bar;
+}
+
+function changeWeek(delta) {
+  state.week = clampWeek(state.week + delta);
+  state.settings.currentWeek = state.week;
+  saveSettings(state.settings);
+  render();
+}
+
+/* ----- View: Session ----- */
+function renderSession() {
+  const session = PLAN.find(s => s.id === state.sessionId);
+  if (!session) { state.view = 'start'; renderStart(); return; }
+
+  const shortTitle = session.title.split('—')[1] ? session.title.split('—')[1].trim() : session.title;
+  headerTitle.textContent = `${shortTitle.split('·')[0].trim()} · Tydzień ${state.week}/${TOTAL_WEEKS}`;
+
+  const frag = document.createElement('div');
+
+  const back = document.createElement('button');
+  back.className = 'back-link';
+  back.textContent = '‹ Sesje';
+  back.addEventListener('click', () => { state.view = 'start'; render(); });
+  frag.appendChild(back);
+
+  frag.appendChild(weekBar());
+
+  const titleEl = document.createElement('div');
+  titleEl.className = 'section-h';
+  titleEl.textContent = session.title;
+  frag.appendChild(titleEl);
+
+  // Group consecutive exercises by supersetGroup
+  let i = 0;
+  while (i < session.exercises.length) {
+    const ex = session.exercises[i];
+    if (ex.supersetGroup) {
+      const group = ex.supersetGroup;
+      const wrap = document.createElement('div');
+      wrap.className = 'superset';
+      const label = document.createElement('div');
+      label.className = 'superset-label';
+      label.textContent = SUPERSET_LABELS[group] || 'Superseria';
+      wrap.appendChild(label);
+      while (i < session.exercises.length && session.exercises[i].supersetGroup === group) {
+        wrap.appendChild(exerciseCard(session, session.exercises[i]));
+        i++;
+      }
+      frag.appendChild(wrap);
+    } else {
+      frag.appendChild(exerciseCard(session, ex));
+      i++;
+    }
+  }
+
+  // Reset this session+week
+  const resetBtn = document.createElement('button');
+  resetBtn.className = 'btn btn-danger btn-block';
+  resetBtn.style.marginTop = '8px';
+  resetBtn.textContent = 'Wyczyść ten tydzień (ta sesja)';
+  resetBtn.addEventListener('click', () => resetSessionWeek(session.id));
+  frag.appendChild(resetBtn);
+
+  appEl.replaceChildren(frag);
+}
+
+function exerciseCard(session, ex) {
+  const card = document.createElement('div');
+  card.className = 'exercise';
+
+  const log = ensureExerciseLog(session.id, state.week, ex.id, ex.sets);
+
+  // head
+  const head = document.createElement('div');
+  head.innerHTML = `
+    <div class="exercise-name">${escapeHtml(ex.name)}</div>
+    <div class="exercise-presc">${ex.sets} × ${escapeHtml(ex.reps)} powt.</div>
+  `;
+  if (ex.warning) {
+    const w = document.createElement('span');
+    w.className = 'warn-badge';
+    w.textContent = '⚠ wysokie ciśnienie śródpiersiowe';
+    w.title = 'Wysokie ciśnienie śródpiersiowe — bez bezdechu (nie wstrzymuj oddechu).';
+    head.appendChild(w);
+  }
+  card.appendChild(head);
+
+  // sets container
+  const setsWrap = document.createElement('div');
+  setsWrap.className = 'sets';
+
+  const colHead = document.createElement('div');
+  colHead.className = 'col-head';
+  colHead.innerHTML = '<span>#</span><span>Ciężar (kg)</span><span>Powt.</span>';
+  setsWrap.appendChild(colHead);
+
+  const rowsWrap = document.createElement('div');
+  rowsWrap.dataset.rows = '1';
+  renderSetRows(rowsWrap, session.id, ex, log);
+  setsWrap.appendChild(rowsWrap);
+
+  // +/- set controls
+  const controls = document.createElement('div');
+  controls.className = 'set-controls';
+  const minus = document.createElement('button');
+  minus.className = 'mini-btn';
+  minus.textContent = '– seria';
+  minus.addEventListener('click', () => {
+    if (log.sets.length > 1) {
+      log.sets.pop();
+      renderSetRows(rowsWrap, session.id, ex, log);
+      scheduleSave();
+    }
+  });
+  const plus = document.createElement('button');
+  plus.className = 'mini-btn';
+  plus.textContent = '+ seria';
+  plus.addEventListener('click', () => {
+    log.sets.push({ weight: null, reps: null });
+    renderSetRows(rowsWrap, session.id, ex, log);
+    scheduleSave();
+  });
+  controls.append(minus, plus);
+  setsWrap.appendChild(controls);
+
+  card.appendChild(setsWrap);
+
+  // previous week disclosure
+  if (state.week > 1) {
+    const det = document.createElement('details');
+    det.className = 'disclosure';
+    const sum = document.createElement('summary');
+    sum.textContent = `Pokaż poprzedni tydzień (T${state.week - 1})`;
+    det.appendChild(sum);
+    det.appendChild(prevWeekTable(session.id, ex.id, state.week - 1));
+    card.appendChild(det);
+  }
+
+  // note accordion
+  const noteDet = document.createElement('details');
+  noteDet.className = 'disclosure';
+  if (log.note && log.note.trim()) noteDet.open = true;
+  const noteSum = document.createElement('summary');
+  noteSum.textContent = 'Notatka';
+  noteDet.appendChild(noteSum);
+  const note = document.createElement('textarea');
+  note.className = 'note-input';
+  note.placeholder = 'np. ból barku, RIR 1...';
+  note.value = log.note || '';
+  note.addEventListener('input', () => { log.note = note.value; scheduleSave(); });
+  noteDet.appendChild(note);
+  card.appendChild(noteDet);
+
+  return card;
+}
+
+function renderSetRows(container, sessionId, ex, log) {
+  container.replaceChildren();
+  log.sets.forEach((set, idx) => {
+    const row = document.createElement('div');
+    row.className = 'set-row';
+
+    const num = document.createElement('div');
+    num.className = 'set-idx';
+    num.textContent = idx + 1;
+
+    const weight = document.createElement('input');
+    weight.type = 'number';
+    weight.inputMode = 'decimal';
+    weight.step = '0.5';
+    weight.min = '0';
+    weight.placeholder = 'kg';
+    weight.value = set.weight != null ? set.weight : '';
+    weight.addEventListener('input', () => {
+      set.weight = weight.value === '' ? null : parseFloat(weight.value);
+      scheduleSave();
+    });
+
+    const reps = document.createElement('input');
+    reps.type = 'number';
+    reps.inputMode = 'numeric';
+    reps.step = '1';
+    reps.min = '0';
+    reps.placeholder = 'powt.';
+    reps.value = set.reps != null ? set.reps : '';
+    reps.addEventListener('input', () => {
+      set.reps = reps.value === '' ? null : parseInt(reps.value, 10);
+      scheduleSave();
+    });
+
+    row.append(num, weight, reps);
+    container.appendChild(row);
+  });
+}
+
+function prevWeekTable(sessionId, exerciseId, week) {
+  const log = getExerciseLog(sessionId, week, exerciseId);
+  const filled = log && log.sets && log.sets.filter(s => s.weight != null || s.reps != null);
+  if (!filled || filled.length === 0) {
+    const p = document.createElement('div');
+    p.className = 'prev-empty';
+    p.textContent = `Brak danych z tygodnia ${week}.`;
+    return p;
+  }
+  const table = document.createElement('table');
+  table.className = 'prev-table';
+  let body = '<tr><th>Seria</th><th>Ciężar</th><th>Powt.</th></tr>';
+  log.sets.forEach((s, i) => {
+    if (s.weight == null && s.reps == null) return;
+    body += `<tr><td>${i + 1}</td><td>${s.weight != null ? s.weight : '–'}</td><td>${s.reps != null ? s.reps : '–'}</td></tr>`;
+  });
+  table.innerHTML = body;
+  if (log.note && log.note.trim()) {
+    const cap = document.createElement('div');
+    cap.className = 'prev-empty';
+    cap.textContent = '📝 ' + log.note;
+    const w = document.createElement('div');
+    w.append(table, cap);
+    return w;
+  }
+  return table;
+}
+
+function resetSessionWeek(sessionId) {
+  if (!confirm(`Na pewno wyczyścić wszystkie wpisy dla tej sesji w tygodniu ${state.week}? Tej operacji nie można cofnąć.`)) return;
+  if (state.log[sessionId]) {
+    delete state.log[sessionId][state.week];
+  }
+  saveLog(state.log);
+  showToast('Wyczyszczono');
+  render();
+}
+
+/* ----- View: Progress ----- */
+function renderProgress() {
+  headerTitle.textContent = 'Progresja';
+  const frag = document.createElement('div');
+
+  // exercise selector grouped by session
+  const wrap = document.createElement('div');
+  wrap.className = 'select-wrap';
+  wrap.innerHTML = '<label for="prog-select">Wybierz ćwiczenie</label>';
+  const select = document.createElement('select');
+  select.id = 'prog-select';
+  PLAN.forEach(session => {
+    const og = document.createElement('optgroup');
+    og.label = session.title;
+    session.exercises.forEach(ex => {
+      const opt = document.createElement('option');
+      opt.value = `${session.id}::${ex.id}`;
+      opt.textContent = ex.name;
+      if (state.progressExerciseId === opt.value) opt.selected = true;
+      og.appendChild(opt);
+    });
+    select.appendChild(og);
+  });
+  if (!state.progressExerciseId) state.progressExerciseId = select.value;
+  select.value = state.progressExerciseId;
+  select.addEventListener('change', () => {
+    state.progressExerciseId = select.value;
+    renderProgress();
+  });
+  wrap.appendChild(select);
+  frag.appendChild(wrap);
+
+  const [sessionId, exerciseId] = state.progressExerciseId.split('::');
+
+  frag.appendChild(progressTable(sessionId, exerciseId));
+
+  const canvas = document.createElement('canvas');
+  canvas.id = 'chart';
+  frag.appendChild(canvas);
+
+  appEl.replaceChildren(frag);
+  drawChart(canvas, sessionId, exerciseId);
+}
+
+function topSet(log) {
+  // returns {weight, reps} of the set with highest weight (then reps), or null
+  if (!log || !log.sets) return null;
+  let best = null;
+  log.sets.forEach(s => {
+    if (s.weight == null && s.reps == null) return;
+    const w = s.weight != null ? s.weight : 0;
+    const r = s.reps != null ? s.reps : 0;
+    if (!best) { best = { weight: s.weight, reps: s.reps, _w: w, _r: r }; return; }
+    if (w > best._w || (w === best._w && r > best._r)) {
+      best = { weight: s.weight, reps: s.reps, _w: w, _r: r };
+    }
+  });
+  return best;
+}
+
+function progressTable(sessionId, exerciseId) {
+  const wrap = document.createElement('div');
+  wrap.className = 'prog-table-wrap';
+  const table = document.createElement('table');
+  table.className = 'prog-table';
+
+  let head = '<thead><tr><th>Tydz.</th>';
+  let maxSets = 1;
+  for (let w = 1; w <= TOTAL_WEEKS; w++) {
+    const log = getExerciseLog(sessionId, w, exerciseId);
+    if (log && log.sets) maxSets = Math.max(maxSets, log.sets.length);
+  }
+
+  let anyData = false;
+  let bodyRows = '';
+  for (let s = 0; s < maxSets; s++) {
+    bodyRows += `<tr><td>S${s + 1}</td>`;
+    for (let w = 1; w <= TOTAL_WEEKS; w++) {
+      const log = getExerciseLog(sessionId, w, exerciseId);
+      const set = log && log.sets && log.sets[s];
+      if (set && (set.weight != null || set.reps != null)) {
+        anyData = true;
+        const wt = set.weight != null ? set.weight : '–';
+        const rp = set.reps != null ? set.reps : '–';
+        bodyRows += `<td>${wt}×${rp}</td>`;
+      } else {
+        bodyRows += '<td>·</td>';
+      }
+    }
+    bodyRows += '</tr>';
+  }
+  // top set row
+  bodyRows += '<tr><td class="prog-best">Top</td>';
+  for (let w = 1; w <= TOTAL_WEEKS; w++) {
+    const t = topSet(getExerciseLog(sessionId, w, exerciseId));
+    if (t) {
+      const wt = t.weight != null ? t.weight : '–';
+      const rp = t.reps != null ? t.reps : '–';
+      bodyRows += `<td class="prog-best">${wt}×${rp}</td>`;
+    } else {
+      bodyRows += '<td>·</td>';
+    }
+  }
+  bodyRows += '</tr>';
+
+  for (let w = 1; w <= TOTAL_WEEKS; w++) head += `<th>${w}</th>`;
+  head += '</tr></thead>';
+
+  if (!anyData) {
+    const empty = document.createElement('div');
+    empty.className = 'empty-state';
+    empty.textContent = 'Brak zapisanych danych dla tego ćwiczenia. Wpisz wartości w widoku Trening.';
+    return empty;
+  }
+
+  table.innerHTML = head + '<tbody>' + bodyRows + '</tbody>';
+  wrap.appendChild(table);
+  return wrap;
+}
+
+function drawChart(canvas, sessionId, exerciseId) {
+  const dpr = window.devicePixelRatio || 1;
+  const cssW = canvas.clientWidth || 320;
+  const cssH = 180;
+  canvas.width = cssW * dpr;
+  canvas.height = cssH * dpr;
+  const ctx = canvas.getContext('2d');
+  ctx.scale(dpr, dpr);
+  ctx.clearRect(0, 0, cssW, cssH);
+
+  // collect top-set weight per week
+  const pts = [];
+  for (let w = 1; w <= TOTAL_WEEKS; w++) {
+    const t = topSet(getExerciseLog(sessionId, w, exerciseId));
+    pts.push(t && t.weight != null ? t.weight : null);
+  }
+  const present = pts.filter(v => v != null);
+  if (present.length < 1) {
+    ctx.fillStyle = '#9aa0ab';
+    ctx.font = '13px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('Brak danych do wykresu', cssW / 2, cssH / 2);
+    return;
+  }
+
+  const pad = { l: 36, r: 12, t: 16, b: 24 };
+  const plotW = cssW - pad.l - pad.r;
+  const plotH = cssH - pad.t - pad.b;
+  let minV = Math.min(...present);
+  let maxV = Math.max(...present);
+  if (minV === maxV) { minV = Math.max(0, minV - 5); maxV = maxV + 5; }
+
+  const xFor = w => pad.l + ((w - 1) / (TOTAL_WEEKS - 1)) * plotW;
+  const yFor = v => pad.t + plotH - ((v - minV) / (maxV - minV)) * plotH;
+
+  // axes
+  ctx.strokeStyle = '#2a2f3a';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(pad.l, pad.t); ctx.lineTo(pad.l, pad.t + plotH); ctx.lineTo(pad.l + plotW, pad.t + plotH);
+  ctx.stroke();
+
+  // y labels
+  ctx.fillStyle = '#9aa0ab';
+  ctx.font = '10px sans-serif';
+  ctx.textAlign = 'right';
+  ctx.fillText(maxV + '', pad.l - 4, pad.t + 8);
+  ctx.fillText(minV + '', pad.l - 4, pad.t + plotH);
+
+  // x labels (every other week)
+  ctx.textAlign = 'center';
+  for (let w = 1; w <= TOTAL_WEEKS; w += (TOTAL_WEEKS > 6 ? 2 : 1)) {
+    ctx.fillText('T' + w, xFor(w), pad.t + plotH + 14);
+  }
+
+  // line
+  ctx.strokeStyle = '#4cc9b0';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  let started = false;
+  pts.forEach((v, idx) => {
+    if (v == null) return;
+    const x = xFor(idx + 1), y = yFor(v);
+    if (!started) { ctx.moveTo(x, y); started = true; } else { ctx.lineTo(x, y); }
+  });
+  ctx.stroke();
+
+  // points
+  ctx.fillStyle = '#4cc9b0';
+  pts.forEach((v, idx) => {
+    if (v == null) return;
+    ctx.beginPath();
+    ctx.arc(xFor(idx + 1), yFor(v), 3, 0, Math.PI * 2);
+    ctx.fill();
+  });
+}
+
+/* ---------- Export / Import ---------- */
+function exportData() {
+  const payload = {
+    [LOG_KEY]: state.log,
+    [SETTINGS_KEY]: state.settings,
+    _meta: { app: 'dziennik-treningowy', version: 1, exportedAt: new Date().toISOString() }
+  };
+  const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  const d = new Date();
+  const stamp = `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`;
+  a.href = url;
+  a.download = `dziennik-treningowy-backup-${stamp}.json`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showToast('Wyeksportowano');
+}
+
+function importData(file) {
+  const reader = new FileReader();
+  reader.onload = () => {
+    try {
+      const parsed = JSON.parse(reader.result);
+      const incomingLog = parsed[LOG_KEY] || parsed.log || (looksLikeLog(parsed) ? parsed : null);
+      if (!incomingLog || typeof incomingLog !== 'object') {
+        alert('Nieprawidłowy plik: brak danych treningowych.');
+        return;
+      }
+      if (!confirm('Import nadpisze obecne dane lokalne. Kontynuować?\n(Zalecane: najpierw zrób eksport jako kopię.)')) return;
+
+      state.log = incomingLog;
+      const incomingSettings = parsed[SETTINGS_KEY] || parsed.settings;
+      if (incomingSettings && incomingSettings.currentWeek) {
+        state.settings.currentWeek = clampWeek(incomingSettings.currentWeek);
+        state.week = state.settings.currentWeek;
+      }
+      saveLog(state.log);
+      saveSettings(state.settings);
+      showToast('Zaimportowano');
+      render();
+    } catch (e) {
+      console.error(e);
+      alert('Nie udało się odczytać pliku JSON.');
+    }
+  };
+  reader.readAsText(file);
+}
+
+function looksLikeLog(obj) {
+  // heuristic: top-level keys match plan session ids
+  const ids = PLAN.map(s => s.id);
+  return Object.keys(obj).some(k => ids.includes(k));
+}
+
+/* ---------- Utilities ---------- */
+function pad2(n) { return String(n).padStart(2, '0'); }
+
+function escapeHtml(str) {
+  return String(str)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+
+let toastTimer = null;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.hidden = false;
+  if (toastTimer) clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { t.hidden = true; }, 1400);
+}
+
+/* ---------- Init ---------- */
+function init() {
+  state.log = loadLog();
+  state.settings = loadSettings();
+  state.week = state.settings.currentWeek;
+
+  // nav
+  document.querySelectorAll('.nav-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      state.view = btn.dataset.view;
+      render();
+    });
+  });
+
+  // export/import
+  document.getElementById('btn-export').addEventListener('click', exportData);
+  const importInput = document.getElementById('import-file');
+  document.getElementById('btn-import').addEventListener('click', () => importInput.click());
+  importInput.addEventListener('change', () => {
+    if (importInput.files && importInput.files[0]) importData(importInput.files[0]);
+    importInput.value = '';
+  });
+
+  // flush pending save before unload
+  window.addEventListener('beforeunload', () => {
+    if (saveTimer) { clearTimeout(saveTimer); saveLog(state.log); }
+  });
+
+  render();
+
+  // service worker (nice-to-have, offline)
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('sw.js').catch(err => console.warn('SW rejestracja nieudana', err));
+    });
+  }
+}
+
+document.addEventListener('DOMContentLoaded', init);
