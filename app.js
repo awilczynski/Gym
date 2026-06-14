@@ -81,6 +81,238 @@ const PLAN = [
 
 const SUPERSET_LABELS = { ssB: 'Superseria', ssC: 'Superseria' };
 
+/* ---------- Exercise metadata: target muscles (for graphic) + technique cues ---------- */
+const EX_META = {
+  // PUSH A
+  push_a_1: { muscles: ['chest', 'frontdelt'], cues: [
+    'Łopatki ściągnięte i opuszczone, klatka wypchnięta do przodu.',
+    'Łokcie ok. 45° od tułowia — nie rozkładaj ich w bok do 90°.',
+    'Nie blokuj łokci w wyproście; na dole poczuj rozciągnięcie klatki.'
+  ] },
+  push_a_2: { muscles: ['upperchest', 'frontdelt'], cues: [
+    'Ławka ok. 30° — celuj hantlami nad górną część klatki.',
+    'Prowadź hantle po łuku, łokcie pod nadgarstkami.',
+    'W górze nie stukaj hantli o siebie; napnij górę klatki.'
+  ] },
+  push_a_3: { muscles: ['chest'], cues: [
+    'Stałe, lekkie zgięcie łokci przez cały ruch (to nie wyciskanie).',
+    'Prowadź łokciami, ściskaj klatkę na końcu zakresu.',
+    'Łopatki ściągnięte — nie wysuwaj barków do przodu.'
+  ] },
+  push_a_4: { muscles: ['frontdelt', 'sidedelt'], cues: [
+    'Plecy oparte, brzuch napięty — nie odchylaj się do tyłu.',
+    'Wyciskaj nad głowę bez blokowania łokci.',
+    'Nie unoś barków do uszu (bez wzruszania).'
+  ] },
+  push_a_5: { muscles: ['sidedelt'], cues: [
+    'Lekko zgięte łokcie; unoś przez bok do linii barków.',
+    'Prowadź łokciem, nie nadgarstkiem — bez bujania tułowiem.',
+    'Opuszczaj powoli, utrzymuj napięcie.'
+  ] },
+  push_a_6: { muscles: ['triceps'], cues: [
+    'Łokcie przy tułowiu, nieruchome — ruch tylko w przedramieniu.',
+    'Pełny wyprost na dole, napnij triceps.',
+    'Nie pomagaj tułowiem ani barkami.'
+  ] },
+  // PULL A
+  pull_a_1: { muscles: ['lats', 'midback'], cues: [
+    'Klatka oparta o podpórkę, ściągaj łokcie do tyłu.',
+    'Prowadź łokciami nisko przy tułowiu, łopatki do siebie.',
+    'Bez szarpania; na końcu ścisk pleców, kontrolowany powrót.'
+  ] },
+  pull_a_2: { muscles: ['midback', 'lats'], cues: [
+    'Tułów stabilny, lekko wypięta klatka — nie bujaj plecami.',
+    'Ściągaj rękojeść do brzucha, łokcie blisko ciała.',
+    'Łopatki do siebie na końcu, powolny powrót.'
+  ] },
+  pull_a_3: { muscles: ['lats'], cues: [
+    'Klatka w górę; ściągaj drążek do górnej części klatki.',
+    'Prowadź łokciami w dół — nie ciągnij samym bicepsem.',
+    'Bez mocnego odchylania tułowia; kontrola w rozciągnięciu.'
+  ] },
+  pull_a_4: { muscles: ['reardelt'], cues: [
+    'Lekko zgięte łokcie; rozwódź ramiona na boki.',
+    'Prowadź łokciami, ściskaj tylne aktony barków.',
+    'Bez zamachu — powolny powrót.'
+  ] },
+  pull_a_5: { muscles: ['biceps'], cues: [
+    'Łokcie przy tułowiu, nieruchome.',
+    'Pełen zakres, napnij biceps w górze.',
+    'Nie bujaj tułowiem; kontroluj opuszczanie.'
+  ] },
+  pull_a_6: { muscles: ['biceps', 'forearm'], cues: [
+    'Chwyt neutralny (młotkowy), kciuki w górę.',
+    'Łokcie przy ciele, bez zamachu.',
+    'Napnij w górze, powoli opuszczaj.'
+  ] },
+  // LEGS
+  legs_1: { muscles: ['quads', 'glutes'], cues: [
+    'Stopy na szerokość bioder, pięty mocno dociśnięte.',
+    'Nie blokuj kolan w górze; kolana w linii stóp.',
+    'Nie odrywaj bioder/pleców od oparcia (bez zwijania miednicy).',
+    '⚠ Nie wstrzymuj oddechu — wydech przy wypychaniu.'
+  ] },
+  legs_2: { muscles: ['quads', 'glutes'], cues: [
+    'Tułów stabilny; schodź kontrolowanie w dół.',
+    'Kolano w linii palców stopy, pięta dociśnięta.',
+    'Pełen zakres bez odbijania na dole.'
+  ] },
+  legs_3: { muscles: ['quads'], cues: [
+    'Oś maszyny na wysokości kolan.',
+    'Prostuj do pełna, napnij czworogłowe na górze.',
+    'Powolne opuszczanie, bez szarpania.'
+  ] },
+  legs_4: { muscles: ['hamstrings'], cues: [
+    'Biodra dociśnięte do oparcia/ławki.',
+    'Pełne uginanie, napnij dwugłowe uda.',
+    'Kontroluj powrót — nie odbijaj ciężaru.'
+  ] },
+  legs_5: { muscles: ['glutes'], cues: [
+    'Broda lekko schowana, żebra w dół (nie wyginaj lędźwi).',
+    'Wypych biodrami; pełne napięcie pośladków w górze.',
+    '⚠ Nie wstrzymuj oddechu — wydech przy wypychaniu.'
+  ] },
+  legs_6: { muscles: ['calves'], cues: [
+    'Pełen zakres: głębokie rozciągnięcie na dole, maks. wspięcie w górze.',
+    'Krótka pauza w górze, bez sprężynowania.',
+    'Stabilne kolano (zależnie od wariantu: stojąc/siedząc).'
+  ] },
+  // PUSH B
+  push_b_1: { muscles: ['frontdelt', 'sidedelt'], cues: [
+    'Brzuch napięty — nie odchylaj się do tyłu.',
+    'Wyciskaj po łuku, nie blokuj łokci.',
+    'Bez wzruszania barków do uszu.'
+  ] },
+  push_b_2: { muscles: ['upperchest'], cues: [
+    'Skos ok. 30°; prowadź sztangę nad górną część klatki.',
+    'Łopatki ściągnięte, klatka wypchnięta.',
+    'Nie blokuj łokci na górze.'
+  ] },
+  push_b_3: { muscles: ['sidedelt'], cues: [
+    'Lekko zgięte łokcie; unoś przez bok do linii barków.',
+    'Prowadź łokciem, bez bujania tułowiem.',
+    'Powolne opuszczanie pod napięciem.'
+  ] },
+  push_b_4: { muscles: ['reardelt'], cues: [
+    'Lekko zgięte łokcie; rozwódź ramiona na boki.',
+    'Ściskaj tylne aktony barków, bez zamachu.',
+    'Kontrolowany powrót.'
+  ] },
+  push_b_5: { muscles: ['triceps'], cues: [
+    'Łokcie blisko głowy, nieruchome.',
+    'Pełne rozciągnięcie za głową i pełny wyprost.',
+    'Dobierz ciężar tak, by nie bolały łokcie.'
+  ] },
+  push_b_6: { muscles: ['triceps'], cues: [
+    'Łokcie przy tułowiu, nieruchome.',
+    'Pełny wyprost na dole, napnij triceps.',
+    'Nie pomagaj tułowiem.'
+  ] },
+  push_b_7: { muscles: ['biceps'], cues: [
+    'Ramiona oparte, łokcie nieruchome.',
+    'Nie prostuj gwałtownie na dole — kontrola.',
+    'Napnij biceps w górze. (Superseria — przejdź od razu do triceps.)'
+  ] },
+  push_b_8: { muscles: ['triceps'], cues: [
+    'Łokcie przy tułowiu; na dole rozsuń linę.',
+    'Pełny wyprost, napnij triceps.',
+    'Wykonaj od razu po bicepsie (superseria).'
+  ] },
+  // PULL B
+  pull_b_1: { muscles: ['lats'], cues: [
+    'Klatka w górę; ściągaj drążek do górnej klatki.',
+    'Prowadź łokciami w dół, bez ciągnięcia bicepsem.',
+    'Cięższa wersja (8–10) — kontroluj rozciągnięcie w górze.'
+  ] },
+  pull_b_2: { muscles: ['lats', 'midback'], cues: [
+    'Klatka w górę; ściągaj uchwyt do górnej klatki.',
+    'Łokcie w dół i do tyłu, ścisk pleców.',
+    'Kontrola w rozciągnięciu.'
+  ] },
+  pull_b_3: { muscles: ['lats', 'midback'], cues: [
+    'Tułów stabilny; ciągnij łokciem do biodra.',
+    'Pełen zakres z wyciągnięciem na początku.',
+    'Bez bujania całym ciałem.'
+  ] },
+  pull_b_4: { muscles: ['lats'], cues: [
+    'Ramiona prawie proste — stałe, lekkie zgięcie łokci.',
+    'Prowadź ruch barkami/plecami, łuk w dół do ud.',
+    'Napnij najszersze, kontroluj powrót.'
+  ] },
+  pull_b_5: { muscles: ['biceps'], cues: [
+    'Ławka w skosie — ramiona zwisają lekko za tułów.',
+    'Pełne rozciągnięcie bicepsa na dole.',
+    'Łokcie nieruchome, bez zamachu.'
+  ] },
+  pull_b_6: { muscles: ['biceps'], cues: [
+    'Łokcie przy tułowiu, nieruchome.',
+    'Pełen zakres, napnij w górze.',
+    'Kontroluj opuszczanie.'
+  ] },
+  pull_b_7: { muscles: ['biceps'], cues: [
+    'Łokcie przy ciele, bez zamachu.',
+    'Pełen zakres, napnij biceps w górze.',
+    '(Superseria — przejdź od razu do triceps.)'
+  ] },
+  pull_b_8: { muscles: ['triceps'], cues: [
+    'Łokcie blisko głowy, nieruchome.',
+    'Pełne rozciągnięcie i pełny wyprost.',
+    'Wykonaj od razu po bicepsie (superseria).'
+  ] }
+};
+
+/* ---------- Body-map graphic (inline SVG, offline) ---------- */
+const BODY_BASE =
+  '<g fill="#39414f">' +
+  '<circle cx="50" cy="18" r="11"/>' +
+  '<rect x="44" y="27" width="12" height="7" rx="3"/>' +
+  '<path d="M31 38 Q50 33 69 38 L63 95 Q50 99 37 95 Z"/>' +
+  '<circle cx="30" cy="40" r="9"/><circle cx="70" cy="40" r="9"/>' +
+  '<rect x="18" y="44" width="11" height="34" rx="5"/>' +
+  '<rect x="71" y="44" width="11" height="34" rx="5"/>' +
+  '<rect x="17" y="76" width="10" height="32" rx="5"/>' +
+  '<rect x="73" y="76" width="10" height="32" rx="5"/>' +
+  '<path d="M37 94 L63 94 L60 113 L40 113 Z"/>' +
+  '<rect x="36" y="110" width="12" height="48" rx="6"/>' +
+  '<rect x="52" y="110" width="12" height="48" rx="6"/>' +
+  '<rect x="37" y="155" width="10" height="44" rx="5"/>' +
+  '<rect x="53" y="155" width="10" height="44" rx="5"/>' +
+  '</g>';
+
+const MUSCLE_SHAPES = {
+  chest: '<ellipse cx="42" cy="52" rx="8" ry="7"/><ellipse cx="58" cy="52" rx="8" ry="7"/>',
+  upperchest: '<ellipse cx="42" cy="47" rx="8" ry="5"/><ellipse cx="58" cy="47" rx="8" ry="5"/>',
+  frontdelt: '<circle cx="30" cy="40" r="8"/><circle cx="70" cy="40" r="8"/>',
+  sidedelt: '<circle cx="28" cy="42" r="8"/><circle cx="72" cy="42" r="8"/>',
+  reardelt: '<circle cx="30" cy="40" r="8"/><circle cx="70" cy="40" r="8"/>',
+  biceps: '<ellipse cx="22" cy="58" rx="5" ry="10"/><ellipse cx="78" cy="58" rx="5" ry="10"/>',
+  triceps: '<ellipse cx="22" cy="58" rx="5" ry="11"/><ellipse cx="78" cy="58" rx="5" ry="11"/>',
+  forearm: '<ellipse cx="21" cy="90" rx="5" ry="12"/><ellipse cx="79" cy="90" rx="5" ry="12"/>',
+  midback: '<ellipse cx="50" cy="57" rx="13" ry="9"/>',
+  lats: '<ellipse cx="39" cy="66" rx="7" ry="14"/><ellipse cx="61" cy="66" rx="7" ry="14"/>',
+  quads: '<ellipse cx="42" cy="130" rx="6" ry="18"/><ellipse cx="58" cy="130" rx="6" ry="18"/>',
+  hamstrings: '<ellipse cx="42" cy="132" rx="6" ry="18"/><ellipse cx="58" cy="132" rx="6" ry="18"/>',
+  glutes: '<ellipse cx="44" cy="104" rx="8" ry="8"/><ellipse cx="56" cy="104" rx="8" ry="8"/>',
+  calves: '<ellipse cx="42" cy="176" rx="5" ry="14"/><ellipse cx="58" cy="176" rx="5" ry="14"/>'
+};
+
+const MUSCLE_LABELS = {
+  chest: 'Klatka', upperchest: 'Górna klatka', frontdelt: 'Barki (przód)', sidedelt: 'Barki (bok)',
+  reardelt: 'Barki (tył)', biceps: 'Biceps', triceps: 'Triceps', forearm: 'Przedramię',
+  midback: 'Plecy (środek)', lats: 'Najszersze', quads: 'Czworogłowe', hamstrings: 'Dwugłowe ud',
+  glutes: 'Pośladki', calves: 'Łydki'
+};
+
+function buildBodySvg(muscles) {
+  const hl = (muscles || []).map(m => MUSCLE_SHAPES[m] || '').join('');
+  return '<svg viewBox="0 0 100 205" class="body-svg" aria-hidden="true">' +
+    BODY_BASE + '<g fill="#4cc9b0">' + hl + '</g></svg>';
+}
+
+function muscleChipText(muscles) {
+  return (muscles || []).map(m => MUSCLE_LABELS[m] || m).join(' · ');
+}
+
 /* ---------- Storage helpers ---------- */
 function loadLog() {
   try {
@@ -315,21 +547,51 @@ function exerciseCard(session, ex) {
   card.className = 'exercise';
 
   const log = ensureExerciseLog(session.id, state.week, ex.id, ex.sets);
+  const meta = EX_META[ex.id] || {};
 
-  // head
+  // head: muscle graphic + info
   const head = document.createElement('div');
-  head.innerHTML = `
+  head.className = 'exercise-head';
+
+  const fig = document.createElement('div');
+  fig.className = 'ex-figure';
+  fig.innerHTML = buildBodySvg(meta.muscles);
+
+  const info = document.createElement('div');
+  info.className = 'ex-info';
+  info.innerHTML = `
     <div class="exercise-name">${escapeHtml(ex.name)}</div>
     <div class="exercise-presc">${ex.sets} × ${escapeHtml(ex.reps)} powt.</div>
+    ${meta.muscles ? `<div class="target-chip">🎯 ${escapeHtml(muscleChipText(meta.muscles))}</div>` : ''}
   `;
   if (ex.warning) {
     const w = document.createElement('span');
     w.className = 'warn-badge';
     w.textContent = '⚠ wysokie ciśnienie śródpiersiowe';
     w.title = 'Wysokie ciśnienie śródpiersiowe — bez bezdechu (nie wstrzymuj oddechu).';
-    head.appendChild(w);
+    info.appendChild(w);
   }
+
+  head.append(fig, info);
   card.appendChild(head);
+
+  // technique cues (collapsed)
+  if (meta.cues && meta.cues.length) {
+    const det = document.createElement('details');
+    det.className = 'disclosure';
+    const sum = document.createElement('summary');
+    sum.textContent = 'Technika — kluczowe wskazówki';
+    det.appendChild(sum);
+    const ul = document.createElement('ul');
+    ul.className = 'cue-list';
+    meta.cues.forEach(c => {
+      const li = document.createElement('li');
+      li.textContent = c;
+      ul.appendChild(li);
+    });
+    det.appendChild(ul);
+    card.appendChild(det);
+  }
 
   // sets container
   const setsWrap = document.createElement('div');
