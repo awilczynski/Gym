@@ -1,6 +1,6 @@
 /* Service worker — caches static assets for offline use.
    Bump CACHE_VERSION on every release to bust the cache. */
-const CACHE_VERSION = 'v3';
+const CACHE_VERSION = 'v4';
 const CACHE_NAME = 'dziennik-treningowy-' + CACHE_VERSION;
 
 const ASSETS = [

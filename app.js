@@ -687,6 +687,7 @@ function renderSetRows(container, sessionId, ex, log) {
     weight.value = set.weight != null ? set.weight : '';
     weight.addEventListener('input', () => {
       set.weight = weight.value === '' ? null : parseFloat(weight.value);
+      weight.classList.remove('invalid');
       scheduleSave();
     });
 
@@ -699,6 +700,7 @@ function renderSetRows(container, sessionId, ex, log) {
     reps.value = set.reps != null ? set.reps : '';
     reps.addEventListener('input', () => {
       set.reps = reps.value === '' ? null : parseInt(reps.value, 10);
+      reps.classList.remove('invalid');
       scheduleSave();
     });
 
@@ -709,8 +711,17 @@ function renderSetRows(container, sessionId, ex, log) {
     done.title = 'Zaznacz serię i odpal przerwę';
     done.setAttribute('aria-label', 'Zatwierdź serię i rozpocznij przerwę');
     done.addEventListener('click', () => {
-      row.classList.toggle('done');
-      if (row.classList.contains('done')) startRest(ex.rest || 90, ex.name);
+      if (row.classList.contains('done')) { row.classList.remove('done'); return; }
+      const weightFilled = weight.value.trim() !== '' && set.weight != null;
+      const repsFilled = reps.value.trim() !== '' && set.reps != null;
+      if (!weightFilled || !repsFilled) {
+        if (!weightFilled) weight.classList.add('invalid');
+        if (!repsFilled) reps.classList.add('invalid');
+        showToast('Uzupełnij ciężar i powtórzenia');
+        return;
+      }
+      row.classList.add('done');
+      startRest(ex.rest || 90, ex.name);
     });
 
     row.append(num, weight, reps, done);

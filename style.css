@@ -218,6 +218,7 @@ body {
   padding: 6px 8px;
 }
 .set-row input:focus { outline: none; border-color: var(--accent); }
+.set-row input.invalid { border-color: var(--danger); background: rgba(255, 107, 107, 0.08); }
 .set-row input::placeholder { color: #5a6270; }
 
 .set-controls { display: flex; gap: 8px; margin-top: 4px; }
