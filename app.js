@@ -8,6 +8,7 @@
 /* ---------- Constants ---------- */
 const LOG_KEY = 'workout-log-v1';
 const SETTINGS_KEY = 'workout-settings-v1';
+const COMPLETED_KEY = 'workout-completed-v1';
 const TOTAL_WEEKS = 12;
 const SAVE_DEBOUNCE_MS = 500;
 
@@ -357,6 +358,39 @@ function saveSettings(settings) {
   }
 }
 
+function loadCompleted() {
+  try {
+    const raw = localStorage.getItem(COMPLETED_KEY);
+    return raw ? JSON.parse(raw) : {};
+  } catch (e) {
+    return {};
+  }
+}
+
+function saveCompleted() {
+  try {
+    localStorage.setItem(COMPLETED_KEY, JSON.stringify(state.completed));
+  } catch (e) {
+    console.error('Błąd zapisu statusu treningów', e);
+  }
+}
+
+function isCompleted(sessionId, week) {
+  return state.completed[sessionId] && state.completed[sessionId][week]
+    ? state.completed[sessionId][week] : null;
+}
+
+function markCompleted(sessionId, week) {
+  if (!state.completed[sessionId]) state.completed[sessionId] = {};
+  state.completed[sessionId][week] = todayISO();
+  saveCompleted();
+}
+
+function unmarkCompleted(sessionId, week) {
+  if (state.completed[sessionId]) delete state.completed[sessionId][week];
+  saveCompleted();
+}
+
 function clampWeek(w) {
   w = parseInt(w, 10);
   if (isNaN(w)) return 1;
@@ -371,6 +405,7 @@ const state = {
   sessionStartAt: null,   // timestamp when current session was opened
   progressExerciseId: null,
   log: {},
+  completed: {},          // completed[sessionId][week] = 'YYYY-MM-DD'
   settings: { currentWeek: 1 }
 };
 
@@ -444,11 +479,18 @@ function renderStart() {
   PLAN.forEach(session => {
     const tile = document.createElement('button');
     tile.className = 'tile';
-    const done = sessionHasData(session.id, state.week);
+    const completedDate = isCompleted(session.id, state.week);
+    const hasData = sessionHasData(session.id, state.week);
+    let statusHtml = '';
+    if (completedDate) {
+      statusHtml = `<div class="tile-done completed">🏁 Trening zakończony · ${formatDatePL(completedDate)}</div>`;
+    } else if (hasData) {
+      statusHtml = '<div class="tile-done">✓ Masz wpisy w tym tygodniu</div>';
+    }
     tile.innerHTML = `
       <div class="tile-title">${escapeHtml(session.title)}</div>
       <div class="tile-sub">${session.exercises.length} ćwiczeń</div>
-      ${done ? '<div class="tile-done">✓ Masz wpisy w tym tygodniu</div>' : ''}
+      ${statusHtml}
     `;
     tile.addEventListener('click', () => {
       state.sessionId = session.id;
@@ -539,21 +581,40 @@ function renderSession() {
     }
   }
 
-  // Finish workout -> summary
-  const finishBtn = document.createElement('button');
-  finishBtn.className = 'btn btn-accent btn-block';
-  finishBtn.style.marginTop = '4px';
-  finishBtn.textContent = '🏁 Zakończ trening';
-  finishBtn.addEventListener('click', () => showSummary(session));
-  frag.appendChild(finishBtn);
-
-  // Reset this session+week
-  const resetBtn = document.createElement('button');
-  resetBtn.className = 'btn btn-danger btn-block';
-  resetBtn.style.marginTop = '10px';
-  resetBtn.textContent = 'Wyczyść ten tydzień (ta sesja)';
-  resetBtn.addEventListener('click', () => resetSessionWeek(session.id));
-  frag.appendChild(resetBtn);
+  // Finish workout / completed status
+  const completedDate = isCompleted(session.id, state.week);
+  if (completedDate) {
+    const done = document.createElement('div');
+    done.className = 'finish-status';
+    done.innerHTML = `<div class="finish-status-text">🏁 Trening zakończony · ${formatDatePL(completedDate)}</div>`;
+    const actions = document.createElement('div');
+    actions.className = 'finish-actions';
+    const sumLink = document.createElement('button');
+    sumLink.className = 'link-btn';
+    sumLink.textContent = 'Podsumowanie';
+    sumLink.addEventListener('click', () => showSummary(session));
+    const undo = document.createElement('button');
+    undo.className = 'link-btn';
+    undo.textContent = 'Cofnij zakończenie';
+    undo.addEventListener('click', () => {
+      unmarkCompleted(session.id, state.week);
+      render();
+    });
+    actions.append(sumLink, undo);
+    done.appendChild(actions);
+    frag.appendChild(done);
+  } else {
+    const finishBtn = document.createElement('button');
+    finishBtn.className = 'btn btn-accent btn-block';
+    finishBtn.style.marginTop = '4px';
+    finishBtn.textContent = '🏁 Zakończ trening';
+    finishBtn.addEventListener('click', () => {
+      markCompleted(session.id, state.week);
+      showSummary(session);
+      render();
+    });
+    frag.appendChild(finishBtn);
+  }
 
   appEl.replaceChildren(frag);
 }
@@ -794,16 +855,6 @@ function prevWeekTable(sessionId, exerciseId, week) {
     return w;
   }
   return table;
-}
-
-function resetSessionWeek(sessionId) {
-  if (!confirm(`Na pewno wyczyścić wszystkie wpisy dla tej sesji w tygodniu ${state.week}? Tej operacji nie można cofnąć.`)) return;
-  if (state.log[sessionId]) {
-    delete state.log[sessionId][state.week];
-  }
-  saveLog(state.log);
-  showToast('Wyczyszczono');
-  render();
 }
 
 /* ---------- Workout summary + PR detection (#2) ---------- */
@@ -1165,6 +1216,7 @@ function exportData() {
   const payload = {
     [LOG_KEY]: state.log,
     [SETTINGS_KEY]: state.settings,
+    [COMPLETED_KEY]: state.completed,
     _meta: { app: 'dziennik-treningowy', version: 1, exportedAt: new Date().toISOString() }
   };
   const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
@@ -1199,8 +1251,11 @@ function importData(file) {
         state.settings.currentWeek = clampWeek(incomingSettings.currentWeek);
         state.week = state.settings.currentWeek;
       }
+      const incomingCompleted = parsed[COMPLETED_KEY] || parsed.completed;
+      state.completed = (incomingCompleted && typeof incomingCompleted === 'object') ? incomingCompleted : {};
       saveLog(state.log);
       saveSettings(state.settings);
+      saveCompleted();
       showToast('Zaimportowano');
       render();
     } catch (e) {
@@ -1303,6 +1358,17 @@ function restBeep() {
 /* ---------- Utilities ---------- */
 function pad2(n) { return String(n).padStart(2, '0'); }
 
+function todayISO() {
+  const d = new Date();
+  return d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate());
+}
+
+function formatDatePL(iso) {
+  if (!iso) return '';
+  const p = String(iso).split('-');
+  return p.length === 3 ? `${p[2]}.${p[1]}.${p[0]}` : iso;
+}
+
 function formatTime(totalSeconds) {
   const s = Math.max(0, Math.round(totalSeconds));
   const m = Math.floor(s / 60);
@@ -1328,6 +1394,7 @@ function showToast(msg) {
 function init() {
   state.log = loadLog();
   state.settings = loadSettings();
+  state.completed = loadCompleted();
   state.week = state.settings.currentWeek;
 
   // nav

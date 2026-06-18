@@ -121,6 +121,29 @@ body {
 .tile .tile-title { font-size: 16px; font-weight: 600; }
 .tile .tile-sub { font-size: 13px; color: var(--text-dim); margin-top: 4px; }
 .tile .tile-done { font-size: 12px; color: var(--accent); margin-top: 6px; }
+.tile .tile-done.completed { font-weight: 600; }
+
+/* finished-workout status block (session view) */
+.finish-status {
+  margin-top: 4px;
+  background: rgba(76, 201, 176, 0.10);
+  border: 1px solid var(--accent-dim);
+  border-radius: var(--radius);
+  padding: 12px 14px;
+  text-align: center;
+}
+.finish-status-text { font-size: 15px; font-weight: 600; color: var(--accent); }
+.finish-actions { display: flex; justify-content: center; gap: 18px; margin-top: 8px; }
+.link-btn {
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  font-size: 13px;
+  padding: 6px 4px;
+  cursor: pointer;
+  text-decoration: underline;
+}
+.link-btn:active { color: var(--accent); }
 
 /* ---------- Section heading ---------- */
 .section-h { font-size: 13px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.5px; margin: 4px 0 10px; }
