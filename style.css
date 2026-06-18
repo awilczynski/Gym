@@ -123,17 +123,22 @@ body {
 .tile .tile-done { font-size: 12px; color: var(--accent); margin-top: 6px; }
 .tile .tile-done.completed { font-weight: 600; }
 
-/* finished-workout status block (session view) */
-.finish-status {
-  margin-top: 4px;
-  background: rgba(76, 201, 176, 0.10);
-  border: 1px solid var(--accent-dim);
+/* finished-workout banner (read-only session view) */
+.locked-banner {
+  margin-bottom: 16px;
+  background: rgba(76, 201, 176, 0.12);
+  border: 1px solid var(--accent);
   border-radius: var(--radius);
   padding: 12px 14px;
   text-align: center;
 }
-.finish-status-text { font-size: 15px; font-weight: 600; color: var(--accent); }
+.locked-banner-text { font-size: 16px; font-weight: 700; color: var(--accent); }
+.locked-banner-sub { font-size: 12px; color: var(--text-dim); margin-top: 2px; }
 .finish-actions { display: flex; justify-content: center; gap: 18px; margin-top: 8px; }
+
+/* dim/lock the exercise cards when the session is completed */
+.exercise.locked { opacity: 0.92; border-style: dashed; }
+.exercise.locked .exercise-name::after { content: ' 🔒'; font-size: 12px; }
 .link-btn {
   background: none;
   border: none;
@@ -250,6 +255,7 @@ body {
 }
 .set-row input:focus { outline: none; border-color: var(--accent); }
 .set-row input.invalid { border-color: var(--danger); background: rgba(255, 107, 107, 0.08); }
+.set-row input[readonly] { background: var(--bg); color: var(--text-dim); border-style: dashed; cursor: default; }
 .set-row input::placeholder { color: #5a6270; }
 
 .set-controls { display: flex; gap: 8px; margin-top: 4px; }

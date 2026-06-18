@@ -558,6 +558,33 @@ function renderSession() {
   titleEl.textContent = session.title;
   frag.appendChild(titleEl);
 
+  const completedDate = isCompleted(session.id, state.week);
+  const locked = !!completedDate;
+
+  // Top banner for a completed (read-only) session
+  if (locked) {
+    const banner = document.createElement('div');
+    banner.className = 'locked-banner';
+    banner.innerHTML = `<div class="locked-banner-text">🏁 Trening zakończony · ${formatDatePL(completedDate)}</div>
+      <div class="locked-banner-sub">Tylko podgląd — edycja wyłączona</div>`;
+    const actions = document.createElement('div');
+    actions.className = 'finish-actions';
+    const sumLink = document.createElement('button');
+    sumLink.className = 'link-btn';
+    sumLink.textContent = 'Podsumowanie';
+    sumLink.addEventListener('click', () => showSummary(session));
+    const undo = document.createElement('button');
+    undo.className = 'link-btn';
+    undo.textContent = 'Cofnij zakończenie (edytuj)';
+    undo.addEventListener('click', () => {
+      unmarkCompleted(session.id, state.week);
+      render();
+    });
+    actions.append(sumLink, undo);
+    banner.appendChild(actions);
+    frag.appendChild(banner);
+  }
+
   // Group consecutive exercises by supersetGroup
   let i = 0;
   while (i < session.exercises.length) {
@@ -571,45 +598,25 @@ function renderSession() {
       label.textContent = SUPERSET_LABELS[group] || 'Superseria';
       wrap.appendChild(label);
       while (i < session.exercises.length && session.exercises[i].supersetGroup === group) {
-        wrap.appendChild(exerciseCard(session, session.exercises[i]));
+        wrap.appendChild(exerciseCard(session, session.exercises[i], locked));
         i++;
       }
       frag.appendChild(wrap);
     } else {
-      frag.appendChild(exerciseCard(session, ex));
+      frag.appendChild(exerciseCard(session, ex, locked));
       i++;
     }
   }
 
-  // Finish workout / completed status
-  const completedDate = isCompleted(session.id, state.week);
-  if (completedDate) {
-    const done = document.createElement('div');
-    done.className = 'finish-status';
-    done.innerHTML = `<div class="finish-status-text">🏁 Trening zakończony · ${formatDatePL(completedDate)}</div>`;
-    const actions = document.createElement('div');
-    actions.className = 'finish-actions';
-    const sumLink = document.createElement('button');
-    sumLink.className = 'link-btn';
-    sumLink.textContent = 'Podsumowanie';
-    sumLink.addEventListener('click', () => showSummary(session));
-    const undo = document.createElement('button');
-    undo.className = 'link-btn';
-    undo.textContent = 'Cofnij zakończenie';
-    undo.addEventListener('click', () => {
-      unmarkCompleted(session.id, state.week);
-      render();
-    });
-    actions.append(sumLink, undo);
-    done.appendChild(actions);
-    frag.appendChild(done);
-  } else {
+  // Finish workout (only when not yet completed)
+  if (!locked) {
     const finishBtn = document.createElement('button');
     finishBtn.className = 'btn btn-accent btn-block';
     finishBtn.style.marginTop = '4px';
     finishBtn.textContent = '🏁 Zakończ trening';
     finishBtn.addEventListener('click', () => {
       markCompleted(session.id, state.week);
+      state.view = 'start';
       showSummary(session);
       render();
     });
@@ -619,9 +626,9 @@ function renderSession() {
   appEl.replaceChildren(frag);
 }
 
-function exerciseCard(session, ex) {
+function exerciseCard(session, ex, locked) {
   const card = document.createElement('div');
-  card.className = 'exercise';
+  card.className = 'exercise' + (locked ? ' locked' : '');
 
   const log = ensureExerciseLog(session.id, state.week, ex.id, ex.sets);
   const meta = EX_META[ex.id] || {};
@@ -684,7 +691,7 @@ function exerciseCard(session, ex) {
 
   const colHead = document.createElement('div');
   colHead.className = 'col-head';
-  colHead.innerHTML = '<span>#</span><span>Ciężar (kg)</span><span>Powt.</span><span>✓</span>';
+  colHead.innerHTML = '<span>#</span><span>Ciężar (kg)</span><span>Powt.</span><span>' + (locked ? '' : '✓') + '</span>';
   setsWrap.appendChild(colHead);
 
   // live stats (tonnage + estimated 1RM)
@@ -700,34 +707,36 @@ function exerciseCard(session, ex) {
 
   const rowsWrap = document.createElement('div');
   rowsWrap.dataset.rows = '1';
-  renderSetRows(rowsWrap, session.id, ex, log, prevLog, updateStats);
+  renderSetRows(rowsWrap, session.id, ex, log, prevLog, updateStats, locked);
   setsWrap.appendChild(rowsWrap);
 
-  // +/- set controls
-  const controls = document.createElement('div');
-  controls.className = 'set-controls';
-  const minus = document.createElement('button');
-  minus.className = 'mini-btn';
-  minus.textContent = '– seria';
-  minus.addEventListener('click', () => {
-    if (log.sets.length > 1) {
-      log.sets.pop();
-      renderSetRows(rowsWrap, session.id, ex, log, prevLog, updateStats);
+  // +/- set controls (hidden when the session is completed/locked)
+  if (!locked) {
+    const controls = document.createElement('div');
+    controls.className = 'set-controls';
+    const minus = document.createElement('button');
+    minus.className = 'mini-btn';
+    minus.textContent = '– seria';
+    minus.addEventListener('click', () => {
+      if (log.sets.length > 1) {
+        log.sets.pop();
+        renderSetRows(rowsWrap, session.id, ex, log, prevLog, updateStats, locked);
+        updateStats();
+        scheduleSave();
+      }
+    });
+    const plus = document.createElement('button');
+    plus.className = 'mini-btn';
+    plus.textContent = '+ seria';
+    plus.addEventListener('click', () => {
+      log.sets.push({ weight: null, reps: null });
+      renderSetRows(rowsWrap, session.id, ex, log, prevLog, updateStats, locked);
       updateStats();
       scheduleSave();
-    }
-  });
-  const plus = document.createElement('button');
-  plus.className = 'mini-btn';
-  plus.textContent = '+ seria';
-  plus.addEventListener('click', () => {
-    log.sets.push({ weight: null, reps: null });
-    renderSetRows(rowsWrap, session.id, ex, log, prevLog, updateStats);
-    updateStats();
-    scheduleSave();
-  });
-  controls.append(minus, plus);
-  setsWrap.appendChild(controls);
+    });
+    controls.append(minus, plus);
+    setsWrap.appendChild(controls);
+  }
   setsWrap.appendChild(statsEl);
   updateStats();
 
@@ -744,25 +753,28 @@ function exerciseCard(session, ex) {
     card.appendChild(det);
   }
 
-  // note accordion
-  const noteDet = document.createElement('details');
-  noteDet.className = 'disclosure';
-  if (log.note && log.note.trim()) noteDet.open = true;
-  const noteSum = document.createElement('summary');
-  noteSum.textContent = 'Notatka';
-  noteDet.appendChild(noteSum);
-  const note = document.createElement('textarea');
-  note.className = 'note-input';
-  note.placeholder = 'np. ból barku, RIR 1...';
-  note.value = log.note || '';
-  note.addEventListener('input', () => { log.note = note.value; scheduleSave(); });
-  noteDet.appendChild(note);
-  card.appendChild(noteDet);
+  // note accordion (when locked, show only if there is a note; read-only)
+  if (!locked || (log.note && log.note.trim())) {
+    const noteDet = document.createElement('details');
+    noteDet.className = 'disclosure';
+    if (log.note && log.note.trim()) noteDet.open = true;
+    const noteSum = document.createElement('summary');
+    noteSum.textContent = 'Notatka';
+    noteDet.appendChild(noteSum);
+    const note = document.createElement('textarea');
+    note.className = 'note-input';
+    note.placeholder = 'np. ból barku, RIR 1...';
+    note.value = log.note || '';
+    note.readOnly = locked;
+    if (!locked) note.addEventListener('input', () => { log.note = note.value; scheduleSave(); });
+    noteDet.appendChild(note);
+    card.appendChild(noteDet);
+  }
 
   return card;
 }
 
-function renderSetRows(container, sessionId, ex, log, prevLog, onChange) {
+function renderSetRows(container, sessionId, ex, log, prevLog, onChange, locked) {
   container.replaceChildren();
   log.sets.forEach((set, idx) => {
     const row = document.createElement('div');
@@ -782,7 +794,8 @@ function renderSetRows(container, sessionId, ex, log, prevLog, onChange) {
     weight.placeholder = prevSet && prevSet.weight != null ? String(prevSet.weight) : 'kg';
     if (prevSet && prevSet.weight != null) weight.title = 'Poprzedni tydzień: ' + prevSet.weight + ' kg';
     weight.value = set.weight != null ? set.weight : '';
-    weight.addEventListener('input', () => {
+    weight.readOnly = !!locked;
+    if (!locked) weight.addEventListener('input', () => {
       set.weight = weight.value === '' ? null : parseFloat(weight.value);
       weight.classList.remove('invalid');
       if (onChange) onChange();
@@ -797,34 +810,39 @@ function renderSetRows(container, sessionId, ex, log, prevLog, onChange) {
     reps.placeholder = prevSet && prevSet.reps != null ? String(prevSet.reps) : 'powt.';
     if (prevSet && prevSet.reps != null) reps.title = 'Poprzedni tydzień: ' + prevSet.reps + ' powt.';
     reps.value = set.reps != null ? set.reps : '';
-    reps.addEventListener('input', () => {
+    reps.readOnly = !!locked;
+    if (!locked) reps.addEventListener('input', () => {
       set.reps = reps.value === '' ? null : parseInt(reps.value, 10);
       reps.classList.remove('invalid');
       if (onChange) onChange();
       scheduleSave();
     });
 
-    const done = document.createElement('button');
-    done.className = 'set-done-btn';
-    done.type = 'button';
-    done.textContent = '✓';
-    done.title = 'Zaznacz serię i odpal przerwę';
-    done.setAttribute('aria-label', 'Zatwierdź serię i rozpocznij przerwę');
-    done.addEventListener('click', () => {
-      if (row.classList.contains('done')) { row.classList.remove('done'); return; }
-      const weightFilled = weight.value.trim() !== '' && set.weight != null;
-      const repsFilled = reps.value.trim() !== '' && set.reps != null;
-      if (!weightFilled || !repsFilled) {
-        if (!weightFilled) weight.classList.add('invalid');
-        if (!repsFilled) reps.classList.add('invalid');
-        showToast('Uzupełnij ciężar i powtórzenia');
-        return;
-      }
-      row.classList.add('done');
-      startRest(ex.rest || 90, ex.name);
-    });
-
-    row.append(num, weight, reps, done);
+    if (locked) {
+      const blank = document.createElement('div');
+      row.append(num, weight, reps, blank);
+    } else {
+      const done = document.createElement('button');
+      done.className = 'set-done-btn';
+      done.type = 'button';
+      done.textContent = '✓';
+      done.title = 'Zaznacz serię i odpal przerwę';
+      done.setAttribute('aria-label', 'Zatwierdź serię i rozpocznij przerwę');
+      done.addEventListener('click', () => {
+        if (row.classList.contains('done')) { row.classList.remove('done'); return; }
+        const weightFilled = weight.value.trim() !== '' && set.weight != null;
+        const repsFilled = reps.value.trim() !== '' && set.reps != null;
+        if (!weightFilled || !repsFilled) {
+          if (!weightFilled) weight.classList.add('invalid');
+          if (!repsFilled) reps.classList.add('invalid');
+          showToast('Uzupełnij ciężar i powtórzenia');
+          return;
+        }
+        row.classList.add('done');
+        startRest(ex.rest || 90, ex.name);
+      });
+      row.append(num, weight, reps, done);
+    }
     container.appendChild(row);
   });
 }
