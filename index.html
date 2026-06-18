@@ -25,6 +25,18 @@
 
   <main id="app" class="app-main"><!-- views rendered here --></main>
 
+  <div id="rest-timer" class="rest-timer" hidden role="timer" aria-live="polite">
+    <button id="rt-skip" class="rt-skip" aria-label="Zakończ przerwę">✕</button>
+    <div class="rt-main">
+      <div class="rt-label" id="rt-label">Przerwa</div>
+      <div class="rt-time" id="rt-time">0:00</div>
+    </div>
+    <div class="rt-actions">
+      <button id="rt-minus" class="rt-adj">−15s</button>
+      <button id="rt-plus" class="rt-adj">+15s</button>
+    </div>
+  </div>
+
   <nav class="bottom-nav">
     <button class="nav-btn" data-view="start">
       <span class="nav-icon">🏠</span><span class="nav-label">Start</span>

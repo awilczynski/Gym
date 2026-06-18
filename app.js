@@ -17,64 +17,65 @@ const PLAN = [
     id: 'push_a',
     title: 'Dzień 1 — PUSH A · Klatka',
     exercises: [
-      { id: 'push_a_1', name: 'Wyciskanie na maszynie (chest press)', sets: 3, reps: '8-10' },
-      { id: 'push_a_2', name: 'Wyciskanie hantle, skos dodatni', sets: 3, reps: '10-12' },
-      { id: 'push_a_3', name: 'Rozpiętki wyciąg / pec deck', sets: 3, reps: '12-15' },
-      { id: 'push_a_4', name: 'Wyciskanie barków na maszynie', sets: 3, reps: '10-12' },
-      { id: 'push_a_5', name: 'Wznosy bokiem (wyciąg)', sets: 3, reps: '12-15' },
-      { id: 'push_a_6', name: 'Pushdown triceps', sets: 3, reps: '12-15' }
+      { id: 'push_a_1', name: 'Wyciskanie na maszynie (chest press)', sets: 3, reps: '8-10', rest: 150 },
+      { id: 'push_a_2', name: 'Wyciskanie hantle, skos dodatni', sets: 3, reps: '10-12', rest: 150 },
+      { id: 'push_a_3', name: 'Rozpiętki wyciąg / pec deck', sets: 3, reps: '12-15', rest: 75 },
+      { id: 'push_a_4', name: 'Wyciskanie barków na maszynie', sets: 3, reps: '10-12', rest: 120 },
+      { id: 'push_a_5', name: 'Wznosy bokiem (wyciąg)', sets: 3, reps: '12-15', rest: 60 },
+      { id: 'push_a_6', name: 'Pushdown triceps', sets: 3, reps: '12-15', rest: 60 }
     ]
   },
   {
     id: 'pull_a',
-    title: 'Dzień 2 — PULL A · Plecy (grubość)',
+    title: 'Dzień 2 — PULL A · Plecy',
     exercises: [
-      { id: 'pull_a_1', name: 'Wiosło Hammer z podparciem klatki (maszyna)', sets: 3, reps: '8-10' },
-      { id: 'pull_a_2', name: 'Wiosło wyciąg, siedząc', sets: 3, reps: '10-12' },
-      { id: 'pull_a_3', name: 'Ściąganie drążka szeroko', sets: 3, reps: '10-12' },
-      { id: 'pull_a_4', name: 'Odwrotne rozpiętki / rear delt', sets: 3, reps: '15' },
-      { id: 'pull_a_5', name: 'Uginania ramion (wyciąg / EZ)', sets: 3, reps: '10-12' },
-      { id: 'pull_a_6', name: 'Hammer curl', sets: 2, reps: '12' }
+      { id: 'pull_a_1', name: 'Wiosło Hammer z podparciem klatki (maszyna)', sets: 3, reps: '8-10', rest: 150 },
+      { id: 'pull_a_2', name: 'Ściąganie jednorącz wyciąg górny (lat)', sets: 3, reps: '10-12', rest: 90 },
+      { id: 'pull_a_3', name: 'Ściąganie drążka szeroko', sets: 3, reps: '10-12', rest: 120 },
+      { id: 'pull_a_4', name: 'Odwrotne rozpiętki / rear delt', sets: 3, reps: '15', rest: 60 },
+      { id: 'pull_a_5', name: 'Wznosy bokiem (wyciąg)', sets: 3, reps: '12-15', rest: 60 },
+      { id: 'pull_a_6', name: 'Uginania ramion (wyciąg / EZ)', sets: 3, reps: '10-12', rest: 75 },
+      { id: 'pull_a_7', name: 'Hammer curl', sets: 2, reps: '12', rest: 60 }
     ]
   },
   {
     id: 'legs',
     title: 'Dzień 3 — NOGI · maszynowe (bez przysiadu / MC)',
     exercises: [
-      { id: 'legs_1', name: 'Suwnica (leg press)', sets: 3, reps: '12-15', warning: true },
-      { id: 'legs_2', name: 'Hack / pendulum lub wykroki bułgarskie', sets: 3, reps: '10-12' },
-      { id: 'legs_3', name: 'Prostowniki nóg', sets: 3, reps: '12-15' },
-      { id: 'legs_4', name: 'Uginanie nóg (leżąc / siedząc)', sets: 3, reps: '12-15' },
-      { id: 'legs_5', name: 'Hip thrust maszyna', sets: 3, reps: '12', warning: true },
-      { id: 'legs_6', name: 'Łydki (stojąc / siedząc)', sets: 4, reps: '12-15' }
+      { id: 'legs_1', name: 'Suwnica (leg press)', sets: 3, reps: '12-15', rest: 150, warning: true },
+      { id: 'legs_2', name: 'Hack / pendulum lub wykroki bułgarskie', sets: 3, reps: '10-12', rest: 150 },
+      { id: 'legs_3', name: 'Prostowniki nóg', sets: 3, reps: '12-15', rest: 75 },
+      { id: 'legs_4', name: 'Uginanie nóg (leżąc / siedząc)', sets: 3, reps: '12-15', rest: 75 },
+      { id: 'legs_5', name: 'Hip thrust maszyna', sets: 3, reps: '12', rest: 120, warning: true },
+      { id: 'legs_6', name: 'Łydki (stojąc / siedząc)', sets: 4, reps: '12-15', rest: 60 }
     ]
   },
   {
     id: 'push_b',
     title: 'Dzień 4 — PUSH B · Barki',
     exercises: [
-      { id: 'push_b_1', name: 'Wyciskanie barków hantle / maszyna', sets: 3, reps: '8-10' },
-      { id: 'push_b_2', name: 'Wyciskanie skos dodatni (maszyna / Smith)', sets: 3, reps: '10-12' },
-      { id: 'push_b_3', name: 'Wznosy bokiem (wyciąg)', sets: 4, reps: '12-15' },
-      { id: 'push_b_4', name: 'Rear delt fly', sets: 3, reps: '15' },
-      { id: 'push_b_5', name: 'Francuskie / wyciąg nad głowę triceps', sets: 3, reps: '12' },
-      { id: 'push_b_6', name: 'Pushdown', sets: 2, reps: '15' },
-      { id: 'push_b_7', name: 'Uginania na modlitewniku/maszyna (biceps)', sets: 2, reps: '12-15', supersetGroup: 'ssB' },
-      { id: 'push_b_8', name: 'Triceps pushdown, lina (triceps)', sets: 2, reps: '12-15', supersetGroup: 'ssB' }
+      { id: 'push_b_1', name: 'Wyciskanie barków hantle / maszyna', sets: 3, reps: '8-10', rest: 150 },
+      { id: 'push_b_2', name: 'Wyciskanie skos dodatni (maszyna / Smith)', sets: 3, reps: '10-12', rest: 120 },
+      { id: 'push_b_3', name: 'Wznosy bokiem (wyciąg)', sets: 4, reps: '12-15', rest: 60 },
+      { id: 'push_b_4', name: 'Rear delt fly', sets: 3, reps: '15', rest: 60 },
+      { id: 'push_b_5', name: 'Francuskie / wyciąg nad głowę triceps', sets: 3, reps: '12', rest: 75 },
+      { id: 'push_b_6', name: 'Pushdown', sets: 2, reps: '15', rest: 60 },
+      { id: 'push_b_7', name: 'Uginania na modlitewniku/maszyna (biceps)', sets: 2, reps: '12-15', rest: 15, supersetGroup: 'ssB' },
+      { id: 'push_b_8', name: 'Triceps pushdown, lina (triceps)', sets: 2, reps: '12-15', rest: 75, supersetGroup: 'ssB' }
     ]
   },
   {
     id: 'pull_b',
     title: 'Dzień 5 — PULL B · Plecy (szerokość)',
     exercises: [
-      { id: 'pull_b_1', name: 'Ściąganie drążka szeroko', sets: 3, reps: '8-10' },
-      { id: 'pull_b_2', name: 'Ściąganie wyciągu, chwyt neutralny (V-bar)', sets: 3, reps: '10-12' },
-      { id: 'pull_b_3', name: 'Wiosło jednorącz (wyciąg / maszyna)', sets: 3, reps: '10-12' },
-      { id: 'pull_b_4', name: 'Przyciąganie prostymi ramionami', sets: 3, reps: '15' },
-      { id: 'pull_b_5', name: 'Uginania skos (incline curl)', sets: 3, reps: '10-12' },
-      { id: 'pull_b_6', name: 'Uginania wyciąg', sets: 2, reps: '15' },
-      { id: 'pull_b_7', name: 'Uginania hantle stojąc (biceps)', sets: 2, reps: '12-15', supersetGroup: 'ssC' },
-      { id: 'pull_b_8', name: 'Wyciskanie francuskie / nad głowę (triceps)', sets: 2, reps: '12-15', supersetGroup: 'ssC' }
+      { id: 'pull_b_1', name: 'Ściąganie drążka szeroko', sets: 3, reps: '8-10', rest: 120 },
+      { id: 'pull_b_2', name: 'Ściąganie wyciągu, chwyt neutralny (V-bar)', sets: 3, reps: '10-12', rest: 120 },
+      { id: 'pull_b_3', name: 'Wiosło jednorącz (wyciąg / maszyna)', sets: 3, reps: '10-12', rest: 90 },
+      { id: 'pull_b_4', name: 'Przyciąganie prostymi ramionami', sets: 3, reps: '15', rest: 60 },
+      { id: 'pull_b_5', name: 'Uginania skos (incline curl)', sets: 3, reps: '10-12', rest: 75 },
+      { id: 'pull_b_6', name: 'Uginania wyciąg', sets: 2, reps: '15', rest: 60 },
+      { id: 'pull_b_7', name: 'Uginania hantle stojąc (biceps)', sets: 2, reps: '12-15', rest: 15, supersetGroup: 'ssC' },
+      { id: 'pull_b_8', name: 'Wyciskanie francuskie / nad głowę (triceps)', sets: 2, reps: '12-15', rest: 75, supersetGroup: 'ssC' }
     ]
   }
 ];
@@ -120,10 +121,10 @@ const EX_META = {
     'Prowadź łokciami nisko przy tułowiu, łopatki do siebie.',
     'Bez szarpania; na końcu ścisk pleców, kontrolowany powrót.'
   ] },
-  pull_a_2: { muscles: ['midback', 'lats'], cues: [
-    'Tułów stabilny, lekko wypięta klatka — nie bujaj plecami.',
-    'Ściągaj rękojeść do brzucha, łokcie blisko ciała.',
-    'Łopatki do siebie na końcu, powolny powrót.'
+  pull_a_2: { muscles: ['lats'], cues: [
+    'Jednorącz — pełen zakres, mocne wyciągnięcie w górze.',
+    'Ściągaj łokieć w dół i lekko do tyłu, do boku tułowia.',
+    'Tułów stabilny, bez rotacji i bujania; ścisk najszerszego.'
   ] },
   pull_a_3: { muscles: ['lats'], cues: [
     'Klatka w górę; ściągaj drążek do górnej części klatki.',
@@ -135,12 +136,17 @@ const EX_META = {
     'Prowadź łokciami, ściskaj tylne aktony barków.',
     'Bez zamachu — powolny powrót.'
   ] },
-  pull_a_5: { muscles: ['biceps'], cues: [
+  pull_a_5: { muscles: ['sidedelt'], cues: [
+    'Lekko zgięte łokcie; unoś przez bok do linii barków.',
+    'Prowadź łokciem, nie nadgarstkiem — bez bujania tułowiem.',
+    'Opuszczaj powoli, utrzymuj napięcie.'
+  ] },
+  pull_a_6: { muscles: ['biceps'], cues: [
     'Łokcie przy tułowiu, nieruchome.',
     'Pełen zakres, napnij biceps w górze.',
     'Nie bujaj tułowiem; kontroluj opuszczanie.'
   ] },
-  pull_a_6: { muscles: ['biceps', 'forearm'], cues: [
+  pull_a_7: { muscles: ['biceps', 'forearm'], cues: [
     'Chwyt neutralny (młotkowy), kciuki w górę.',
     'Łokcie przy ciele, bez zamachu.',
     'Napnij w górze, powoli opuszczaj.'
@@ -561,7 +567,7 @@ function exerciseCard(session, ex) {
   info.className = 'ex-info';
   info.innerHTML = `
     <div class="exercise-name">${escapeHtml(ex.name)}</div>
-    <div class="exercise-presc">${ex.sets} × ${escapeHtml(ex.reps)} powt.</div>
+    <div class="exercise-presc">${ex.sets} × ${escapeHtml(ex.reps)} powt.${ex.rest ? ` · ⏱ ${formatTime(ex.rest)} przerwy` : ''}</div>
     ${meta.muscles ? `<div class="target-chip">🎯 ${escapeHtml(muscleChipText(meta.muscles))}</div>` : ''}
   `;
   if (ex.warning) {
@@ -599,7 +605,7 @@ function exerciseCard(session, ex) {
 
   const colHead = document.createElement('div');
   colHead.className = 'col-head';
-  colHead.innerHTML = '<span>#</span><span>Ciężar (kg)</span><span>Powt.</span>';
+  colHead.innerHTML = '<span>#</span><span>Ciężar (kg)</span><span>Powt.</span><span>✓</span>';
   setsWrap.appendChild(colHead);
 
   const rowsWrap = document.createElement('div');
@@ -696,7 +702,18 @@ function renderSetRows(container, sessionId, ex, log) {
       scheduleSave();
     });
 
-    row.append(num, weight, reps);
+    const done = document.createElement('button');
+    done.className = 'set-done-btn';
+    done.type = 'button';
+    done.textContent = '✓';
+    done.title = 'Zaznacz serię i odpal przerwę';
+    done.setAttribute('aria-label', 'Zatwierdź serię i rozpocznij przerwę');
+    done.addEventListener('click', () => {
+      row.classList.toggle('done');
+      if (row.classList.contains('done')) startRest(ex.rest || 90, ex.name);
+    });
+
+    row.append(num, weight, reps, done);
     container.appendChild(row);
   });
 }
@@ -993,8 +1010,97 @@ function looksLikeLog(obj) {
   return Object.keys(obj).some(k => ids.includes(k));
 }
 
+/* ---------- Rest timer ---------- */
+const restTimer = { endAt: 0, intervalId: null, finished: false, exName: '' };
+
+function startRest(seconds, exName) {
+  stopRestInterval();
+  restTimer.finished = false;
+  restTimer.exName = exName || '';
+  restTimer.endAt = Date.now() + seconds * 1000;
+  const el = document.getElementById('rest-timer');
+  el.hidden = false;
+  el.classList.remove('done');
+  tickRest();
+  restTimer.intervalId = setInterval(tickRest, 250);
+}
+
+function tickRest() {
+  const remMs = restTimer.endAt - Date.now();
+  const rem = Math.max(0, Math.ceil(remMs / 1000));
+  const timeEl = document.getElementById('rt-time');
+  const labelEl = document.getElementById('rt-label');
+  if (timeEl) timeEl.textContent = formatTime(rem);
+  if (labelEl && !restTimer.finished) {
+    labelEl.textContent = restTimer.exName ? 'Przerwa — ' + restTimer.exName : 'Przerwa';
+  }
+  if (remMs <= 0 && !restTimer.finished) finishRest();
+}
+
+function finishRest() {
+  restTimer.finished = true;
+  stopRestInterval();
+  const el = document.getElementById('rest-timer');
+  const labelEl = document.getElementById('rt-label');
+  const timeEl = document.getElementById('rt-time');
+  if (el) el.classList.add('done');
+  if (labelEl) labelEl.textContent = 'Koniec przerwy!';
+  if (timeEl) timeEl.textContent = '0:00';
+  restBeep();
+  if (navigator.vibrate) { try { navigator.vibrate([180, 90, 180]); } catch (e) {} }
+  // auto-hide after a short while
+  restTimer.intervalId = setTimeout(hideRestTimer, 5000);
+}
+
+function adjustRest(deltaSeconds) {
+  if (restTimer.finished) {
+    // restart from delta if user wants more time after it ended
+    if (deltaSeconds > 0) startRest(deltaSeconds, restTimer.exName);
+    return;
+  }
+  restTimer.endAt = Math.max(Date.now() + 1000, restTimer.endAt + deltaSeconds * 1000);
+  tickRest();
+}
+
+function stopRestInterval() {
+  if (restTimer.intervalId) { clearTimeout(restTimer.intervalId); clearInterval(restTimer.intervalId); restTimer.intervalId = null; }
+}
+
+function hideRestTimer() {
+  stopRestInterval();
+  const el = document.getElementById('rest-timer');
+  if (el) { el.hidden = true; el.classList.remove('done'); }
+}
+
+let audioCtx = null;
+function restBeep() {
+  try {
+    audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    const now = audioCtx.currentTime;
+    [0, 0.18, 0.36].forEach(offset => {
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = 'sine';
+      osc.frequency.value = 880;
+      gain.gain.setValueAtTime(0.0001, now + offset);
+      gain.gain.exponentialRampToValueAtTime(0.3, now + offset + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + offset + 0.15);
+      osc.connect(gain).connect(audioCtx.destination);
+      osc.start(now + offset);
+      osc.stop(now + offset + 0.16);
+    });
+  } catch (e) { /* audio not available */ }
+}
+
 /* ---------- Utilities ---------- */
 function pad2(n) { return String(n).padStart(2, '0'); }
+
+function formatTime(totalSeconds) {
+  const s = Math.max(0, Math.round(totalSeconds));
+  const m = Math.floor(s / 60);
+  return m + ':' + pad2(s % 60);
+}
 
 function escapeHtml(str) {
   return String(str)
@@ -1033,6 +1139,11 @@ function init() {
     if (importInput.files && importInput.files[0]) importData(importInput.files[0]);
     importInput.value = '';
   });
+
+  // rest timer controls
+  document.getElementById('rt-skip').addEventListener('click', hideRestTimer);
+  document.getElementById('rt-minus').addEventListener('click', () => adjustRest(-15));
+  document.getElementById('rt-plus').addEventListener('click', () => adjustRest(15));
 
   // flush pending save before unload
   window.addEventListener('beforeunload', () => {

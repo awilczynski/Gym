@@ -10,6 +10,10 @@ telefonie (`localStorage`), z eksportem/importem JSON jako kopią zapasową.
   ćwiczeniami i zakresami serii/powtórzeń.
 - **Zapis treningu**: ciężar (kg) i powtórzenia per seria, per tydzień (1–12).
   Dodawanie/usuwanie serii w danym dniu (`+ seria` / `– seria`).
+- **Timer przerwy**: przycisk `✓` przy serii zatwierdza ją i odpala odliczanie
+  przerwy (czas z planu, pole `rest` w sekundach). Sticky pasek u dołu pokazuje
+  pozostały czas, można dorzucić/odjąć 15 s lub pominąć. Na koniec sygnał
+  dźwiękowy + wibracja (jeśli telefon wspiera).
 - **Auto-zapis** do `localStorage` (debounce ~500 ms) — żadnego przycisku „Zapisz”.
 - **Poprzedni tydzień**: przy każdym ćwiczeniu rozwijana tabelka z wartościami z tygodnia T-1.
 - **Progresja**: tabela wszystkich tygodni dla wybranego ćwiczenia + prosty wykres
