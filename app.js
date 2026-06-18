@@ -368,6 +368,7 @@ const state = {
   view: 'start',          // 'start' | 'session' | 'progress'
   week: 1,                // selected week 1..12
   sessionId: null,        // currently open session
+  sessionStartAt: null,   // timestamp when current session was opened
   progressExerciseId: null,
   log: {},
   settings: { currentWeek: 1 }
@@ -451,6 +452,7 @@ function renderStart() {
     `;
     tile.addEventListener('click', () => {
       state.sessionId = session.id;
+      state.sessionStartAt = Date.now();
       state.view = 'session';
       render();
     });
@@ -537,10 +539,18 @@ function renderSession() {
     }
   }
 
+  // Finish workout -> summary
+  const finishBtn = document.createElement('button');
+  finishBtn.className = 'btn btn-accent btn-block';
+  finishBtn.style.marginTop = '4px';
+  finishBtn.textContent = '🏁 Zakończ trening';
+  finishBtn.addEventListener('click', () => showSummary(session));
+  frag.appendChild(finishBtn);
+
   // Reset this session+week
   const resetBtn = document.createElement('button');
   resetBtn.className = 'btn btn-danger btn-block';
-  resetBtn.style.marginTop = '8px';
+  resetBtn.style.marginTop = '10px';
   resetBtn.textContent = 'Wyczyść ten tydzień (ta sesja)';
   resetBtn.addEventListener('click', () => resetSessionWeek(session.id));
   frag.appendChild(resetBtn);
@@ -794,6 +804,120 @@ function resetSessionWeek(sessionId) {
   saveLog(state.log);
   showToast('Wyczyszczono');
   render();
+}
+
+/* ---------- Workout summary + PR detection (#2) ---------- */
+const PR_LABELS = { weight: 'ciężar', e1rm: 'e1RM', volume: 'objętość' };
+
+function setMaxWeight(log) {
+  if (!log || !log.sets) return 0;
+  let m = 0;
+  log.sets.forEach(s => { if (s.weight != null && s.reps != null && s.weight > m) m = s.weight; });
+  return m;
+}
+
+function summarizeExercise(sessionId, exId, week) {
+  const cur = getExerciseLog(sessionId, week, exId);
+  const completed = cur && cur.sets ? cur.sets.filter(s => s.weight != null && s.reps != null) : [];
+  const tonnage = exerciseTonnage(cur);
+  const e1 = bestE1RM(cur);
+  const top = topSet(cur);
+  const curMaxW = completed.length ? Math.max.apply(null, completed.map(s => s.weight)) : 0;
+
+  // previous-week bests for PR comparison
+  let prevW = 0, prevE1 = 0, prevTon = 0, hasPrev = false;
+  for (let w = 1; w < week; w++) {
+    const l = getExerciseLog(sessionId, w, exId);
+    if (!l || !l.sets) continue;
+    const lc = l.sets.filter(s => s.weight != null && s.reps != null);
+    if (!lc.length) continue;
+    hasPrev = true;
+    prevW = Math.max(prevW, setMaxWeight(l));
+    const le = bestE1RM(l); if (le != null) prevE1 = Math.max(prevE1, le);
+    prevTon = Math.max(prevTon, exerciseTonnage(l));
+  }
+
+  const prs = [];
+  if (completed.length && hasPrev) {
+    if (curMaxW > prevW) prs.push({ type: 'weight', val: curMaxW });
+    if (e1 != null && e1 > prevE1) prs.push({ type: 'e1rm', val: e1 });
+    if (tonnage > prevTon) prs.push({ type: 'volume', val: tonnage });
+  }
+
+  return { completed: completed.length, tonnage, e1, top, prs, hasData: completed.length > 0 };
+}
+
+function showSummary(session) {
+  const week = state.week;
+  let totalTon = 0, totalSets = 0, doneExercises = 0, totalPRs = 0;
+  const rows = [];
+
+  session.exercises.forEach(ex => {
+    const s = summarizeExercise(session.id, ex.id, week);
+    if (!s.hasData) return;
+    doneExercises++;
+    totalTon += s.tonnage;
+    totalSets += s.completed;
+    totalPRs += s.prs.length;
+    rows.push({ ex, s });
+  });
+
+  const elapsedMs = state.sessionStartAt ? Date.now() - state.sessionStartAt : null;
+
+  const overlay = document.createElement('div');
+  overlay.className = 'modal-overlay';
+
+  const modal = document.createElement('div');
+  modal.className = 'modal';
+
+  const sub = session.title.split('—')[1] ? session.title.split('—')[1].trim() : session.title;
+  let html = `<div class="modal-head">
+      <h2>Podsumowanie treningu</h2>
+      <div class="modal-sub">${escapeHtml(sub.split('·')[0].trim())} · Tydzień ${week}/${TOTAL_WEEKS}</div>
+    </div>`;
+
+  if (!rows.length) {
+    html += '<div class="empty-state">Brak uzupełnionych serii w tej sesji.</div>';
+  } else {
+    html += '<div class="sum-stats">' +
+      statCard('Objętość', totalTon + ' kg') +
+      statCard('Serie', String(totalSets)) +
+      statCard('Ćwiczenia', String(doneExercises)) +
+      (elapsedMs != null ? statCard('Czas', formatTime(Math.round(elapsedMs / 1000))) : '') +
+      '</div>';
+
+    if (totalPRs > 0) {
+      html += `<div class="pr-banner">🏆 Nowe rekordy: <b>${totalPRs}</b></div>`;
+    }
+
+    html += '<div class="sum-list">';
+    rows.forEach(({ ex, s }) => {
+      const best = s.top ? `${s.top.weight != null ? s.top.weight : '–'}×${s.top.reps != null ? s.top.reps : '–'}` : '–';
+      let prBadges = '';
+      s.prs.forEach(pr => {
+        prBadges += `<span class="pr-badge">🏆 ${PR_LABELS[pr.type]} ${pr.val} kg</span>`;
+      });
+      html += `<div class="sum-item">
+        <div class="sum-item-name">${escapeHtml(ex.name)}</div>
+        <div class="sum-item-meta">${s.completed} ser. · top ${best} · ${s.tonnage} kg${s.e1 != null ? ` · e1RM ~${s.e1} kg` : ''}</div>
+        ${prBadges ? `<div class="sum-item-prs">${prBadges}</div>` : ''}
+      </div>`;
+    });
+    html += '</div>';
+  }
+
+  html += '<button class="btn btn-accent btn-block modal-close">Zamknij</button>';
+  modal.innerHTML = html;
+  overlay.appendChild(modal);
+  document.body.appendChild(overlay);
+
+  const close = () => overlay.remove();
+  modal.querySelector('.modal-close').addEventListener('click', close);
+  overlay.addEventListener('click', e => { if (e.target === overlay) close(); });
+}
+
+function statCard(label, value) {
+  return `<div class="stat-card"><div class="stat-val">${escapeHtml(value)}</div><div class="stat-label">${escapeHtml(label)}</div></div>`;
 }
 
 /* ----- View: Progress ----- */
