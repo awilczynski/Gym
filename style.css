@@ -150,6 +150,8 @@ body {
 }
 .link-btn:active { color: var(--accent); }
 
+.app-version { text-align: center; color: var(--text-dim); font-size: 11px; opacity: 0.6; margin-top: 18px; }
+
 /* ---------- Section heading ---------- */
 .section-h { font-size: 13px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.5px; margin: 4px 0 10px; }
 

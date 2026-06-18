@@ -1,6 +1,8 @@
-/* Service worker — caches static assets for offline use.
-   Bump CACHE_VERSION on every release to bust the cache. */
-const CACHE_VERSION = 'v8';
+/* Service worker — offline cache with stale-while-revalidate.
+   Serves cached assets instantly, refreshes them from the network in the
+   background, and (via skipWaiting + clients.claim) lets a new version take
+   over immediately. Bump CACHE_VERSION on every release. */
+const CACHE_VERSION = 'v9';
 const CACHE_NAME = 'dziennik-treningowy-' + CACHE_VERSION;
 
 const ASSETS = [
@@ -29,18 +31,22 @@ self.addEventListener('activate', event => {
 });
 
 self.addEventListener('fetch', event => {
-  if (event.request.method !== 'GET') return;
+  const req = event.request;
+  if (req.method !== 'GET') return;
+  if (new URL(req.url).origin !== self.location.origin) return;
+
+  // stale-while-revalidate: respond from cache, update cache in background
   event.respondWith(
-    caches.match(event.request).then(cached => {
-      if (cached) return cached;
-      return fetch(event.request).then(resp => {
-        // runtime-cache same-origin GET responses
-        if (resp && resp.status === 200 && resp.type === 'basic') {
-          const copy = resp.clone();
-          caches.open(CACHE_NAME).then(cache => cache.put(event.request, copy));
-        }
-        return resp;
-      }).catch(() => cached);
-    })
+    caches.open(CACHE_NAME).then(cache =>
+      cache.match(req).then(cached => {
+        const network = fetch(req).then(resp => {
+          if (resp && resp.status === 200 && resp.type === 'basic') {
+            cache.put(req, resp.clone());
+          }
+          return resp;
+        }).catch(() => cached);
+        return cached || network;
+      })
+    )
   );
 });

@@ -9,6 +9,7 @@
 const LOG_KEY = 'workout-log-v1';
 const SETTINGS_KEY = 'workout-settings-v1';
 const COMPLETED_KEY = 'workout-completed-v1';
+const APP_VERSION = 'v9';
 const TOTAL_WEEKS = 12;
 const SAVE_DEBOUNCE_MS = 500;
 
@@ -500,6 +501,11 @@ function renderStart() {
     });
     frag.appendChild(tile);
   });
+
+  const ver = document.createElement('div');
+  ver.className = 'app-version';
+  ver.textContent = 'Dziennik treningowy · ' + APP_VERSION;
+  frag.appendChild(ver);
 
   appEl.replaceChildren(frag);
 }
@@ -1444,10 +1450,21 @@ function init() {
 
   render();
 
-  // service worker (nice-to-have, offline)
+  // service worker — offline + auto-update
   if ('serviceWorker' in navigator) {
+    // when a new SW takes control, reload once so the latest app is shown
+    let refreshing = false;
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      if (refreshing) return;
+      refreshing = true;
+      window.location.reload();
+    });
     window.addEventListener('load', () => {
-      navigator.serviceWorker.register('sw.js').catch(err => console.warn('SW rejestracja nieudana', err));
+      navigator.serviceWorker.register('sw.js').then(reg => {
+        // proactively check for an updated worker
+        reg.update();
+        setInterval(() => reg.update(), 60 * 60 * 1000);
+      }).catch(err => console.warn('SW rejestracja nieudana', err));
     });
   }
 }
