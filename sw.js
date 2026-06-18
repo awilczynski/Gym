@@ -2,7 +2,7 @@
    Serves cached assets instantly, refreshes them from the network in the
    background, and (via skipWaiting + clients.claim) lets a new version take
    over immediately. Bump CACHE_VERSION on every release. */
-const CACHE_VERSION = 'v9';
+const CACHE_VERSION = 'v10';
 const CACHE_NAME = 'dziennik-treningowy-' + CACHE_VERSION;
 
 const ASSETS = [

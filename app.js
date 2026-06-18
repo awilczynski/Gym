@@ -9,7 +9,7 @@
 const LOG_KEY = 'workout-log-v1';
 const SETTINGS_KEY = 'workout-settings-v1';
 const COMPLETED_KEY = 'workout-completed-v1';
-const APP_VERSION = 'v9';
+const APP_VERSION = 'v10';
 const TOTAL_WEEKS = 12;
 const SAVE_DEBOUNCE_MS = 500;
 
@@ -542,6 +542,19 @@ function changeWeek(delta) {
 }
 
 /* ----- View: Session ----- */
+// Pick which workout to show when entering the Trening tab:
+// the one already open (if unfinished), else an in-progress one, else the
+// next not-completed in plan order, else the first session.
+function pickTrainingSessionId() {
+  const wk = state.week;
+  if (state.sessionId && !isCompleted(state.sessionId, wk)) return state.sessionId;
+  const inProgress = PLAN.find(s => !isCompleted(s.id, wk) && sessionHasData(s.id, wk));
+  if (inProgress) return inProgress.id;
+  const next = PLAN.find(s => !isCompleted(s.id, wk));
+  if (next) return next.id;
+  return PLAN[0].id;
+}
+
 function renderSession() {
   const session = PLAN.find(s => s.id === state.sessionId);
   if (!session) { state.view = 'start'; renderStart(); return; }
@@ -1424,7 +1437,15 @@ function init() {
   // nav
   document.querySelectorAll('.nav-btn').forEach(btn => {
     btn.addEventListener('click', () => {
-      state.view = btn.dataset.view;
+      const v = btn.dataset.view;
+      if (v === 'session') {
+        const picked = pickTrainingSessionId();
+        if (picked !== state.sessionId) {
+          state.sessionId = picked;
+          state.sessionStartAt = Date.now();
+        }
+      }
+      state.view = v;
       render();
     });
   });
