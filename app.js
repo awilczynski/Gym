@@ -554,6 +554,7 @@ function exerciseCard(session, ex) {
 
   const log = ensureExerciseLog(session.id, state.week, ex.id, ex.sets);
   const meta = EX_META[ex.id] || {};
+  const prevLog = state.week > 1 ? getExerciseLog(session.id, state.week - 1, ex.id) : null;
 
   // head: muscle graphic + info
   const head = document.createElement('div');
@@ -570,6 +571,13 @@ function exerciseCard(session, ex) {
     <div class="exercise-presc">${ex.sets} × ${escapeHtml(ex.reps)} powt.${ex.rest ? ` · ⏱ ${formatTime(ex.rest)} przerwy` : ''}</div>
     ${meta.muscles ? `<div class="target-chip">🎯 ${escapeHtml(muscleChipText(meta.muscles))}</div>` : ''}
   `;
+  const hint = progressionHint(ex, prevLog);
+  if (hint) {
+    const h = document.createElement('div');
+    h.className = 'prog-hint ' + hint.kind;
+    h.textContent = hint.text;
+    info.appendChild(h);
+  }
   if (ex.warning) {
     const w = document.createElement('span');
     w.className = 'warn-badge';
@@ -608,9 +616,20 @@ function exerciseCard(session, ex) {
   colHead.innerHTML = '<span>#</span><span>Ciężar (kg)</span><span>Powt.</span><span>✓</span>';
   setsWrap.appendChild(colHead);
 
+  // live stats (tonnage + estimated 1RM)
+  const statsEl = document.createElement('div');
+  statsEl.className = 'ex-stats';
+  function updateStats() {
+    const ton = exerciseTonnage(log);
+    const e1 = bestE1RM(log);
+    if (ton === 0 && e1 == null) { statsEl.hidden = true; statsEl.textContent = ''; return; }
+    statsEl.hidden = false;
+    statsEl.innerHTML = `Objętość: <b>${ton}</b> kg` + (e1 != null ? ` · Szac. 1RM: <b>~${e1}</b> kg` : '');
+  }
+
   const rowsWrap = document.createElement('div');
   rowsWrap.dataset.rows = '1';
-  renderSetRows(rowsWrap, session.id, ex, log);
+  renderSetRows(rowsWrap, session.id, ex, log, prevLog, updateStats);
   setsWrap.appendChild(rowsWrap);
 
   // +/- set controls
@@ -622,7 +641,8 @@ function exerciseCard(session, ex) {
   minus.addEventListener('click', () => {
     if (log.sets.length > 1) {
       log.sets.pop();
-      renderSetRows(rowsWrap, session.id, ex, log);
+      renderSetRows(rowsWrap, session.id, ex, log, prevLog, updateStats);
+      updateStats();
       scheduleSave();
     }
   });
@@ -631,11 +651,14 @@ function exerciseCard(session, ex) {
   plus.textContent = '+ seria';
   plus.addEventListener('click', () => {
     log.sets.push({ weight: null, reps: null });
-    renderSetRows(rowsWrap, session.id, ex, log);
+    renderSetRows(rowsWrap, session.id, ex, log, prevLog, updateStats);
+    updateStats();
     scheduleSave();
   });
   controls.append(minus, plus);
   setsWrap.appendChild(controls);
+  setsWrap.appendChild(statsEl);
+  updateStats();
 
   card.appendChild(setsWrap);
 
@@ -668,7 +691,7 @@ function exerciseCard(session, ex) {
   return card;
 }
 
-function renderSetRows(container, sessionId, ex, log) {
+function renderSetRows(container, sessionId, ex, log, prevLog, onChange) {
   container.replaceChildren();
   log.sets.forEach((set, idx) => {
     const row = document.createElement('div');
@@ -678,16 +701,20 @@ function renderSetRows(container, sessionId, ex, log) {
     num.className = 'set-idx';
     num.textContent = idx + 1;
 
+    const prevSet = prevLog && prevLog.sets && prevLog.sets[idx];
+
     const weight = document.createElement('input');
     weight.type = 'number';
     weight.inputMode = 'decimal';
     weight.step = '0.5';
     weight.min = '0';
-    weight.placeholder = 'kg';
+    weight.placeholder = prevSet && prevSet.weight != null ? String(prevSet.weight) : 'kg';
+    if (prevSet && prevSet.weight != null) weight.title = 'Poprzedni tydzień: ' + prevSet.weight + ' kg';
     weight.value = set.weight != null ? set.weight : '';
     weight.addEventListener('input', () => {
       set.weight = weight.value === '' ? null : parseFloat(weight.value);
       weight.classList.remove('invalid');
+      if (onChange) onChange();
       scheduleSave();
     });
 
@@ -696,11 +723,13 @@ function renderSetRows(container, sessionId, ex, log) {
     reps.inputMode = 'numeric';
     reps.step = '1';
     reps.min = '0';
-    reps.placeholder = 'powt.';
+    reps.placeholder = prevSet && prevSet.reps != null ? String(prevSet.reps) : 'powt.';
+    if (prevSet && prevSet.reps != null) reps.title = 'Poprzedni tydzień: ' + prevSet.reps + ' powt.';
     reps.value = set.reps != null ? set.reps : '';
     reps.addEventListener('input', () => {
       set.reps = reps.value === '' ? null : parseInt(reps.value, 10);
       reps.classList.remove('invalid');
+      if (onChange) onChange();
       scheduleSave();
     });
 
@@ -825,6 +854,49 @@ function topSet(log) {
     }
   });
   return best;
+}
+
+/* ---------- Progression maths (#1) ---------- */
+function parseRepMax(reps) {
+  // top of a rep range: "8-10" -> 10, "12" -> 12, "RIR 2" -> null
+  const m = String(reps).match(/(\d+)\s*(?:[-–]\s*(\d+))?/);
+  if (!m) return null;
+  const hi = m[2] != null ? parseInt(m[2], 10) : parseInt(m[1], 10);
+  return isNaN(hi) ? null : hi;
+}
+
+function epley1RM(weight, reps) {
+  if (weight == null || reps == null || reps < 1) return null;
+  if (reps === 1) return weight; // a single rep is the 1RM
+  return weight * (1 + reps / 30);
+}
+
+function exerciseTonnage(log) {
+  if (!log || !log.sets) return 0;
+  let t = 0;
+  log.sets.forEach(s => { if (s.weight != null && s.reps != null) t += s.weight * s.reps; });
+  return Math.round(t);
+}
+
+function bestE1RM(log) {
+  if (!log || !log.sets) return null;
+  let best = null;
+  log.sets.forEach(s => {
+    const e = epley1RM(s.weight, s.reps);
+    if (e != null && (best == null || e > best)) best = e;
+  });
+  return best == null ? null : Math.round(best);
+}
+
+function progressionHint(ex, prevLog) {
+  // suggestion based on last week's top set vs the planned rep-range ceiling
+  const repMax = parseRepMax(ex.reps);
+  const t = topSet(prevLog);
+  if (!t || t.weight == null || t.reps == null || repMax == null) return null;
+  if (t.reps >= repMax) {
+    return { kind: 'up', text: `Ostatnio ${t.weight}×${t.reps} — trafiłeś górę zakresu (${repMax}). Czas dodać ciężar 💪` };
+  }
+  return { kind: 'hold', text: `Ostatnio ${t.weight}×${t.reps}. Dobij do ${repMax} powt., potem dodaj ciężar.` };
 }
 
 function progressTable(sessionId, exerciseId) {

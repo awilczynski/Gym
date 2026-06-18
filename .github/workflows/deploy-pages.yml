@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - claude/training-diary-pwa-rvkp8e
   workflow_dispatch:
 
 # Allow the workflow to publish to Pages
