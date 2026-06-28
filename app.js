@@ -9,7 +9,7 @@
 const LOG_KEY = 'workout-log-v1';
 const SETTINGS_KEY = 'workout-settings-v1';
 const COMPLETED_KEY = 'workout-completed-v1';
-const APP_VERSION = 'v10';
+const APP_VERSION = 'v11';
 const TOTAL_WEEKS = 12;
 const SAVE_DEBOUNCE_MS = 500;
 
@@ -642,7 +642,30 @@ function renderSession() {
     frag.appendChild(finishBtn);
   }
 
+  // Reset the whole training day (this session + current week)
+  const resetBtn = document.createElement('button');
+  resetBtn.className = 'btn btn-danger btn-block';
+  resetBtn.style.marginTop = '10px';
+  resetBtn.textContent = '🗑️ Resetuj cały dzień treningowy';
+  resetBtn.addEventListener('click', () => resetTrainingDay(session));
+  frag.appendChild(resetBtn);
+
   appEl.replaceChildren(frag);
+}
+
+function resetTrainingDay(session) {
+  const ok = confirm(
+    `Zresetować cały dzień treningowy?\n\n„${session.title}" — tydzień ${state.week}/${TOTAL_WEEKS}\n\n` +
+    'Usunie to wszystkie wpisy (ciężary, powtórzenia, notatki) oraz status zakończenia tej sesji. ' +
+    'Tej operacji nie można cofnąć.'
+  );
+  if (!ok) return;
+  if (state.log[session.id]) delete state.log[session.id][state.week];
+  if (state.completed[session.id]) delete state.completed[session.id][state.week];
+  saveLog(state.log);
+  saveCompleted();
+  showToast('Zresetowano dzień treningowy');
+  render();
 }
 
 function exerciseCard(session, ex, locked) {
