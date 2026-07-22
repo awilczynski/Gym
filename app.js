@@ -9,7 +9,7 @@
 const LOG_KEY = 'workout-log-v1';
 const SETTINGS_KEY = 'workout-settings-v1';
 const COMPLETED_KEY = 'workout-completed-v1';
-const APP_VERSION = 'v11';
+const APP_VERSION = 'v12';
 const TOTAL_WEEKS = 12;
 const SAVE_DEBOUNCE_MS = 500;
 
@@ -820,7 +820,7 @@ function renderSetRows(container, sessionId, ex, log, prevLog, onChange, locked)
   container.replaceChildren();
   log.sets.forEach((set, idx) => {
     const row = document.createElement('div');
-    row.className = 'set-row';
+    row.className = 'set-row' + (set.done ? ' done' : '');
 
     const num = document.createElement('div');
     num.className = 'set-idx';
@@ -871,7 +871,12 @@ function renderSetRows(container, sessionId, ex, log, prevLog, onChange, locked)
       done.title = 'Zaznacz serię i odpal przerwę';
       done.setAttribute('aria-label', 'Zatwierdź serię i rozpocznij przerwę');
       done.addEventListener('click', () => {
-        if (row.classList.contains('done')) { row.classList.remove('done'); return; }
+        if (row.classList.contains('done')) {
+          row.classList.remove('done');
+          set.done = false;
+          scheduleSave();
+          return;
+        }
         const weightFilled = weight.value.trim() !== '' && set.weight != null;
         const repsFilled = reps.value.trim() !== '' && set.reps != null;
         if (!weightFilled || !repsFilled) {
@@ -881,6 +886,8 @@ function renderSetRows(container, sessionId, ex, log, prevLog, onChange, locked)
           return;
         }
         row.classList.add('done');
+        set.done = true;
+        scheduleSave();
         startRest(ex.rest || 90, ex.name);
       });
       row.append(num, weight, reps, done);
