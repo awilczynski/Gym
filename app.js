@@ -9,7 +9,8 @@
 const LOG_KEY = 'workout-log-v1';
 const SETTINGS_KEY = 'workout-settings-v1';
 const COMPLETED_KEY = 'workout-completed-v1';
-const APP_VERSION = 'v12';
+const EXTRAS_KEY = 'workout-extras-v1';
+const APP_VERSION = 'v13';
 const TOTAL_WEEKS = 12;
 const SAVE_DEBOUNCE_MS = 500;
 
@@ -83,6 +84,142 @@ const PLAN = [
 ];
 
 const SUPERSET_LABELS = { ssB: 'Superseria', ssC: 'Superseria' };
+
+/* ---------- Add-on: warm-up + plyo (Blok A) & mobility (Blok B) ---------- */
+/* Stored separately from workout logs — never touches workout-log-v1. */
+const WARMUP_NOTE = 'Rozgrzewka ogólna, wydłużona (~8 min) — tkanki zimne (trening rano). ' +
+  'Podnieś temperaturę, mobilizuj stawy, stopniowo zwiększaj tempo.';
+
+const PLYO_PHASE_LABELS = {
+  1: 'Faza 1 · Lądowanie (tyg. 1–3)',
+  2: 'Faza 2 · Kierunek (tyg. 4–7)',
+  3: 'Faza 3 · Reaktywność (tyg. 8–12)'
+};
+
+// PLYO[sessionId][phase] = [{ name, dose }]; legs = brak plyo
+const PLYO = {
+  push_a: {
+    1: [
+      { name: 'Pogo hops (podskoki z kostki, kolana prawie proste)', dose: '3 × 15 s' },
+      { name: 'Zeskok z niskiego stopnia 20 cm + zatrzymanie 2 s (stick landing)', dose: '3 × 5' }
+    ],
+    2: [
+      { name: 'Pogo hops', dose: '2 × 15 s' },
+      { name: 'Skoki boczne małe (nad linią)', dose: '3 × 8/stronę' }
+    ],
+    3: [
+      { name: 'Pogo hops jednonóż', dose: '3 × 8/nogę' }
+    ]
+  },
+  pull_a: {
+    1: [
+      { name: 'Chest pass piłką lekarską 3–4 kg w ścianę (wysokość klatki)', dose: '3 × 8' },
+      { name: 'Skip A w miejscu', dose: '2 × 20 s' }
+    ],
+    2: [
+      { name: 'Chest pass 4–5 kg', dose: '3 × 8' },
+      { name: 'Skater bounds z zatrzymaniem', dose: '3 × 6/stronę' }
+    ],
+    3: [
+      { name: 'Chest pass 5 kg (maks. szybkość)', dose: '3 × 8' },
+      { name: 'Skater bounds ciągłe', dose: '3 × 8/stronę' }
+    ]
+  },
+  legs: { 1: [], 2: [], 3: [] },
+  push_b: {
+    1: [
+      { name: 'Pogo hops', dose: '3 × 15 s' },
+      { name: 'Dynamiczne wejście na stopień 25 cm', dose: '3 × 6/nogę' }
+    ],
+    2: [
+      { name: 'Wskok na skrzynię 30 cm (zejście krokiem)', dose: '4 × 4' }
+    ],
+    3: [
+      { name: 'Wskok na skrzynię 40 cm (zejście krokiem)', dose: '4 × 4' }
+    ]
+  },
+  pull_b: {
+    1: [
+      { name: 'Rzut rotacyjny piłką w ścianę (wysokość bioder, NIE nad głowę)', dose: '3 × 6/stronę' },
+      { name: 'Skip A + skip B', dose: '2 × 20 s' }
+    ],
+    2: [
+      { name: 'Rzut rotacyjny', dose: '3 × 8/stronę' },
+      { name: 'Bieg w miejscu z wysokim kolanem', dose: '2 × 20 s' }
+    ],
+    3: [
+      { name: 'Rzut rotacyjny', dose: '3 × 6/stronę' },
+      { name: 'Drabinka koordynacyjna / footwork', dose: '3 × 20 s' }
+    ]
+  }
+};
+
+// MOBILITY[sessionId] = [{ name, dose }] (same every week)
+const MOBILITY = {
+  push_a: [
+    { name: 'Rozciąganie piersiowego w narożniku/framudze (łokieć 90° i 120°)', dose: '2 × 45 s/stronę' },
+    { name: 'Ekstensja piersiowa na wałku (3 poziomy)', dose: '8–10 powolnych' },
+    { name: 'Wall angels (lędźwie dociśnięte)', dose: '2 × 10' },
+    { name: 'Rotacja zewnętrzna barku z gumą, łokieć przy tułowiu', dose: '2 × 12/stronę' },
+    { name: 'Chin tuck leżąc (5 s przytrzymania)', dose: '3 × 8' },
+    { name: 'Oddech przeponowy 4-6-8 (~6/min)', dose: '2 min' }
+  ],
+  pull_a: [
+    { name: 'Open book (rotacja Th leżąc na boku)', dose: '8/stronę' },
+    { name: 'Thread the needle (szyja neutralna)', dose: '6/stronę' },
+    { name: 'Rozciąganie zginaczy biodra w klęku (żebra w dół)', dose: '45 s/stronę' },
+    { name: 'Rozciąganie najszerszego przy drążku (lekki wyciąg)', dose: '45 s/stronę' },
+    { name: 'Prone Y + T na brzuchu', dose: '2 × 10' },
+    { name: 'Oddech przeponowy', dose: '2 min' }
+  ],
+  legs: [
+    { name: 'Knee-to-wall (zgięcie grzbietowe kostki)', dose: '10/stronę' },
+    { name: 'Rozciąganie łydki o ścianę (kolano proste, potem zgięte)', dose: '2 × 45 s/stronę' },
+    { name: '90/90 hip switch', dose: '8/stronę' },
+    { name: 'Couch stretch (zginacze + czworogłowy)', dose: '45 s/stronę' },
+    { name: 'Frog rocking (przywodziciele)', dose: '60 s' },
+    { name: 'Oddech przeponowy', dose: '2 min' }
+  ],
+  push_b: [
+    { name: 'Martwy zwis na drążku (tylko jeśli bez objawów w lewej ręce)', dose: '3 × 20–30 s' },
+    { name: 'Ekstensja piersiowa na wałku', dose: '10 powolnych' },
+    { name: 'Cross-body stretch (tylna torebka barku) — NIE sleeper stretch', dose: '45 s/stronę' },
+    { name: 'Wall angels', dose: '2 × 10' },
+    { name: 'Chin tuck + rotacja szyi wyłącznie w zakresie bezbolesnym', dose: '2 × 8/stronę' },
+    { name: 'Oddech przeponowy', dose: '2 min' }
+  ],
+  pull_b: [
+    { name: 'Ślizgi nerwu pośrodkowego (ślizg, nie napinanie do bólu)', dose: '6–8/stronę' },
+    { name: 'Ślizgi nerwu łokciowego', dose: '6–8/stronę' },
+    { name: 'Głęboki przysiad z podparciem (goblet hold, lekki ciężar)', dose: '3 × 30 s' },
+    { name: 'Rozciąganie zginaczy i prostowników nadgarstka', dose: '2 × 30 s/stronę' },
+    { name: 'Open book', dose: '8/stronę' },
+    { name: 'Oddech przeponowy', dose: '2 min' }
+  ]
+};
+
+const SAFETY_RULES = [
+  'Zero Valsalvy w plyo — oddech swobodny, wydech przy odbiciu.',
+  'Zero rzutów piłką znad głowy (slamy, overhead throws).',
+  'Zero gwałtownych rotacji i krążeń szyi.',
+  'Zejście ze skrzyni krokiem, nigdy zeskokiem.',
+  'Bez plyo przy HRV >20% poniżej bazy lub HR spoczynkowym +8 bpm — wtedy tylko mobilność.',
+  'Bez plyo w dniu nóg (Dzień 3).',
+  'Nie wstawaj gwałtownie z leżenia/głębokiego rozciągania.',
+  'Twarde, płaskie podłoże + buty (nie mata piankowa).',
+  'Nasilenie drętwienia palców lewej ręki → przerwij blok, nie „przechodź przez to”.'
+];
+
+const STOP_SIGNS = [
+  'Kołatanie, „trzepotanie”, nierówne bicie serca',
+  'Zawroty głowy, mroczki, uczucie zbliżającego się omdlenia',
+  'HR nieproporcjonalnie wysoki (>85% HRmax przy 15 s pogo hops)',
+  'Nasilenie drętwienia/mrowienia w lewej ręce',
+  'Ból w klatce w dowolnej postaci'
+];
+
+function phaseForWeek(w) { return w <= 3 ? 1 : (w <= 7 ? 2 : 3); }
+function isDeloadWeek(w) { return w === 6 || w === 11; }
 
 /* ---------- Exercise metadata: target muscles (for graphic) + technique cues ---------- */
 const EX_META = {
@@ -392,6 +529,36 @@ function unmarkCompleted(sessionId, week) {
   saveCompleted();
 }
 
+/* extras (plyo/mobility check-off) — separate store, never touches logs */
+function loadExtras() {
+  try {
+    const raw = localStorage.getItem(EXTRAS_KEY);
+    return raw ? JSON.parse(raw) : {};
+  } catch (e) {
+    return {};
+  }
+}
+
+function saveExtras() {
+  try {
+    localStorage.setItem(EXTRAS_KEY, JSON.stringify(state.extras));
+  } catch (e) {
+    console.error('Błąd zapisu dodatków', e);
+  }
+}
+
+function isExtraDone(sessionId, week, key) {
+  return !!(state.extras[sessionId] && state.extras[sessionId][week] && state.extras[sessionId][week][key]);
+}
+
+function toggleExtra(sessionId, week, key) {
+  if (!state.extras[sessionId]) state.extras[sessionId] = {};
+  if (!state.extras[sessionId][week]) state.extras[sessionId][week] = {};
+  const cur = state.extras[sessionId][week];
+  if (cur[key]) delete cur[key]; else cur[key] = true;
+  saveExtras();
+}
+
 function clampWeek(w) {
   w = parseInt(w, 10);
   if (isNaN(w)) return 1;
@@ -407,6 +574,7 @@ const state = {
   progressExerciseId: null,
   log: {},
   completed: {},          // completed[sessionId][week] = 'YYYY-MM-DD'
+  extras: {},             // extras[sessionId][week][itemKey] = true (plyo/mobility)
   settings: { currentWeek: 1 }
 };
 
@@ -604,6 +772,9 @@ function renderSession() {
     frag.appendChild(banner);
   }
 
+  // 🔷 Blok A — rozgrzewka + plyo (na początku)
+  frag.appendChild(blokASection(session, locked));
+
   // Group consecutive exercises by supersetGroup
   let i = 0;
   while (i < session.exercises.length) {
@@ -626,6 +797,9 @@ function renderSession() {
       i++;
     }
   }
+
+  // 🔶 Blok B — mobilność (na końcu)
+  frag.appendChild(blokBSection(session, locked));
 
   // Finish workout (only when not yet completed)
   if (!locked) {
@@ -656,16 +830,119 @@ function renderSession() {
 function resetTrainingDay(session) {
   const ok = confirm(
     `Zresetować cały dzień treningowy?\n\n„${session.title}" — tydzień ${state.week}/${TOTAL_WEEKS}\n\n` +
-    'Usunie to wszystkie wpisy (ciężary, powtórzenia, notatki) oraz status zakończenia tej sesji. ' +
-    'Tej operacji nie można cofnąć.'
+    'Usunie to wszystkie wpisy (ciężary, powtórzenia, notatki), odhaczone plyo/mobilność ' +
+    'oraz status zakończenia tej sesji. Tej operacji nie można cofnąć.'
   );
   if (!ok) return;
   if (state.log[session.id]) delete state.log[session.id][state.week];
   if (state.completed[session.id]) delete state.completed[session.id][state.week];
+  if (state.extras[session.id]) delete state.extras[session.id][state.week];
   saveLog(state.log);
   saveCompleted();
+  saveExtras();
   showToast('Zresetowano dzień treningowy');
   render();
+}
+
+/* ----- Blok A / Blok B (plyo + mobility) ----- */
+function extraRow(sessionId, week, key, name, dose, locked) {
+  const row = document.createElement('button');
+  row.type = 'button';
+  row.className = 'extra-item' + (isExtraDone(sessionId, week, key) ? ' done' : '');
+  if (locked) row.disabled = true;
+  row.innerHTML =
+    '<span class="extra-check" aria-hidden="true"></span>' +
+    '<span class="extra-body"><span class="extra-name">' + escapeHtml(name) + '</span>' +
+    (dose ? '<span class="extra-dose">' + escapeHtml(dose) + '</span>' : '') + '</span>';
+  if (!locked) {
+    row.addEventListener('click', () => {
+      toggleExtra(sessionId, week, key);
+      row.classList.toggle('done');
+    });
+  }
+  return row;
+}
+
+function collapsibleList(summaryHtml, open) {
+  const det = document.createElement('details');
+  det.className = 'block-section';
+  if (open) det.open = true;
+  const sum = document.createElement('summary');
+  sum.innerHTML = summaryHtml;
+  det.appendChild(sum);
+  return det;
+}
+
+function blokASection(session, locked) {
+  const det = collapsibleList('🔷 Blok A — Rozgrzewka + Plyo <span class="block-when">na początku</span>', false);
+  det.classList.add('block-a');
+
+  const warm = document.createElement('div');
+  warm.className = 'block-note';
+  warm.textContent = '🔥 ' + WARMUP_NOTE;
+  det.appendChild(warm);
+
+  const phase = phaseForWeek(state.week);
+  const items = (PLYO[session.id] && PLYO[session.id][phase]) || [];
+
+  if (!items.length) {
+    const none = document.createElement('div');
+    none.className = 'block-note';
+    none.textContent = '🦵 Dzień nóg — bez plyo (zgodnie z planem). Przejdź do treningu głównego.';
+    det.appendChild(none);
+  } else {
+    const info = document.createElement('div');
+    info.className = 'block-phase';
+    info.textContent = PLYO_PHASE_LABELS[phase] + ' · przerwy 45 s · „cicho = dobrze”' +
+      (isDeloadWeek(state.week) ? ' · ⬇ DELOAD: plyo do 50% objętości' : '');
+    det.appendChild(info);
+
+    const list = document.createElement('div');
+    list.className = 'extra-list';
+    items.forEach((it, idx) => list.appendChild(
+      extraRow(session.id, state.week, 'plyo_' + idx, it.name, it.dose, locked)
+    ));
+    det.appendChild(list);
+
+    // safety + STOP (nested)
+    const safety = document.createElement('details');
+    safety.className = 'safety-box';
+    safety.innerHTML = '<summary>⚠️ Zasady bezpieczeństwa i kryteria STOP</summary>';
+    const s1 = document.createElement('ul');
+    s1.className = 'safety-list';
+    SAFETY_RULES.forEach(r => { const li = document.createElement('li'); li.textContent = r; s1.appendChild(li); });
+    safety.appendChild(s1);
+    const stopH = document.createElement('div');
+    stopH.className = 'safety-h';
+    stopH.textContent = '🩺 STOP — przerwij blok natychmiast:';
+    safety.appendChild(stopH);
+    const s2 = document.createElement('ul');
+    s2.className = 'safety-list stop';
+    STOP_SIGNS.forEach(r => { const li = document.createElement('li'); li.textContent = r; s2.appendChild(li); });
+    safety.appendChild(s2);
+    det.appendChild(safety);
+  }
+
+  return det;
+}
+
+function blokBSection(session, locked) {
+  const det = collapsibleList('🔶 Blok B — Mobilność <span class="block-when">na końcu</span>', false);
+  det.classList.add('block-b');
+
+  const info = document.createElement('div');
+  info.className = 'block-phase';
+  info.textContent = 'Statyczne 45–60 s · dynamiczne 8–10 powt. · tempo wolne, oddech nosem';
+  det.appendChild(info);
+
+  const items = MOBILITY[session.id] || [];
+  const list = document.createElement('div');
+  list.className = 'extra-list';
+  items.forEach((it, idx) => list.appendChild(
+    extraRow(session.id, state.week, 'mob_' + idx, it.name, it.dose, locked)
+  ));
+  det.appendChild(list);
+  return det;
 }
 
 function exerciseCard(session, ex, locked) {
@@ -1284,6 +1561,7 @@ function exportData() {
     [LOG_KEY]: state.log,
     [SETTINGS_KEY]: state.settings,
     [COMPLETED_KEY]: state.completed,
+    [EXTRAS_KEY]: state.extras,
     _meta: { app: 'dziennik-treningowy', version: 1, exportedAt: new Date().toISOString() }
   };
   const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
@@ -1320,9 +1598,12 @@ function importData(file) {
       }
       const incomingCompleted = parsed[COMPLETED_KEY] || parsed.completed;
       state.completed = (incomingCompleted && typeof incomingCompleted === 'object') ? incomingCompleted : {};
+      const incomingExtras = parsed[EXTRAS_KEY] || parsed.extras;
+      state.extras = (incomingExtras && typeof incomingExtras === 'object') ? incomingExtras : {};
       saveLog(state.log);
       saveSettings(state.settings);
       saveCompleted();
+      saveExtras();
       showToast('Zaimportowano');
       render();
     } catch (e) {
@@ -1462,6 +1743,7 @@ function init() {
   state.log = loadLog();
   state.settings = loadSettings();
   state.completed = loadCompleted();
+  state.extras = loadExtras();
   state.week = state.settings.currentWeek;
 
   // nav
