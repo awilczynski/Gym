@@ -5,6 +5,7 @@
 Zakresy powtórzeń i przerwy są przepisane w planie; ciężary dobierasz sam i zapisujesz w aplikacji.
 
 > ⚠ = ćwiczenie o wysokim ciśnieniu śródpiersiowym — nie wstrzymuj oddechu (wydech przy wypychaniu).
+> 💪 = ruch PRIMARY (tryb siłowy w bloku tyg. 8–12, patrz sekcja na końcu).
 
 ---
 
@@ -12,7 +13,7 @@ Zakresy powtórzeń i przerwy są przepisane w planie; ciężary dobierasz sam i
 
 | # | Ćwiczenie | Serie × Powt. | Przerwa | Partia |
 |---|-----------|:-------------:|:-------:|--------|
-| 1 | Wyciskanie na maszynie (chest press) | 3 × 8-10 | 2:30 | Klatka · Barki (przód) |
+| 1 | 💪 Wyciskanie na maszynie (chest press) | 3 × 8-10 | 2:30 | Klatka · Barki (przód) |
 | 2 | Wyciskanie hantle, skos dodatni | 3 × 10-12 | 2:30 | Górna klatka · Barki (przód) |
 | 3 | Rozpiętki wyciąg / pec deck | 3 × 12-15 | 1:15 | Klatka |
 | 4 | Wyciskanie barków na maszynie | 3 × 10-12 | 2:00 | Barki (przód) · Barki (bok) |
@@ -57,7 +58,7 @@ Zakresy powtórzeń i przerwy są przepisane w planie; ciężary dobierasz sam i
 
 | # | Ćwiczenie | Serie × Powt. | Przerwa | Partia |
 |---|-----------|:-------------:|:-------:|--------|
-| 1 | Wiosło Hammer z podparciem klatki (maszyna) | 3 × 8-10 | 2:30 | Najszersze · Plecy (środek) |
+| 1 | 💪 Wiosło Hammer z podparciem klatki (maszyna) | 3 × 8-10 | 2:30 | Najszersze · Plecy (środek) |
 | 2 | Ściąganie jednorącz wyciąg górny (lat) | 3 × 10-12 | 1:30 | Najszersze |
 | 3 | Ściąganie drążka szeroko | 3 × 10-12 | 2:00 | Najszersze |
 | 4 | Odwrotne rozpiętki / rear delt | 3 × 15 | 1:00 | Barki (tył) |
@@ -108,7 +109,7 @@ Zakresy powtórzeń i przerwy są przepisane w planie; ciężary dobierasz sam i
 
 | # | Ćwiczenie | Serie × Powt. | Przerwa | Partia |
 |---|-----------|:-------------:|:-------:|--------|
-| 1 | ⚠ Suwnica (leg press) | 3 × 12-15 | 2:30 | Czworogłowe · Pośladki |
+| 1 | ⚠ 💪 Suwnica (leg press) | 3 × 12-15 | 2:30 | Czworogłowe · Pośladki |
 | 2 | Hack / pendulum lub wykroki bułgarskie | 3 × 10-12 | 2:30 | Czworogłowe · Pośladki |
 | 3 | Prostowniki nóg | 3 × 12-15 | 1:15 | Czworogłowe |
 | 4 | Uginanie nóg (leżąc / siedząc) | 3 × 12-15 | 1:15 | Dwugłowe ud |
@@ -154,7 +155,7 @@ Zakresy powtórzeń i przerwy są przepisane w planie; ciężary dobierasz sam i
 
 | # | Ćwiczenie | Serie × Powt. | Przerwa | Partia |
 |---|-----------|:-------------:|:-------:|--------|
-| 1 | Wyciskanie barków hantle / maszyna | 3 × 8-10 | 2:30 | Barki (przód) · Barki (bok) |
+| 1 | 💪 Wyciskanie barków hantle / maszyna | 3 × 8-10 | 2:30 | Barki (przód) · Barki (bok) |
 | 2 | Wyciskanie skos dodatni (maszyna / Smith) | 3 × 10-12 | 2:00 | Górna klatka |
 | 3 | Wznosy bokiem (wyciąg) | 4 × 12-15 | 1:00 | Barki (bok) |
 | 4 | Rear delt fly | 3 × 15 | 1:00 | Barki (tył) |
@@ -213,7 +214,7 @@ Zakresy powtórzeń i przerwy są przepisane w planie; ciężary dobierasz sam i
 
 | # | Ćwiczenie | Serie × Powt. | Przerwa | Partia |
 |---|-----------|:-------------:|:-------:|--------|
-| 1 | Ściąganie drążka szeroko | 3 × 8-10 | 2:00 | Najszersze |
+| 1 | 💪 Ściąganie drążka szeroko | 3 × 8-10 | 2:00 | Najszersze |
 | 2 | Ściąganie wyciągu, chwyt neutralny (V-bar) | 3 × 10-12 | 2:00 | Najszersze · Plecy (środek) |
 | 3 | Wiosło jednorącz (wyciąg / maszyna) | 3 × 10-12 | 1:30 | Najszersze · Plecy (środek) |
 | 4 | Przyciąganie prostymi ramionami | 3 × 15 | 1:00 | Najszersze |
@@ -268,4 +269,55 @@ Zakresy powtórzeń i przerwy są przepisane w planie; ciężary dobierasz sam i
 
 ---
 
-_Wygenerowano z aplikacji Dziennik treningowy._
+## 💪 Blok intensyfikacji siłowej — tygodnie 8–12
+
+Falowanie DUP: jeden ruch **PRIMARY** na dzień przechodzi w tryb siłowy (fala obciążenia między tygodniami). Izolacje/akcesoria pozostają w trybie hipertroficznym (10–15 powt., RIR 1–2) bez zmian. Tygodnie 1–7 bez zmian.
+
+### Ruch PRIMARY na dzień
+
+| Dzień | Primary |
+|-------|---------|
+| PUSH A · Klatka | Wyciskanie na maszynie (chest press) |
+| PULL A · Plecy | Wiosło Hammer z podparciem klatki (maszyna) |
+| NOGI · maszynowe (bez przysiadu / MC) | Suwnica (leg press) |
+| PUSH B · Barki | Wyciskanie barków hantle / maszyna |
+| PULL B · Plecy (szerokość) | Ściąganie drążka szeroko |
+
+### Fala tygodniowa — ruch PRIMARY (poza leg press)
+
+| Tydzień | Faza | Serie | Powt. | RIR | Przerwa |
+|---------|------|:-----:|:-----:|:---:|:-------:|
+| 8 | Wprowadzenie siły | 4 | 6–8 | 3 | 3:00 |
+| 9 | Akumulacja | 4 | 6–8 | 2–3 | 3:00 |
+| 10 | Intensyfikacja | 4 | 5–6 | 2–3 | 3:30 |
+| 11 | Szczyt (submax) | 3–4 | 5–6 | 2 (floor) | 3:30 |
+| 12 | Deload | 2–3 | 8–10 | 4 | 2:00 |
+
+### Wyjątek — Dzień 3 · leg press (nigdy < 8 powt.)
+
+| Tydzień | Faza | Serie | Powt. | RIR | Przerwa |
+|---------|------|:-----:|:-----:|:---:|:-------:|
+| 8 | Wprowadzenie siły | 4 | 8–10 | 2–3 | 3:00 |
+| 9 | Akumulacja | 4 | 8–10 | 2–3 | 3:00 |
+| 10 | Intensyfikacja | 4 | 8–10 | 2–3 | 3:00 |
+| 11 | Szczyt (submax) | 3–4 | 8 | 2 | 3:00 |
+| 12 | Deload | 2–3 | 10–12 | 4 | 2:00 |
+
+### Reguła progresji (double progression)
+
+> Progresja: gdy trafisz górny zakres powtórzeń we WSZYSTKICH seriach roboczych przy docelowym RIR → następna sesja +2,5–5% ciężaru, wróć na dół zakresu.
+
+### ⚠️ Zasady bezpieczeństwa (blok siłowy)
+
+- Wydech na koncentryku — zero bezdechu / bez Valsalvy.
+- RIR 2 to twarda podłoga — bez grindu, bez testowania maksów, bez singli/dubletów.
+- Bez wolnych ciężarów wielostawowych (przysiad / martwy pozostają wykluczone).
+- Cardio Zone 2 20–30 min po treningu, z rampą w dół 3–5 min.
+- Nie siadaj gwałtownie po serii.
+- Dzień nóg: leg press (primary) nigdy poniżej 8 powt., RIR 2–3, submaksymalnie.
+
+> Reżim submaksymalny (RIR 2, floor 5–8 powt.) jest celowy — nie obniżać.
+
+---
+
+_Wygenerowano z aplikacji Dziennik treningowy (v14)._
