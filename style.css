@@ -186,6 +186,41 @@ body {
 .prog-hint.up { color: var(--accent); background: rgba(76, 201, 176, 0.10); border: 1px solid var(--accent-dim); }
 .prog-hint.hold { color: var(--text-dim); background: var(--bg-elev-2); border: 1px solid var(--border); }
 
+.primary-badge {
+  display: inline-block;
+  margin: 4px 0 2px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  color: #04201a;
+  background: var(--accent);
+  border-radius: 999px;
+  padding: 3px 9px;
+}
+.prog-note {
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--accent);
+  background: rgba(76, 201, 176, 0.08);
+  border: 1px solid var(--accent-dim);
+  border-radius: 8px;
+  padding: 6px 10px;
+  margin-top: 8px;
+}
+
+/* strength block banner */
+.strength-banner {
+  border: 1px solid var(--accent);
+  border-left-width: 4px;
+  border-radius: var(--radius);
+  padding: 10px 12px;
+  margin-bottom: 12px;
+  background: rgba(76, 201, 176, 0.08);
+}
+.strength-title { font-size: 15px; font-weight: 700; color: var(--accent); }
+.strength-sub { font-size: 12px; color: var(--text-dim); margin-top: 3px; line-height: 1.4; }
+.strength-guardrails { margin-top: 10px; }
+
 .ex-stats { font-size: 12.5px; color: var(--text-dim); margin-top: 10px; }
 .ex-stats[hidden] { display: none; }
 .ex-stats b { color: var(--text); font-weight: 600; }

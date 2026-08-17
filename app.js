@@ -10,7 +10,7 @@ const LOG_KEY = 'workout-log-v1';
 const SETTINGS_KEY = 'workout-settings-v1';
 const COMPLETED_KEY = 'workout-completed-v1';
 const EXTRAS_KEY = 'workout-extras-v1';
-const APP_VERSION = 'v13';
+const APP_VERSION = 'v14';
 const TOTAL_WEEKS = 12;
 const SAVE_DEBOUNCE_MS = 500;
 
@@ -20,7 +20,7 @@ const PLAN = [
     id: 'push_a',
     title: 'Dzień 1 — PUSH A · Klatka',
     exercises: [
-      { id: 'push_a_1', name: 'Wyciskanie na maszynie (chest press)', sets: 3, reps: '8-10', rest: 150 },
+      { id: 'push_a_1', name: 'Wyciskanie na maszynie (chest press)', sets: 3, reps: '8-10', rest: 150, role: 'primary' },
       { id: 'push_a_2', name: 'Wyciskanie hantle, skos dodatni', sets: 3, reps: '10-12', rest: 150 },
       { id: 'push_a_3', name: 'Rozpiętki wyciąg / pec deck', sets: 3, reps: '12-15', rest: 75 },
       { id: 'push_a_4', name: 'Wyciskanie barków na maszynie', sets: 3, reps: '10-12', rest: 120 },
@@ -32,7 +32,7 @@ const PLAN = [
     id: 'pull_a',
     title: 'Dzień 2 — PULL A · Plecy',
     exercises: [
-      { id: 'pull_a_1', name: 'Wiosło Hammer z podparciem klatki (maszyna)', sets: 3, reps: '8-10', rest: 150 },
+      { id: 'pull_a_1', name: 'Wiosło Hammer z podparciem klatki (maszyna)', sets: 3, reps: '8-10', rest: 150, role: 'primary' },
       { id: 'pull_a_2', name: 'Ściąganie jednorącz wyciąg górny (lat)', sets: 3, reps: '10-12', rest: 90 },
       { id: 'pull_a_3', name: 'Ściąganie drążka szeroko', sets: 3, reps: '10-12', rest: 120 },
       { id: 'pull_a_4', name: 'Odwrotne rozpiętki / rear delt', sets: 3, reps: '15', rest: 60 },
@@ -45,7 +45,7 @@ const PLAN = [
     id: 'legs',
     title: 'Dzień 3 — NOGI · maszynowe (bez przysiadu / MC)',
     exercises: [
-      { id: 'legs_1', name: 'Suwnica (leg press)', sets: 3, reps: '12-15', rest: 150, warning: true },
+      { id: 'legs_1', name: 'Suwnica (leg press)', sets: 3, reps: '12-15', rest: 150, warning: true, role: 'primary' },
       { id: 'legs_2', name: 'Hack / pendulum lub wykroki bułgarskie', sets: 3, reps: '10-12', rest: 150 },
       { id: 'legs_3', name: 'Prostowniki nóg', sets: 3, reps: '12-15', rest: 75 },
       { id: 'legs_4', name: 'Uginanie nóg (leżąc / siedząc)', sets: 3, reps: '12-15', rest: 75 },
@@ -57,7 +57,7 @@ const PLAN = [
     id: 'push_b',
     title: 'Dzień 4 — PUSH B · Barki',
     exercises: [
-      { id: 'push_b_1', name: 'Wyciskanie barków hantle / maszyna', sets: 3, reps: '8-10', rest: 150 },
+      { id: 'push_b_1', name: 'Wyciskanie barków hantle / maszyna', sets: 3, reps: '8-10', rest: 150, role: 'primary' },
       { id: 'push_b_2', name: 'Wyciskanie skos dodatni (maszyna / Smith)', sets: 3, reps: '10-12', rest: 120 },
       { id: 'push_b_3', name: 'Wznosy bokiem (wyciąg)', sets: 4, reps: '12-15', rest: 60 },
       { id: 'push_b_4', name: 'Rear delt fly', sets: 3, reps: '15', rest: 60 },
@@ -71,7 +71,7 @@ const PLAN = [
     id: 'pull_b',
     title: 'Dzień 5 — PULL B · Plecy (szerokość)',
     exercises: [
-      { id: 'pull_b_1', name: 'Ściąganie drążka szeroko', sets: 3, reps: '8-10', rest: 120 },
+      { id: 'pull_b_1', name: 'Ściąganie drążka szeroko', sets: 3, reps: '8-10', rest: 120, role: 'primary' },
       { id: 'pull_b_2', name: 'Ściąganie wyciągu, chwyt neutralny (V-bar)', sets: 3, reps: '10-12', rest: 120 },
       { id: 'pull_b_3', name: 'Wiosło jednorącz (wyciąg / maszyna)', sets: 3, reps: '10-12', rest: 90 },
       { id: 'pull_b_4', name: 'Przyciąganie prostymi ramionami', sets: 3, reps: '15', rest: 60 },
@@ -220,6 +220,57 @@ const STOP_SIGNS = [
 
 function phaseForWeek(w) { return w <= 3 ? 1 : (w <= 7 ? 2 : 3); }
 function isDeloadWeek(w) { return w === 6 || w === 11; }
+
+/* ---------- Strength block (DUP wave, weeks 8–12) — display/prescription only ---------- */
+const STRENGTH_START_WEEK = 8;
+
+// generic primary wave by week
+const STRENGTH_WAVE = {
+  8:  { setsLabel: '4', setsCount: 4, reps: '6–8', rir: '3', rest: 180, phase: 'Wprowadzenie siły' },
+  9:  { setsLabel: '4', setsCount: 4, reps: '6–8', rir: '2–3', rest: 180, phase: 'Akumulacja' },
+  10: { setsLabel: '4', setsCount: 4, reps: '5–6', rir: '2–3', rest: 210, phase: 'Intensyfikacja' },
+  11: { setsLabel: '3–4', setsCount: 4, reps: '5–6', rir: '2 (floor)', rest: 210, phase: 'Szczyt (submax)' },
+  12: { setsLabel: '2–3', setsCount: 3, reps: '8–10', rir: '4', rest: 120, phase: 'Deload' }
+};
+
+// leg press (legs_1) exception — never below 8 reps; deload rest matched to 2:00
+const STRENGTH_LEGPRESS = {
+  8:  { setsLabel: '4', setsCount: 4, reps: '8–10', rir: '2–3', rest: 180, phase: 'Wprowadzenie siły' },
+  9:  { setsLabel: '4', setsCount: 4, reps: '8–10', rir: '2–3', rest: 180, phase: 'Akumulacja' },
+  10: { setsLabel: '4', setsCount: 4, reps: '8–10', rir: '2–3', rest: 180, phase: 'Intensyfikacja' },
+  11: { setsLabel: '3–4', setsCount: 4, reps: '8', rir: '2', rest: 180, phase: 'Szczyt (submax)' },
+  12: { setsLabel: '2–3', setsCount: 3, reps: '10–12', rir: '4', rest: 120, phase: 'Deload' }
+};
+
+const STRENGTH_GUARDRAILS = [
+  'Wydech na koncentryku — zero bezdechu / bez Valsalvy.',
+  'RIR 2 to twarda podłoga — bez grindu, bez testowania maksów, bez singli/dubletów.',
+  'Bez wolnych ciężarów wielostawowych (przysiad / martwy pozostają wykluczone).',
+  'Cardio Zone 2 20–30 min po treningu, z rampą w dół 3–5 min.',
+  'Nie siadaj gwałtownie po serii.'
+];
+const STRENGTH_GUARDRAIL_LEGS = 'Dzień nóg: leg press (primary) nigdy poniżej 8 powt., RIR 2–3, submaksymalnie.';
+const DOUBLE_PROGRESSION_NOTE = 'Progresja: gdy trafisz górny zakres powtórzeń we WSZYSTKICH seriach roboczych ' +
+  'przy docelowym RIR → następna sesja +2,5–5% ciężaru, wróć na dół zakresu.';
+
+function isStrengthWeek(w) { return w >= STRENGTH_START_WEEK && w <= TOTAL_WEEKS; }
+
+// Resolve the effective prescription for an exercise in a given week.
+// Non-primary and weeks 1–7 fall back to the base plan values (unchanged).
+function effectivePrescription(ex, week) {
+  const base = {
+    setsCount: ex.sets, setsLabel: String(ex.sets), reps: ex.reps,
+    rir: null, rest: ex.rest, phase: null, primaryStrength: false
+  };
+  if (!isStrengthWeek(week) || ex.role !== 'primary') return base;
+  const table = ex.id === 'legs_1' ? STRENGTH_LEGPRESS : STRENGTH_WAVE;
+  const w = table[week];
+  if (!w) return base;
+  return {
+    setsCount: w.setsCount, setsLabel: w.setsLabel, reps: w.reps,
+    rir: w.rir, rest: w.rest, phase: w.phase, primaryStrength: true
+  };
+}
 
 /* ---------- Exercise metadata: target muscles (for graphic) + technique cues ---------- */
 const EX_META = {
@@ -775,6 +826,9 @@ function renderSession() {
   // 🔷 Blok A — rozgrzewka + plyo (na początku)
   frag.appendChild(blokASection(session, locked));
 
+  // 💪 Blok siłowy (tyg. 8–12) — guardraile
+  if (isStrengthWeek(state.week)) frag.appendChild(strengthSection(session));
+
   // Group consecutive exercises by supersetGroup
   let i = 0;
   while (i < session.exercises.length) {
@@ -945,11 +999,33 @@ function blokBSection(session, locked) {
   return det;
 }
 
+function strengthSection(session) {
+  const wave = STRENGTH_WAVE[state.week];
+  const phase = wave ? wave.phase : '';
+  const wrap = document.createElement('div');
+  wrap.className = 'strength-banner';
+  wrap.innerHTML = '<div class="strength-title">💪 Blok siłowy · Tydzień ' + state.week + '/' + TOTAL_WEEKS +
+    (phase ? ' · ' + escapeHtml(phase) : '') + '</div>' +
+    '<div class="strength-sub">Falowanie DUP — tryb siłowy tylko dla ruchu PRIMARY (💪). Izolacje bez zmian.</div>';
+
+  const det = document.createElement('details');
+  det.className = 'safety-box strength-guardrails';
+  det.innerHTML = '<summary>⚠️ Zasady bezpieczeństwa (blok siłowy)</summary>';
+  const ul = document.createElement('ul');
+  ul.className = 'safety-list';
+  STRENGTH_GUARDRAILS.forEach(r => { const li = document.createElement('li'); li.textContent = r; ul.appendChild(li); });
+  if (session.id === 'legs') { const li = document.createElement('li'); li.textContent = STRENGTH_GUARDRAIL_LEGS; ul.appendChild(li); }
+  det.appendChild(ul);
+  wrap.appendChild(det);
+  return wrap;
+}
+
 function exerciseCard(session, ex, locked) {
   const card = document.createElement('div');
   card.className = 'exercise' + (locked ? ' locked' : '');
 
-  const log = ensureExerciseLog(session.id, state.week, ex.id, ex.sets);
+  const eff = effectivePrescription(ex, state.week);
+  const log = ensureExerciseLog(session.id, state.week, ex.id, eff.setsCount);
   const meta = EX_META[ex.id] || {};
   const prevLog = state.week > 1 ? getExerciseLog(session.id, state.week - 1, ex.id) : null;
 
@@ -963,11 +1039,21 @@ function exerciseCard(session, ex, locked) {
 
   const info = document.createElement('div');
   info.className = 'ex-info';
+  const prescLine = `${eff.setsLabel} × ${escapeHtml(eff.reps)} powt.` +
+    (eff.rir ? ` · RIR ${escapeHtml(eff.rir)}` : '') +
+    (eff.rest ? ` · ⏱ ${formatTime(eff.rest)} przerwy` : '');
   info.innerHTML = `
     <div class="exercise-name">${escapeHtml(ex.name)}</div>
-    <div class="exercise-presc">${ex.sets} × ${escapeHtml(ex.reps)} powt.${ex.rest ? ` · ⏱ ${formatTime(ex.rest)} przerwy` : ''}</div>
+    ${eff.primaryStrength ? `<div class="primary-badge">💪 PRIMARY · Siła — ${escapeHtml(eff.phase)}</div>` : ''}
+    <div class="exercise-presc">${prescLine}</div>
     ${meta.muscles ? `<div class="target-chip">🎯 ${escapeHtml(muscleChipText(meta.muscles))}</div>` : ''}
   `;
+  if (eff.primaryStrength) {
+    const dp = document.createElement('div');
+    dp.className = 'prog-note';
+    dp.textContent = '↑ ' + DOUBLE_PROGRESSION_NOTE;
+    info.appendChild(dp);
+  }
   const hint = progressionHint(ex, prevLog);
   if (hint) {
     const h = document.createElement('div');
@@ -1026,7 +1112,7 @@ function exerciseCard(session, ex, locked) {
 
   const rowsWrap = document.createElement('div');
   rowsWrap.dataset.rows = '1';
-  renderSetRows(rowsWrap, session.id, ex, log, prevLog, updateStats, locked);
+  renderSetRows(rowsWrap, session.id, ex, log, prevLog, updateStats, locked, eff.rest);
   setsWrap.appendChild(rowsWrap);
 
   // +/- set controls (hidden when the session is completed/locked)
@@ -1039,7 +1125,7 @@ function exerciseCard(session, ex, locked) {
     minus.addEventListener('click', () => {
       if (log.sets.length > 1) {
         log.sets.pop();
-        renderSetRows(rowsWrap, session.id, ex, log, prevLog, updateStats, locked);
+        renderSetRows(rowsWrap, session.id, ex, log, prevLog, updateStats, locked, eff.rest);
         updateStats();
         scheduleSave();
       }
@@ -1049,7 +1135,7 @@ function exerciseCard(session, ex, locked) {
     plus.textContent = '+ seria';
     plus.addEventListener('click', () => {
       log.sets.push({ weight: null, reps: null });
-      renderSetRows(rowsWrap, session.id, ex, log, prevLog, updateStats, locked);
+      renderSetRows(rowsWrap, session.id, ex, log, prevLog, updateStats, locked, eff.rest);
       updateStats();
       scheduleSave();
     });
@@ -1093,7 +1179,7 @@ function exerciseCard(session, ex, locked) {
   return card;
 }
 
-function renderSetRows(container, sessionId, ex, log, prevLog, onChange, locked) {
+function renderSetRows(container, sessionId, ex, log, prevLog, onChange, locked, restSeconds) {
   container.replaceChildren();
   log.sets.forEach((set, idx) => {
     const row = document.createElement('div');
@@ -1165,7 +1251,7 @@ function renderSetRows(container, sessionId, ex, log, prevLog, onChange, locked)
         row.classList.add('done');
         set.done = true;
         scheduleSave();
-        startRest(ex.rest || 90, ex.name);
+        startRest(restSeconds || ex.rest || 90, ex.name);
       });
       row.append(num, weight, reps, done);
     }
