@@ -37,11 +37,11 @@ let pass = 0, fail = 0;
 function ok(name, cond) { cond ? (pass++, console.log('  ✓ ' + name)) : (fail++, console.error('  ✗ ' + name)); }
 
 // 1. plan integrity
-ok('5 sessions', T.PLAN.length === 5);
+ok('4 sessions (3 upper + legs)', T.PLAN.length === 4);
 const allEx = T.PLAN.flatMap(s => s.exercises);
 ok('unique exercise ids', new Set(allEx.map(e => e.id)).size === allEx.length);
 ok('warnings on legs', T.PLAN.find(s => s.id === 'legs').exercises.filter(e => e.warning).length === 2);
-ok('supersets present', allEx.filter(e => e.supersetGroup).length === 4);
+ok('one superset pair (ssB)', allEx.filter(e => e.supersetGroup).length === 2);
 
 // 2. clampWeek
 ok('clamp low', T.clampWeek(0) === 1);

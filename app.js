@@ -10,7 +10,7 @@ const LOG_KEY = 'workout-log-v1';
 const SETTINGS_KEY = 'workout-settings-v1';
 const COMPLETED_KEY = 'workout-completed-v1';
 const EXTRAS_KEY = 'workout-extras-v1';
-const APP_VERSION = 'v14';
+const APP_VERSION = 'v15';
 const TOTAL_WEEKS = 12;
 const SAVE_DEBOUNCE_MS = 500;
 
@@ -18,25 +18,23 @@ const SAVE_DEBOUNCE_MS = 500;
 const PLAN = [
   {
     id: 'push_a',
-    title: 'Dzień 1 — PUSH A · Klatka',
+    title: 'Dzień 1 — PUSH · Klatka + triceps',
     exercises: [
-      { id: 'push_a_1', name: 'Wyciskanie na maszynie (chest press)', sets: 3, reps: '8-10', rest: 150, role: 'primary' },
-      { id: 'push_a_2', name: 'Wyciskanie hantle, skos dodatni', sets: 3, reps: '10-12', rest: 150 },
+      { id: 'push_a_1', name: 'Wyciskanie na maszynie (chest press)', sets: 3, reps: '8-10', rest: 180, role: 'primary' },
+      { id: 'push_a_2', name: 'Wyciskanie hantle, skos dodatni', sets: 3, reps: '10-12', rest: 120 },
       { id: 'push_a_3', name: 'Rozpiętki wyciąg / pec deck', sets: 3, reps: '12-15', rest: 75 },
-      { id: 'push_a_4', name: 'Wyciskanie barków na maszynie', sets: 3, reps: '10-12', rest: 120 },
-      { id: 'push_a_5', name: 'Wznosy bokiem (wyciąg)', sets: 3, reps: '12-15', rest: 60 },
-      { id: 'push_a_6', name: 'Pushdown triceps', sets: 3, reps: '12-15', rest: 60 }
+      { id: 'push_a_6', name: 'Pushdown triceps', sets: 3, reps: '12-15', rest: 60 },
+      { id: 'push_b_5', name: 'Francuskie / wyciąg nad głowę triceps', sets: 3, reps: '12', rest: 75 }
     ]
   },
   {
     id: 'pull_a',
-    title: 'Dzień 2 — PULL A · Plecy',
+    title: 'Dzień 2 — PULL · Plecy + biceps',
     exercises: [
-      { id: 'pull_a_1', name: 'Wiosło Hammer z podparciem klatki (maszyna)', sets: 3, reps: '8-10', rest: 150, role: 'primary' },
-      { id: 'pull_a_2', name: 'Ściąganie jednorącz wyciąg górny (lat)', sets: 3, reps: '10-12', rest: 90 },
+      { id: 'pull_a_1', name: 'Wiosło Hammer z podparciem klatki (maszyna)', sets: 3, reps: '8-10', rest: 180, role: 'primary' },
       { id: 'pull_a_3', name: 'Ściąganie drążka szeroko', sets: 3, reps: '10-12', rest: 120 },
+      { id: 'pull_a_2', name: 'Ściąganie jednorącz wyciąg górny (lat)', sets: 3, reps: '10-12', rest: 90 },
       { id: 'pull_a_4', name: 'Odwrotne rozpiętki / rear delt', sets: 3, reps: '15', rest: 60 },
-      { id: 'pull_a_5', name: 'Wznosy bokiem (wyciąg)', sets: 3, reps: '12-15', rest: 60 },
       { id: 'pull_a_6', name: 'Uginania ramion (wyciąg / EZ)', sets: 3, reps: '10-12', rest: 75 },
       { id: 'pull_a_7', name: 'Hammer curl', sets: 2, reps: '12', rest: 60 }
     ]
@@ -55,30 +53,13 @@ const PLAN = [
   },
   {
     id: 'push_b',
-    title: 'Dzień 4 — PUSH B · Barki',
+    title: 'Dzień 4 — DELTY + RAMIONA',
     exercises: [
-      { id: 'push_b_1', name: 'Wyciskanie barków hantle / maszyna', sets: 3, reps: '8-10', rest: 150, role: 'primary' },
-      { id: 'push_b_2', name: 'Wyciskanie skos dodatni (maszyna / Smith)', sets: 3, reps: '10-12', rest: 120 },
+      { id: 'push_b_1', name: 'Wyciskanie barków hantle / maszyna', sets: 3, reps: '8-10', rest: 180, role: 'primary' },
       { id: 'push_b_3', name: 'Wznosy bokiem (wyciąg)', sets: 4, reps: '12-15', rest: 60 },
-      { id: 'push_b_4', name: 'Rear delt fly', sets: 3, reps: '15', rest: 60 },
-      { id: 'push_b_5', name: 'Francuskie / wyciąg nad głowę triceps', sets: 3, reps: '12', rest: 75 },
-      { id: 'push_b_6', name: 'Pushdown', sets: 2, reps: '15', rest: 60 },
-      { id: 'push_b_7', name: 'Uginania na modlitewniku/maszyna (biceps)', sets: 2, reps: '12-15', rest: 15, supersetGroup: 'ssB' },
-      { id: 'push_b_8', name: 'Triceps pushdown, lina (triceps)', sets: 2, reps: '12-15', rest: 75, supersetGroup: 'ssB' }
-    ]
-  },
-  {
-    id: 'pull_b',
-    title: 'Dzień 5 — PULL B · Plecy (szerokość)',
-    exercises: [
-      { id: 'pull_b_1', name: 'Ściąganie drążka szeroko', sets: 3, reps: '8-10', rest: 120, role: 'primary' },
-      { id: 'pull_b_2', name: 'Ściąganie wyciągu, chwyt neutralny (V-bar)', sets: 3, reps: '10-12', rest: 120 },
-      { id: 'pull_b_3', name: 'Wiosło jednorącz (wyciąg / maszyna)', sets: 3, reps: '10-12', rest: 90 },
-      { id: 'pull_b_4', name: 'Przyciąganie prostymi ramionami', sets: 3, reps: '15', rest: 60 },
-      { id: 'pull_b_5', name: 'Uginania skos (incline curl)', sets: 3, reps: '10-12', rest: 75 },
-      { id: 'pull_b_6', name: 'Uginania wyciąg', sets: 2, reps: '15', rest: 60 },
-      { id: 'pull_b_7', name: 'Uginania hantle stojąc (biceps)', sets: 2, reps: '12-15', rest: 15, supersetGroup: 'ssC' },
-      { id: 'pull_b_8', name: 'Wyciskanie francuskie / nad głowę (triceps)', sets: 2, reps: '12-15', rest: 75, supersetGroup: 'ssC' }
+      { id: 'push_b_7', name: 'Uginania na modlitewniku/maszyna (biceps)', sets: 3, reps: '12-15', rest: 15, supersetGroup: 'ssB' },
+      { id: 'push_b_8', name: 'Triceps pushdown, lina (triceps)', sets: 3, reps: '12-15', rest: 75, supersetGroup: 'ssB' },
+      { id: 'push_b_4', name: 'Rear delt fly (opcjonalnie)', sets: 2, reps: '15', rest: 60 }
     ]
   }
 ];
@@ -518,6 +499,26 @@ function loadLog() {
     console.error('Błąd odczytu logów', e);
     return {};
   }
+}
+
+// One-time, non-destructive: 'push_b_5' (francuskie) moved from the old
+// PUSH B day to the new PUSH day (push_a). Copy its history so it follows
+// the exercise. Idempotent; leaves the source entries untouched.
+function migrateMovedExercises() {
+  const from = state.log['push_b'];
+  if (!from) return;
+  let changed = false;
+  Object.keys(from).forEach(week => {
+    const entry = from[week] && from[week]['push_b_5'];
+    if (!entry) return;
+    if (!state.log['push_a']) state.log['push_a'] = {};
+    if (!state.log['push_a'][week]) state.log['push_a'][week] = {};
+    if (!state.log['push_a'][week]['push_b_5']) {
+      state.log['push_a'][week]['push_b_5'] = entry;
+      changed = true;
+    }
+  });
+  if (changed) saveLog(state.log);
 }
 
 function saveLog(log) {
@@ -1007,16 +1008,6 @@ function strengthSection(session) {
   wrap.innerHTML = '<div class="strength-title">💪 Blok siłowy · Tydzień ' + state.week + '/' + TOTAL_WEEKS +
     (phase ? ' · ' + escapeHtml(phase) : '') + '</div>' +
     '<div class="strength-sub">Falowanie DUP — tryb siłowy tylko dla ruchu PRIMARY (💪). Izolacje bez zmian.</div>';
-
-  const det = document.createElement('details');
-  det.className = 'safety-box strength-guardrails';
-  det.innerHTML = '<summary>⚠️ Zasady bezpieczeństwa (blok siłowy)</summary>';
-  const ul = document.createElement('ul');
-  ul.className = 'safety-list';
-  STRENGTH_GUARDRAILS.forEach(r => { const li = document.createElement('li'); li.textContent = r; ul.appendChild(li); });
-  if (session.id === 'legs') { const li = document.createElement('li'); li.textContent = STRENGTH_GUARDRAIL_LEGS; ul.appendChild(li); }
-  det.appendChild(ul);
-  wrap.appendChild(det);
   return wrap;
 }
 
@@ -1830,6 +1821,7 @@ function init() {
   state.settings = loadSettings();
   state.completed = loadCompleted();
   state.extras = loadExtras();
+  migrateMovedExercises();
   state.week = state.settings.currentWeek;
 
   // nav
