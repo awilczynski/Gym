@@ -207,6 +207,54 @@ body {
   padding: 6px 10px;
   margin-top: 8px;
 }
+.prog-note.special { color: var(--warn); background: var(--warn-bg); border-color: var(--warn); font-weight: 500; }
+.variant-chip {
+  display: inline-block;
+  margin: 4px 0 2px;
+  font-size: 12px;
+  color: var(--superset);
+  background: rgba(108, 123, 255, 0.10);
+  border: 1px solid var(--superset);
+  border-radius: 999px;
+  padding: 2px 9px;
+}
+.variant-note { font-size: 12px; color: var(--text-dim); margin-top: 6px; font-style: italic; }
+
+/* cycle panel (Start) */
+.cycle-panel {
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--accent);
+  border-radius: var(--radius);
+  padding: 12px 14px;
+  margin-bottom: 16px;
+}
+.cycle-name { font-size: 15px; font-weight: 700; }
+.cycle-sub { font-size: 12px; color: var(--text-dim); margin-top: 2px; }
+.cycle-row { display: flex; align-items: center; gap: 10px; margin-top: 12px; }
+.cycle-label { font-size: 13px; color: var(--text-dim); }
+.cycle-input {
+  flex: 1;
+  min-height: var(--tap);
+  font-size: 16px;
+  text-align: center;
+  background: var(--bg-elev-2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--text);
+  padding: 6px 8px;
+}
+.cycle-input:focus { outline: none; border-color: var(--accent); }
+.cycle-e1rm { font-size: 12.5px; color: var(--accent); margin-top: 8px; line-height: 1.4; }
+.cycle-path { margin-top: 12px; display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+.path-badge { font-size: 12px; color: var(--text-dim); border: 1px solid var(--border); border-radius: 999px; padding: 3px 10px; }
+.path-badge.ext { color: var(--warn); border-color: var(--warn); background: var(--warn-bg); font-weight: 600; }
+.path-switch { width: 100%; margin-top: 6px; padding: 10px; background: var(--bg-elev-2); border: 1px solid var(--border); border-radius: 10px; }
+.path-note { font-size: 12px; color: var(--text-dim); margin-bottom: 8px; }
+.cycle-check { display: flex; align-items: center; gap: 8px; font-size: 13px; margin-bottom: 8px; cursor: pointer; }
+.cycle-check input { width: 20px; height: 20px; }
+.path-switch .btn { width: 100%; }
+.path-switch .btn:disabled { opacity: 0.4; }
 
 /* strength block banner */
 .strength-banner {

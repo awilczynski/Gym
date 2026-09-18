@@ -10,61 +10,63 @@ const LOG_KEY = 'workout-log-v1';
 const SETTINGS_KEY = 'workout-settings-v1';
 const COMPLETED_KEY = 'workout-completed-v1';
 const EXTRAS_KEY = 'workout-extras-v1';
-const APP_VERSION = 'v15';
+const ARCHIVE_KEY = 'workout-archive-v1';
+const APP_VERSION = 'v16';
 const TOTAL_WEEKS = 12;
 const SAVE_DEBOUNCE_MS = 500;
 
 /* ---------- Plan (seed data, static) ---------- */
 const PLAN = [
   {
-    id: 'push_a',
-    title: 'Dzień 1 — PUSH · Klatka + triceps',
+    id: 'd1_bench',
+    title: 'Dzień 1 — Ławka ciężka',
     exercises: [
-      { id: 'push_a_1', name: 'Wyciskanie na maszynie (chest press)', sets: 3, reps: '8-10', rest: 180, role: 'primary' },
-      { id: 'push_a_2', name: 'Wyciskanie hantle, skos dodatni', sets: 3, reps: '10-12', rest: 120 },
-      { id: 'push_a_3', name: 'Rozpiętki wyciąg / pec deck', sets: 3, reps: '12-15', rest: 75 },
-      { id: 'push_a_6', name: 'Pushdown triceps', sets: 3, reps: '12-15', rest: 60 },
-      { id: 'push_b_5', name: 'Francuskie / wyciąg nad głowę triceps', sets: 3, reps: '12', rest: 75 }
+      { id: 'd1_bench', name: 'Wyciskanie sztangą leżąc', sets: 4, reps: '—', rest: 210, role: 'primary', weeklyRef: 'd1' },
+      { id: 'd1_a1', name: 'Wyciskanie hantle skos dodatni', sets: 3, reps: '8-10', rir: '2', rest: 120 },
+      { id: 'd1_a2', name: 'Chest press maszyna / dipsy maszyna', sets: 3, reps: '10-12', rir: '2', rest: 90 },
+      { id: 'd1_a3', name: 'Pushdown triceps', sets: 3, reps: '12-15', rir: '1-2', rest: 60 },
+      { id: 'd1_a4', name: 'Face pull', sets: 3, reps: '15-20', rir: '2', rest: 45 }
     ]
   },
   {
-    id: 'pull_a',
-    title: 'Dzień 2 — PULL · Plecy + biceps',
+    id: 'd2_pull',
+    title: 'Dzień 2 — Pull',
     exercises: [
-      { id: 'pull_a_1', name: 'Wiosło Hammer z podparciem klatki (maszyna)', sets: 3, reps: '8-10', rest: 180, role: 'primary' },
-      { id: 'pull_a_3', name: 'Ściąganie drążka szeroko', sets: 3, reps: '10-12', rest: 120 },
-      { id: 'pull_a_2', name: 'Ściąganie jednorącz wyciąg górny (lat)', sets: 3, reps: '10-12', rest: 90 },
-      { id: 'pull_a_4', name: 'Odwrotne rozpiętki / rear delt', sets: 3, reps: '15', rest: 60 },
-      { id: 'pull_a_6', name: 'Uginania ramion (wyciąg / EZ)', sets: 3, reps: '10-12', rest: 75 },
-      { id: 'pull_a_7', name: 'Hammer curl', sets: 2, reps: '12', rest: 60 }
+      { id: 'd2_1', name: 'Wiosło Hammer z podparciem', sets: 4, reps: '6-8', rir: '2-3', rest: 150 },
+      { id: 'd2_2', name: 'Ściąganie drążka szeroko', sets: 3, reps: '10-12', rir: '2', rest: 90 },
+      { id: 'd2_3', name: 'Wiosło jednorącz hantel', sets: 3, reps: '10-12', rir: '2', rest: 75 },
+      { id: 'd2_4', name: 'Rear delt / odwrotne rozpiętki', sets: 4, reps: '15', rir: '1-2', rest: 60 },
+      { id: 'd2_5', name: 'Uginania EZ', sets: 3, reps: '10-12', rir: '1-2', rest: 60 },
+      { id: 'd2_6', name: 'Hammer curl', sets: 2, reps: '12', rir: '1-2', rest: 60 }
     ]
   },
   {
     id: 'legs',
     title: 'Dzień 3 — NOGI · maszynowe (bez przysiadu / MC)',
     exercises: [
-      { id: 'legs_1', name: 'Suwnica (leg press)', sets: 3, reps: '12-15', rest: 150, warning: true, role: 'primary' },
-      { id: 'legs_2', name: 'Hack / pendulum lub wykroki bułgarskie', sets: 3, reps: '10-12', rest: 150 },
-      { id: 'legs_3', name: 'Prostowniki nóg', sets: 3, reps: '12-15', rest: 75 },
-      { id: 'legs_4', name: 'Uginanie nóg (leżąc / siedząc)', sets: 3, reps: '12-15', rest: 75 },
-      { id: 'legs_5', name: 'Hip thrust maszyna', sets: 3, reps: '12', rest: 120, warning: true },
-      { id: 'legs_6', name: 'Łydki (stojąc / siedząc)', sets: 4, reps: '12-15', rest: 60 }
+      { id: 'legs_1', name: 'Suwnica (leg press)', sets: 3, reps: '8-10', rir: '2-3', rest: 180, warning: true },
+      { id: 'legs_2', name: 'Hack / pendulum lub wykroki bułgarskie', sets: 3, reps: '10-12', rir: '2', rest: 150 },
+      { id: 'legs_3', name: 'Prostowniki nóg', sets: 3, reps: '12-15', rir: '2', rest: 75 },
+      { id: 'legs_4', name: 'Uginanie nóg (leżąc / siedząc)', sets: 3, reps: '12-15', rir: '2', rest: 75 },
+      { id: 'legs_5', name: 'Hip thrust maszyna', sets: 3, reps: '12', rir: '2', rest: 120, warning: true },
+      { id: 'legs_6', name: 'Łydki (stojąc / siedząc)', sets: 4, reps: '12-15', rir: '1-2', rest: 60 }
     ]
   },
   {
-    id: 'push_b',
-    title: 'Dzień 4 — DELTY + RAMIONA',
+    id: 'd4_bench_vol',
+    title: 'Dzień 4 — Ławka objętość + barki/ramiona',
     exercises: [
-      { id: 'push_b_1', name: 'Wyciskanie barków hantle / maszyna', sets: 3, reps: '8-10', rest: 180, role: 'primary' },
-      { id: 'push_b_3', name: 'Wznosy bokiem (wyciąg)', sets: 4, reps: '12-15', rest: 60 },
-      { id: 'push_b_7', name: 'Uginania na modlitewniku/maszyna (biceps)', sets: 3, reps: '12-15', rest: 15, supersetGroup: 'ssB' },
-      { id: 'push_b_8', name: 'Triceps pushdown, lina (triceps)', sets: 3, reps: '12-15', rest: 75, supersetGroup: 'ssB' },
-      { id: 'push_b_4', name: 'Rear delt fly (opcjonalnie)', sets: 2, reps: '15', rest: 60 }
+      { id: 'd4_bench', name: 'Wyciskanie leżąc (wariant)', sets: 4, reps: '—', rest: 180, role: 'secondary', weeklyRef: 'd4' },
+      { id: 'd4_a1', name: 'Wyciskanie barków maszyna', sets: 3, reps: '8-10', rir: '2', rest: 120 },
+      { id: 'd4_a2', name: 'Wznosy bokiem wyciąg', sets: 4, reps: '12-15', rir: '1-2', rest: 60 },
+      { id: 'd4_a3', name: 'Francuskie / triceps nad głowę', sets: 3, reps: '10-12', rir: '2', rest: 75 },
+      { id: 'd4_ss1', name: 'Uginania modlitewnik (biceps)', sets: 2, reps: '12-15', rir: '1-2', rest: 15, supersetGroup: 'ssD' },
+      { id: 'd4_ss2', name: 'Triceps pushdown lina', sets: 2, reps: '12-15', rir: '1-2', rest: 60, supersetGroup: 'ssD' }
     ]
   }
 ];
 
-const SUPERSET_LABELS = { ssB: 'Superseria', ssC: 'Superseria' };
+const SUPERSET_LABELS = { ssB: 'Superseria', ssC: 'Superseria', ssD: 'Superseria' };
 
 /* ---------- Add-on: warm-up + plyo (Blok A) & mobility (Blok B) ---------- */
 /* Stored separately from workout logs — never touches workout-log-v1. */
@@ -202,59 +204,133 @@ const STOP_SIGNS = [
 function phaseForWeek(w) { return w <= 3 ? 1 : (w <= 7 ? 2 : 3); }
 function isDeloadWeek(w) { return w === 6 || w === 11; }
 
-/* ---------- Strength block (DUP wave, weeks 8–12) — display/prescription only ---------- */
-const STRENGTH_START_WEEK = 8;
+/* ---------- Bench cycle engine (per-week D1/D4 tables, %→kg, path) ---------- */
+const BENCH_CYCLE_ID = 'bench_2026_09';
+const BENCH_CYCLE_NAME = 'Bench Specialization 12w';
+const BENCH_START_DATE = '2026-09-21';
+const BASELINE_MULT = 1.1667; // e1RM = 5RM × 1.1667 (Epley for 5 reps)
 
-// generic primary wave by week
-const STRENGTH_WAVE = {
-  8:  { setsLabel: '4', setsCount: 4, reps: '6–8', rir: '3', rest: 180, phase: 'Wprowadzenie siły' },
-  9:  { setsLabel: '4', setsCount: 4, reps: '6–8', rir: '2–3', rest: 180, phase: 'Akumulacja' },
-  10: { setsLabel: '4', setsCount: 4, reps: '5–6', rir: '2–3', rest: 210, phase: 'Intensyfikacja' },
-  11: { setsLabel: '3–4', setsCount: 4, reps: '5–6', rir: '2 (floor)', rest: 210, phase: 'Szczyt (submax)' },
-  12: { setsLabel: '2–3', setsCount: 3, reps: '8–10', rir: '4', rest: 120, phase: 'Deload' }
+// Per-week tables. pct = % of e1rm_base. special = protocol text (no % row).
+const D1_WEEKLY = {
+  base: {
+    1:  { setsLabel: '1+2', setsCount: 3, reps: '5 / 6', pct: null, rir: '2-3', rest: 210, special: 'BASELINE: rozgrzewka progresywna → 1×5 @ RIR 2–3 (zapisz jako baseline 5RM) + 2×6 @ 90% B5. To NIE test maksymalny.' },
+    2:  { setsLabel: '4', setsCount: 4, reps: '8', pct: 72, rir: '3', rest: 210 },
+    3:  { setsLabel: '4', setsCount: 4, reps: '7', pct: 75, rir: '2-3', rest: 210 },
+    4:  { setsLabel: '4', setsCount: 4, reps: '6', pct: 78, rir: '2', rest: 210 },
+    5:  { setsLabel: '5', setsCount: 5, reps: '6', pct: 76, rir: '3', rest: 210 },
+    6:  { setsLabel: '5', setsCount: 5, reps: '5', pct: 79, rir: '2-3', rest: 210 },
+    7:  { setsLabel: '5', setsCount: 5, reps: '4', pct: 82, rir: '2-3', rest: 210 },
+    8:  { setsLabel: '4', setsCount: 4, reps: '5', pct: 76, rir: '3-4', rest: 210 },
+    9:  { setsLabel: '4', setsCount: 4, reps: '4', pct: 82, rir: '2', rest: 210 },
+    10: { setsLabel: '4', setsCount: 4, reps: '4', pct: 84, rir: '2', rest: 210 },
+    11: { setsLabel: '1+2', setsCount: 3, reps: '4-5 / 4', pct: null, rir: '2', rest: 240, special: 'POMIAR: rozgrzewka → 1×4–5 @ RIR 2 (cel e1RM > 160 kg: ≥145×4 lub ≥140×5) + 2×4 @ 78%. Policz e1RM = ciężar × (1 + powt./30).' },
+    12: { setsLabel: '3', setsCount: 3, reps: '5', pct: 70, rir: '4', rest: 150 }
+  },
+  ext: {
+    9:  { setsLabel: '4', setsCount: 4, reps: '3', pct: 85, rir: '2', rest: 240 },
+    10: { setsLabel: '3', setsCount: 3, reps: '2', pct: 88, rir: '2', rest: 240 },
+    11: { setsLabel: '2+2', setsCount: 4, reps: '1 / 3', pct: null, rir: '2', rest: 240, special: '2×1 @ 91% + 2×3 @ 80%.' },
+    12: { setsLabel: 'test', setsCount: 1, reps: '1', pct: null, rir: '0-1', rest: 300, special: 'TEST 1RM: rozgrzewka → 1×1 @ 90% → 1×1 @ 100% (160 kg) → jeśli czysto: 1×1 @ 102–103% (165 kg). KONIEC. Max 3 próby > 90%; grind @ 100% = koniec. Tylko z asekuracją i zabezpieczeniami.' }
+  }
 };
 
-// leg press (legs_1) exception — never below 8 reps; deload rest matched to 2:00
-const STRENGTH_LEGPRESS = {
-  8:  { setsLabel: '4', setsCount: 4, reps: '8–10', rir: '2–3', rest: 180, phase: 'Wprowadzenie siły' },
-  9:  { setsLabel: '4', setsCount: 4, reps: '8–10', rir: '2–3', rest: 180, phase: 'Akumulacja' },
-  10: { setsLabel: '4', setsCount: 4, reps: '8–10', rir: '2–3', rest: 180, phase: 'Intensyfikacja' },
-  11: { setsLabel: '3–4', setsCount: 4, reps: '8', rir: '2', rest: 180, phase: 'Szczyt (submax)' },
-  12: { setsLabel: '2–3', setsCount: 3, reps: '10–12', rir: '4', rest: 120, phase: 'Deload' }
+const D4_WEEKLY = {
+  base: {
+    1:  { variant: 'Ławka z pauzą 2 s', setsLabel: '4', setsCount: 4, reps: '10', pct: 62, rir: '3', rest: 180 },
+    2:  { variant: 'Ławka z pauzą 2 s', setsLabel: '4', setsCount: 4, reps: '9', pct: 65, rir: '3', rest: 180 },
+    3:  { variant: 'Ławka z pauzą 2 s', setsLabel: '4', setsCount: 4, reps: '8', pct: 68, rir: '3', rest: 180 },
+    4:  { variant: 'Ławka z pauzą 2 s', setsLabel: '4', setsCount: 4, reps: '8', pct: 70, rir: '3', rest: 180 },
+    5:  { variant: 'Wąski chwyt', setsLabel: '4', setsCount: 4, reps: '8', pct: 68, rir: '2-3', rest: 180 },
+    6:  { variant: 'Wąski chwyt', setsLabel: '4', setsCount: 4, reps: '7', pct: 70, rir: '2-3', rest: 180 },
+    7:  { variant: 'Wąski chwyt', setsLabel: '4', setsCount: 4, reps: '6', pct: 73, rir: '2-3', rest: 180 },
+    8:  { variant: 'Wąski chwyt', setsLabel: '3', setsCount: 3, reps: '8', pct: 65, rir: '3', rest: 180 },
+    9:  { variant: 'Skos+ sztanga', setsLabel: '3', setsCount: 3, reps: '8', pct: null, rir: '3', rest: 150, note: 'double progression' },
+    10: { variant: 'Skos+ sztanga', setsLabel: '3', setsCount: 3, reps: '7', pct: null, rir: '3', rest: 150, note: 'double progression' },
+    11: { variant: 'Skos+ sztanga', setsLabel: '3', setsCount: 3, reps: '6', pct: null, rir: '3', rest: 150 },
+    12: { variant: 'Skos+ sztanga', setsLabel: '2', setsCount: 2, reps: '8', pct: null, rir: '4', rest: 120, note: 'lekko' }
+  },
+  ext: {
+    9:  { variant: 'Skos+ sztanga', setsLabel: '3', setsCount: 3, reps: '6', pct: null, rir: '3', rest: 150 },
+    10: { variant: 'Skos+ sztanga', setsLabel: '2', setsCount: 2, reps: '6', pct: null, rir: '3', rest: 150 },
+    11: { variant: 'Skos+ sztanga', setsLabel: '2', setsCount: 2, reps: '6', pct: null, rir: '4', rest: 150, note: 'lekko' },
+    12: { variant: '—', setsLabel: '—', setsCount: 0, reps: '—', pct: null, rir: null, rest: 0, special: 'Brak wariantu ławki (test 1RM na D1) — akcesoria lekkie, połowa serii.' }
+  }
 };
 
-const STRENGTH_GUARDRAILS = [
-  'Wydech na koncentryku — zero bezdechu / bez Valsalvy.',
-  'RIR 2 to twarda podłoga — bez grindu, bez testowania maksów, bez singli/dubletów.',
-  'Bez wolnych ciężarów wielostawowych (przysiad / martwy pozostają wykluczone).',
-  'Cardio Zone 2 20–30 min po treningu, z rampą w dół 3–5 min.',
-  'Nie siadaj gwałtownie po serii.'
+const BENCH_GUARDRAILS = [
+  'Wydech na fazie wyciskania — bez wstrzymywania oddechu, także pod ciężkimi seriami; bez pełnego mostka z bezdechem.',
+  'RIR 2 = twarda podłoga w całym cyklu (base); zero grindu. Wyjątek: tydz. 12 na ścieżce extended.',
+  'Zabezpieczenia na stojaku zawsze; serie ≥ 82% e1RM z asekuracją.',
+  'Odpoczynek na primary (210–240 s) nie do skracania — przy braku czasu tnij przerwy na akcesoriach.',
+  'Przysiad i martwy ciąg wykluczone (wyjątek „bez wolnych wielostawów” dotyczy tylko ławki).',
+  'Face pull / rear delt w każdym tygodniu (ochrona barku przy 2× wyciskaniu).',
+  'Cardio Zone 2 20–30 min po treningu, rampa w dół 3–5 min; nie siadać gwałtownie po serii.',
+  'Bez nikotyny (woreczki) w oknie okołotreningowym.'
 ];
-const STRENGTH_GUARDRAIL_LEGS = 'Dzień nóg: leg press (primary) nigdy poniżej 8 powt., RIR 2–3, submaksymalnie.';
-const DOUBLE_PROGRESSION_NOTE = 'Progresja: gdy trafisz górny zakres powtórzeń we WSZYSTKICH seriach roboczych ' +
-  'przy docelowym RIR → następna sesja +2,5–5% ciężaru, wróć na dół zakresu.';
 
-function isStrengthWeek(w) { return w >= STRENGTH_START_WEEK && w <= TOTAL_WEEKS; }
+// e1RM base from the entered 5RM (or null until entered)
+function e1rmBase() {
+  const b = state.settings.baseline5rm;
+  return (b && b > 0) ? b * BASELINE_MULT : null;
+}
+
+function roundDown25(kg) { return Math.floor(kg / 2.5) * 2.5; }
+
+function kgForPct(pct) {
+  const base = e1rmBase();
+  if (base == null || pct == null) return null;
+  return roundDown25((pct / 100) * base);
+}
+
+function halfSets(n) { return Math.max(1, Math.round(n / 2)); }
 
 // Resolve the effective prescription for an exercise in a given week.
-// Non-primary and weeks 1–7 fall back to the base plan values (unchanged).
 function effectivePrescription(ex, week) {
-  const base = {
-    setsCount: ex.sets, setsLabel: String(ex.sets), reps: ex.reps,
-    rir: null, rest: ex.rest, phase: null, primaryStrength: false
-  };
-  if (!isStrengthWeek(week) || ex.role !== 'primary') return base;
-  const table = ex.id === 'legs_1' ? STRENGTH_LEGPRESS : STRENGTH_WAVE;
-  const w = table[week];
-  if (!w) return base;
-  return {
-    setsCount: w.setsCount, setsLabel: w.setsLabel, reps: w.reps,
-    rir: w.rir, rest: w.rest, phase: w.phase, primaryStrength: true
-  };
+  if (ex.weeklyRef) {
+    const table = ex.weeklyRef === 'd1' ? D1_WEEKLY : D4_WEEKLY;
+    const usePath = state.settings.path === 'extended' && table.ext[week] ? 'ext' : 'base';
+    const w = (usePath === 'ext' ? table.ext[week] : table.base[week]) || table.base[week];
+    if (!w) return { setsCount: ex.sets, setsLabel: String(ex.sets), reps: ex.reps, rir: null, rest: ex.rest };
+    return {
+      setsCount: w.setsCount, setsLabel: w.setsLabel, reps: w.reps, rir: w.rir, rest: w.rest,
+      pct: w.pct != null ? w.pct : null, kg: kgForPct(w.pct), variant: w.variant || null,
+      special: w.special || null, note: w.note || null,
+      badge: ex.weeklyRef === 'd1' ? '💪 PRIMARY · Bench' : '💪 SECONDARY · Wariant',
+      weeklyRef: ex.weeklyRef
+    };
+  }
+  // accessories / pull / legs — base params; week 12 = half sets (legs also RIR 4)
+  let setsCount = ex.sets, setsLabel = String(ex.sets), rir = ex.rir || null;
+  if (week === 12) {
+    setsCount = halfSets(ex.sets);
+    setsLabel = String(setsCount);
+    if (ex.id && ex.id.indexOf('legs') === 0) rir = '4';
+  }
+  return { setsCount: setsCount, setsLabel: setsLabel, reps: ex.reps, rir: rir, rest: ex.rest };
 }
+
 
 /* ---------- Exercise metadata: target muscles (for graphic) + technique cues ---------- */
 const EX_META = {
+  // Bench cycle (2026-09) exercises
+  d1_bench: { muscles: ['chest', 'frontdelt'] },
+  d1_a1: { muscles: ['upperchest', 'frontdelt'] },
+  d1_a2: { muscles: ['chest'] },
+  d1_a3: { muscles: ['triceps'] },
+  d1_a4: { muscles: ['reardelt'] },
+  d2_1: { muscles: ['lats', 'midback'] },
+  d2_2: { muscles: ['lats'] },
+  d2_3: { muscles: ['lats', 'midback'] },
+  d2_4: { muscles: ['reardelt'] },
+  d2_5: { muscles: ['biceps'] },
+  d2_6: { muscles: ['biceps', 'forearm'] },
+  d4_bench: { muscles: ['chest', 'frontdelt'] },
+  d4_a1: { muscles: ['frontdelt', 'sidedelt'] },
+  d4_a2: { muscles: ['sidedelt'] },
+  d4_a3: { muscles: ['triceps'] },
+  d4_ss1: { muscles: ['biceps'] },
+  d4_ss2: { muscles: ['triceps'] },
+
   // PUSH A
   push_a_1: { muscles: ['chest', 'frontdelt'], cues: [
     'Łopatki ściągnięte i opuszczone, klatka wypchnięta do przodu.',
@@ -531,13 +607,69 @@ function saveLog(log) {
 }
 
 function loadSettings() {
+  const def = { currentWeek: 1, cycleId: '', baseline5rm: null, path: 'base', echoDone: false, cardioApproval: false };
   try {
     const raw = localStorage.getItem(SETTINGS_KEY);
     const s = raw ? JSON.parse(raw) : {};
-    return { currentWeek: clampWeek(s.currentWeek || 1) };
+    return {
+      currentWeek: clampWeek(s.currentWeek || 1),
+      cycleId: s.cycleId || '',
+      baseline5rm: (typeof s.baseline5rm === 'number' && s.baseline5rm > 0) ? s.baseline5rm : null,
+      path: s.path === 'extended' ? 'extended' : 'base',
+      echoDone: !!s.echoDone,
+      cardioApproval: !!s.cardioApproval
+    };
   } catch (e) {
-    return { currentWeek: 1 };
+    return def;
   }
+}
+
+function loadArchive() {
+  try {
+    const raw = localStorage.getItem(ARCHIVE_KEY);
+    return raw ? JSON.parse(raw) : { cycles: [] };
+  } catch (e) {
+    return { cycles: [] };
+  }
+}
+
+function saveArchive() {
+  try {
+    localStorage.setItem(ARCHIVE_KEY, JSON.stringify(state.archive));
+  } catch (e) {
+    console.error('Błąd zapisu archiwum', e);
+  }
+}
+
+// One-time: archive the previous cycle (non-destructive snapshot) and start
+// the new bench cycle with empty active stores.
+function migrateToBenchCycle() {
+  if (state.settings.cycleId === BENCH_CYCLE_ID) return;
+  const hadData = (state.log && Object.keys(state.log).length > 0) ||
+    (state.completed && Object.keys(state.completed).length > 0);
+  if (hadData) {
+    if (!state.archive.cycles) state.archive.cycles = [];
+    state.archive.cycles.push({
+      id: 'cycle_' + Date.now(),
+      name: state.settings.cycleId || 'PPL maszynowy 12w (archiwum)',
+      archivedAt: todayISO(),
+      log: state.log,
+      completed: state.completed,
+      extras: state.extras
+    });
+    saveArchive();
+  }
+  // fresh active stores for the new cycle
+  state.log = {}; state.completed = {}; state.extras = {};
+  saveLog(state.log); saveCompleted(); saveExtras();
+  // cycle params reset
+  state.settings.cycleId = BENCH_CYCLE_ID;
+  state.settings.currentWeek = 1;
+  state.settings.baseline5rm = null;
+  state.settings.path = 'base';
+  state.settings.echoDone = false;
+  state.settings.cardioApproval = false;
+  saveSettings(state.settings);
 }
 
 function saveSettings(settings) {
@@ -627,6 +759,7 @@ const state = {
   log: {},
   completed: {},          // completed[sessionId][week] = 'YYYY-MM-DD'
   extras: {},             // extras[sessionId][week][itemKey] = true (plyo/mobility)
+  archive: { cycles: [] },// archived previous cycles (log/completed/extras snapshots)
   settings: { currentWeek: 1 }
 };
 
@@ -686,10 +819,105 @@ function render() {
 }
 
 /* ----- View: Start ----- */
+function cycleCheckbox(labelText, checked, onChange) {
+  const row = document.createElement('label');
+  row.className = 'cycle-check';
+  const input = document.createElement('input');
+  input.type = 'checkbox';
+  input.checked = !!checked;
+  input.addEventListener('change', () => onChange(input.checked));
+  const span = document.createElement('span');
+  span.textContent = labelText;
+  row.append(input, span);
+  return { row: row, input: input };
+}
+
+function cyclePanel() {
+  const wrap = document.createElement('div');
+  wrap.className = 'cycle-panel';
+
+  const head = document.createElement('div');
+  head.innerHTML = '<div class="cycle-name">🏋︎ ' + escapeHtml(BENCH_CYCLE_NAME) + '</div>' +
+    '<div class="cycle-sub">12 tyg. · 4 dni · start ' + escapeHtml(BENCH_START_DATE) + ' · cel bench 160 kg</div>';
+  wrap.appendChild(head);
+
+  const base = e1rmBase();
+  const b5 = state.settings.baseline5rm;
+
+  const brow = document.createElement('div');
+  brow.className = 'cycle-row';
+  const lbl = document.createElement('span');
+  lbl.className = 'cycle-label';
+  lbl.textContent = 'Baseline 5RM (kg):';
+  const inp = document.createElement('input');
+  inp.type = 'number'; inp.inputMode = 'decimal'; inp.step = '2.5'; inp.min = '0';
+  inp.className = 'cycle-input';
+  inp.placeholder = 'np. 130';
+  inp.value = b5 != null ? b5 : '';
+  inp.addEventListener('change', () => {
+    const v = inp.value === '' ? null : parseFloat(inp.value);
+    state.settings.baseline5rm = (v && v > 0) ? v : null;
+    saveSettings(state.settings);
+    render();
+  });
+  brow.append(lbl, inp);
+  wrap.appendChild(brow);
+
+  const e = document.createElement('div');
+  e.className = 'cycle-e1rm';
+  e.textContent = base != null
+    ? ('e1RM baza ≈ ' + (Math.round(base * 10) / 10) + ' kg — obciążenia liczone w kg (round-down 2,5).')
+    : 'Wpisz baseline (po D1 tyg. 1) — do tego czasu obciążenia pokazywane jako „% e1RM”.';
+  wrap.appendChild(e);
+
+  const prow = document.createElement('div');
+  prow.className = 'cycle-path';
+  if (state.settings.path === 'extended') {
+    const badge = document.createElement('span');
+    badge.className = 'path-badge ext';
+    badge.textContent = '⚠ Ścieżka EXTENDED (test 1RM w tyg. 12)';
+    const back = document.createElement('button');
+    back.className = 'mini-btn';
+    back.textContent = 'Wróć do base';
+    back.addEventListener('click', () => { state.settings.path = 'base'; saveSettings(state.settings); render(); });
+    prow.append(badge, back);
+  } else {
+    const badge = document.createElement('span');
+    badge.className = 'path-badge';
+    badge.textContent = 'Ścieżka: base';
+    prow.appendChild(badge);
+    if (state.week >= 8) {
+      const box = document.createElement('div');
+      box.className = 'path-switch';
+      const note = document.createElement('div');
+      note.className = 'path-note';
+      note.textContent = 'Przełącznik po tyg. 8 — extended (test 1RM) wymaga OBU potwierdzeń:';
+      box.appendChild(note);
+      const btn = document.createElement('button');
+      btn.className = 'btn btn-accent';
+      btn.textContent = 'Włącz extended';
+      const refresh = () => { btn.disabled = !(state.settings.echoDone && state.settings.cardioApproval); };
+      const c1 = cycleCheckbox('Echo kontrolne wykonane', state.settings.echoDone, v => { state.settings.echoDone = v; saveSettings(state.settings); refresh(); });
+      const c2 = cycleCheckbox('Zgoda kardiologa na wysiłek maksymalny', state.settings.cardioApproval, v => { state.settings.cardioApproval = v; saveSettings(state.settings); refresh(); });
+      btn.addEventListener('click', () => {
+        if (state.settings.echoDone && state.settings.cardioApproval) {
+          state.settings.path = 'extended'; saveSettings(state.settings); render();
+        }
+      });
+      box.append(c1.row, c2.row, btn);
+      refresh();
+      prow.appendChild(box);
+    }
+  }
+  wrap.appendChild(prow);
+  return wrap;
+}
+
 function renderStart() {
   headerTitle.textContent = 'Dziennik Treningowy';
   const frag = document.createElement('div');
 
+  frag.appendChild(cyclePanel());
   frag.appendChild(weekBar());
 
   const h = document.createElement('div');
@@ -824,11 +1052,13 @@ function renderSession() {
     frag.appendChild(banner);
   }
 
-  // 🔷 Blok A — rozgrzewka + plyo (na początku)
-  frag.appendChild(blokASection(session, locked));
+  // 🔷 Blok A — rozgrzewka + plyo (tylko tam, gdzie jest rozpiska, np. nogi)
+  if (PLYO[session.id]) frag.appendChild(blokASection(session, locked));
 
-  // 💪 Blok siłowy (tyg. 8–12) — guardraile
-  if (isStrengthWeek(state.week)) frag.appendChild(strengthSection(session));
+  // 💪 Guardraile bloku ławki — przy D1 i D4
+  if (session.id === 'd1_bench' || session.id === 'd4_bench_vol') {
+    frag.appendChild(benchGuardrailsSection());
+  }
 
   // Group consecutive exercises by supersetGroup
   let i = 0;
@@ -853,8 +1083,8 @@ function renderSession() {
     }
   }
 
-  // 🔶 Blok B — mobilność (na końcu)
-  frag.appendChild(blokBSection(session, locked));
+  // 🔶 Blok B — mobilność (tylko tam, gdzie jest rozpiska)
+  if (MOBILITY[session.id]) frag.appendChild(blokBSection(session, locked));
 
   // Finish workout (only when not yet completed)
   if (!locked) {
@@ -1000,15 +1230,15 @@ function blokBSection(session, locked) {
   return det;
 }
 
-function strengthSection(session) {
-  const wave = STRENGTH_WAVE[state.week];
-  const phase = wave ? wave.phase : '';
-  const wrap = document.createElement('div');
-  wrap.className = 'strength-banner';
-  wrap.innerHTML = '<div class="strength-title">💪 Blok siłowy · Tydzień ' + state.week + '/' + TOTAL_WEEKS +
-    (phase ? ' · ' + escapeHtml(phase) : '') + '</div>' +
-    '<div class="strength-sub">Falowanie DUP — tryb siłowy tylko dla ruchu PRIMARY (💪). Izolacje bez zmian.</div>';
-  return wrap;
+function benchGuardrailsSection() {
+  const det = document.createElement('details');
+  det.className = 'safety-box';
+  det.innerHTML = '<summary>⚠️ Guardraile bezpieczeństwa (ławka)</summary>';
+  const ul = document.createElement('ul');
+  ul.className = 'safety-list';
+  BENCH_GUARDRAILS.forEach(r => { const li = document.createElement('li'); li.textContent = r; ul.appendChild(li); });
+  det.appendChild(ul);
+  return det;
 }
 
 function exerciseCard(session, ex, locked) {
@@ -1030,20 +1260,33 @@ function exerciseCard(session, ex, locked) {
 
   const info = document.createElement('div');
   info.className = 'ex-info';
-  const prescLine = `${eff.setsLabel} × ${escapeHtml(eff.reps)} powt.` +
+  // load part: kg (with %) when baseline set, else "% e1RM", else nothing
+  let loadPart = '';
+  if (eff.pct != null) {
+    loadPart = eff.kg != null ? ` · ${eff.kg} kg · ${eff.pct}%` : ` · ${eff.pct}% e1RM`;
+  }
+  const setsPart = eff.setsCount > 0 ? `${eff.setsLabel} × ${escapeHtml(eff.reps)} powt.` : '';
+  const prescLine = setsPart + loadPart +
     (eff.rir ? ` · RIR ${escapeHtml(eff.rir)}` : '') +
     (eff.rest ? ` · ⏱ ${formatTime(eff.rest)} przerwy` : '');
   info.innerHTML = `
     <div class="exercise-name">${escapeHtml(ex.name)}</div>
-    ${eff.primaryStrength ? `<div class="primary-badge">💪 PRIMARY · Siła — ${escapeHtml(eff.phase)}</div>` : ''}
+    ${eff.badge ? `<div class="primary-badge">${escapeHtml(eff.badge)}</div>` : ''}
+    ${eff.variant ? `<div class="variant-chip">🎚 Wariant: ${escapeHtml(eff.variant)}</div>` : ''}
     <div class="exercise-presc">${prescLine}</div>
     ${meta.muscles ? `<div class="target-chip">🎯 ${escapeHtml(muscleChipText(meta.muscles))}</div>` : ''}
   `;
-  if (eff.primaryStrength) {
-    const dp = document.createElement('div');
-    dp.className = 'prog-note';
-    dp.textContent = '↑ ' + DOUBLE_PROGRESSION_NOTE;
-    info.appendChild(dp);
+  if (eff.special) {
+    const sp = document.createElement('div');
+    sp.className = 'prog-note special';
+    sp.textContent = '★ ' + eff.special;
+    info.appendChild(sp);
+  }
+  if (eff.note) {
+    const nt = document.createElement('div');
+    nt.className = 'variant-note';
+    nt.textContent = eff.note;
+    info.appendChild(nt);
   }
   const hint = progressionHint(ex, prevLog);
   if (hint) {
@@ -1639,6 +1882,7 @@ function exportData() {
     [SETTINGS_KEY]: state.settings,
     [COMPLETED_KEY]: state.completed,
     [EXTRAS_KEY]: state.extras,
+    [ARCHIVE_KEY]: state.archive,
     _meta: { app: 'dziennik-treningowy', version: 1, exportedAt: new Date().toISOString() }
   };
   const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
@@ -1669,18 +1913,28 @@ function importData(file) {
 
       state.log = incomingLog;
       const incomingSettings = parsed[SETTINGS_KEY] || parsed.settings;
-      if (incomingSettings && incomingSettings.currentWeek) {
-        state.settings.currentWeek = clampWeek(incomingSettings.currentWeek);
+      if (incomingSettings && typeof incomingSettings === 'object') {
+        state.settings = {
+          currentWeek: clampWeek(incomingSettings.currentWeek || state.settings.currentWeek || 1),
+          cycleId: incomingSettings.cycleId || state.settings.cycleId || '',
+          baseline5rm: (typeof incomingSettings.baseline5rm === 'number' && incomingSettings.baseline5rm > 0) ? incomingSettings.baseline5rm : null,
+          path: incomingSettings.path === 'extended' ? 'extended' : 'base',
+          echoDone: !!incomingSettings.echoDone,
+          cardioApproval: !!incomingSettings.cardioApproval
+        };
         state.week = state.settings.currentWeek;
       }
       const incomingCompleted = parsed[COMPLETED_KEY] || parsed.completed;
       state.completed = (incomingCompleted && typeof incomingCompleted === 'object') ? incomingCompleted : {};
       const incomingExtras = parsed[EXTRAS_KEY] || parsed.extras;
       state.extras = (incomingExtras && typeof incomingExtras === 'object') ? incomingExtras : {};
+      const incomingArchive = parsed[ARCHIVE_KEY] || parsed.archive;
+      state.archive = (incomingArchive && typeof incomingArchive === 'object') ? incomingArchive : { cycles: [] };
       saveLog(state.log);
       saveSettings(state.settings);
       saveCompleted();
       saveExtras();
+      saveArchive();
       showToast('Zaimportowano');
       render();
     } catch (e) {
@@ -1821,7 +2075,9 @@ function init() {
   state.settings = loadSettings();
   state.completed = loadCompleted();
   state.extras = loadExtras();
+  state.archive = loadArchive();
   migrateMovedExercises();
+  migrateToBenchCycle();
   state.week = state.settings.currentWeek;
 
   // nav
