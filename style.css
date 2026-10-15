@@ -220,6 +220,28 @@ body {
 }
 .variant-note { font-size: 12px; color: var(--text-dim); margin-top: 6px; font-style: italic; }
 
+.type-chip {
+  display: inline-block;
+  margin: 4px 6px 2px 0;
+  font-size: 11px;
+  color: var(--text-dim);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 2px 8px;
+}
+.type-chip.k { color: var(--accent); border-color: var(--accent-dim); background: rgba(76, 201, 176, 0.10); font-weight: 600; }
+.alert-banner {
+  margin-top: 8px;
+  background: var(--warn-bg);
+  border: 1px solid var(--warn);
+  color: var(--warn);
+  border-radius: var(--radius);
+  padding: 10px 12px;
+  font-size: 13px;
+  line-height: 1.4;
+  font-weight: 600;
+}
+
 /* cycle panel (Start) */
 .cycle-panel {
   background: var(--bg-elev);

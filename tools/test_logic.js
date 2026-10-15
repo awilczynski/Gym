@@ -40,8 +40,8 @@ function ok(name, cond) { cond ? (pass++, console.log('  ✓ ' + name)) : (fail+
 ok('4 sessions (3 upper + legs)', T.PLAN.length === 4);
 const allEx = T.PLAN.flatMap(s => s.exercises);
 ok('unique exercise ids', new Set(allEx.map(e => e.id)).size === allEx.length);
-ok('warnings on legs', T.PLAN.find(s => s.id === 'legs').exercises.filter(e => e.warning).length === 2);
-ok('one superset pair (ssB)', allEx.filter(e => e.supersetGroup).length === 2);
+ok('warnings on legs (hp_legs)', T.PLAN.find(s => s.id === 'hp_legs').exercises.filter(e => e.warning).length === 2);
+ok('one superset pair (ssE)', allEx.filter(e => e.supersetGroup).length === 2);
 
 // 2. clampWeek
 ok('clamp low', T.clampWeek(0) === 1);
@@ -50,13 +50,13 @@ ok('clamp nan', T.clampWeek('x') === 1);
 
 // 3. ensure / get / save / reload
 T.state.log = {};
-const exLog = T.ensureExerciseLog('legs', 1, 'legs_1', 3);
+const exLog = T.ensureExerciseLog('hp_legs', 1, 'hp_d3_1', 3);
 ok('default sets length', exLog.sets.length === 3);
 exLog.sets[0].weight = 100; exLog.sets[0].reps = 12;
 exLog.sets[1].weight = 100; exLog.sets[1].reps = 10;
 exLog.sets[2].weight = 120; exLog.sets[2].reps = 8;
-ok('sessionHasData true', T.sessionHasData('legs', 1) === true);
-ok('sessionHasData false other week', T.sessionHasData('legs', 2) === false);
+ok('sessionHasData true', T.sessionHasData('hp_legs', 1) === true);
+ok('sessionHasData false other week', T.sessionHasData('hp_legs', 2) === false);
 
 // 4. topSet picks highest weight then reps
 const top = T.topSet(exLog);
@@ -66,11 +66,11 @@ ok('topSet reps', top.reps === 8);
 // 5. persistence round-trip
 T.saveLog(T.state.log);
 const reloaded = T.loadLog();
-ok('persisted weight survives', reloaded.legs[1].legs_1.sets[2].weight === 120);
+ok('persisted weight survives', reloaded.hp_legs[1].hp_d3_1.sets[2].weight === 120);
 
 // 6. getExerciseLog null path
 ok('get missing session', T.getExerciseLog('nope', 1, 'x') === null);
-ok('get missing week', T.getExerciseLog('legs', 9, 'legs_1') === null);
+ok('get missing week', T.getExerciseLog('hp_legs', 9, 'hp_d3_1') === null);
 
 console.log(`\n${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);
