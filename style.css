@@ -331,7 +331,7 @@ body {
 .sets { margin-top: 12px; }
 .set-row {
   display: grid;
-  grid-template-columns: 22px 1fr 1fr 46px;
+  grid-template-columns: 18px 1fr 1fr 44px 44px;
   gap: 8px;
   align-items: center;
   margin-bottom: 8px;
@@ -363,6 +363,9 @@ body {
 .set-row input:focus { outline: none; border-color: var(--accent); }
 .set-row input.invalid { border-color: var(--danger); background: rgba(255, 107, 107, 0.08); }
 .set-row input[readonly] { background: var(--bg); color: var(--text-dim); border-style: dashed; cursor: default; }
+.set-row input.rir-input { padding: 6px 2px; }
+.set-row input.rir-input::placeholder { font-size: 11px; }
+.mini-btn.mode-on { background: var(--accent); color: #04201a; border-color: var(--accent); }
 .set-row input::placeholder { color: #5a6270; }
 
 .set-controls { display: flex; gap: 8px; margin-top: 4px; }
@@ -380,7 +383,7 @@ body {
 
 .col-head {
   display: grid;
-  grid-template-columns: 22px 1fr 1fr 46px;
+  grid-template-columns: 18px 1fr 1fr 44px 44px;
   gap: 8px;
   font-size: 11px;
   color: var(--text-dim);

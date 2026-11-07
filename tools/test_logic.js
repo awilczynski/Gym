@@ -37,26 +37,26 @@ let pass = 0, fail = 0;
 function ok(name, cond) { cond ? (pass++, console.log('  ✓ ' + name)) : (fail++, console.error('  ✗ ' + name)); }
 
 // 1. plan integrity
-ok('4 sessions (3 upper + legs)', T.PLAN.length === 4);
+ok('3 sessions (HIT)', T.PLAN.length === 3);
 const allEx = T.PLAN.flatMap(s => s.exercises);
 ok('unique exercise ids', new Set(allEx.map(e => e.id)).size === allEx.length);
-ok('warnings on legs (hp_legs)', T.PLAN.find(s => s.id === 'hp_legs').exercises.filter(e => e.warning).length === 2);
-ok('one superset pair (ssE)', allEx.filter(e => e.supersetGroup).length === 2);
+ok('d3 session is variable', !!T.PLAN.find(s => s.id === 'hit_d3').variable);
+ok('no supersets in HIT base', allEx.filter(e => e.supersetGroup).length === 0);
 
-// 2. clampWeek
+// 2. clampWeek (6-week cycle)
 ok('clamp low', T.clampWeek(0) === 1);
-ok('clamp high', T.clampWeek(99) === 12);
+ok('clamp high', T.clampWeek(99) === 6);
 ok('clamp nan', T.clampWeek('x') === 1);
 
 // 3. ensure / get / save / reload
 T.state.log = {};
-const exLog = T.ensureExerciseLog('hp_legs', 1, 'hp_d3_1', 3);
+const exLog = T.ensureExerciseLog('hit_d1', 1, 'hit_d1_2', 3);
 ok('default sets length', exLog.sets.length === 3);
 exLog.sets[0].weight = 100; exLog.sets[0].reps = 12;
 exLog.sets[1].weight = 100; exLog.sets[1].reps = 10;
 exLog.sets[2].weight = 120; exLog.sets[2].reps = 8;
-ok('sessionHasData true', T.sessionHasData('hp_legs', 1) === true);
-ok('sessionHasData false other week', T.sessionHasData('hp_legs', 2) === false);
+ok('sessionHasData true', T.sessionHasData('hit_d1', 1) === true);
+ok('sessionHasData false other week', T.sessionHasData('hit_d1', 2) === false);
 
 // 4. topSet picks highest weight then reps
 const top = T.topSet(exLog);
@@ -66,11 +66,11 @@ ok('topSet reps', top.reps === 8);
 // 5. persistence round-trip
 T.saveLog(T.state.log);
 const reloaded = T.loadLog();
-ok('persisted weight survives', reloaded.hp_legs[1].hp_d3_1.sets[2].weight === 120);
+ok('persisted weight survives', reloaded.hit_d1[1].hit_d1_2.sets[2].weight === 120);
 
 // 6. getExerciseLog null path
 ok('get missing session', T.getExerciseLog('nope', 1, 'x') === null);
-ok('get missing week', T.getExerciseLog('hp_legs', 9, 'hp_d3_1') === null);
+ok('get missing week', T.getExerciseLog('hit_d1', 9, 'hit_d1_2') === null);
 
 console.log(`\n${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);

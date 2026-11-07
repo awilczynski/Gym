@@ -11,63 +11,58 @@ const SETTINGS_KEY = 'workout-settings-v1';
 const COMPLETED_KEY = 'workout-completed-v1';
 const EXTRAS_KEY = 'workout-extras-v1';
 const ARCHIVE_KEY = 'workout-archive-v1';
-const APP_VERSION = 'v17';
-const TOTAL_WEEKS = 12;
+const APP_VERSION = 'v18';
+const TOTAL_WEEKS = 6;
 const SAVE_DEBOUNCE_MS = 500;
 
 /* ---------- Plan (seed data, static) ---------- */
 const PLAN = [
   {
-    id: 'hp_push',
-    title: 'Dzień 1 — Push (klatka priorytet)',
+    id: 'hit_d1',
+    title: 'Dzień 1 — Klatka + triceps',
     exercises: [
-      { id: 'hp_d1_1', name: 'Wyciskanie sztangą leżąc', type: 'K', sets: 3, reps: '6-8', rest: 180 },
-      { id: 'hp_d1_2', name: 'Wyciskanie hantle skos+ (~30°)', type: 'W', sets: 3, reps: '8-12', rest: 120, plus: true, variantM2: 'Wyciskanie skos+ Smith / maszyna' },
-      { id: 'hp_d1_3', name: 'Rozpiętki wyciąg', type: 'I', sets: 3, reps: '12-15', rest: 75, variantM2: 'Pec deck' },
-      { id: 'hp_d1_4', name: 'Wyciskanie barków maszyna', type: 'W', sets: 3, reps: '8-12', rest: 120, variantM2: 'Wyciskanie barków hantle siedząc z oparciem' },
-      { id: 'hp_d1_5', name: 'Wznosy bokiem wyciąg jednorącz', type: 'I', sets: 3, reps: '12-20', rest: 60, plus: true, variantM2: 'Wznosy bokiem maszyna' },
-      { id: 'hp_d1_6', name: 'Triceps nad głową, lina', type: 'I', sets: 4, reps: '10-15', rest: 75, plus: true, variantM2: 'Francuskie EZ leżąc' },
-      { id: 'hp_d1_7', name: 'Pushdown triceps, drążek', type: 'I', sets: 2, reps: '12-15', rest: 60, variantM2: 'Pushdown jednorącz, wyciąg' }
+      { id: 'hit_d1_1', name: 'Pec deck / rozpiętki wyciąg (pre-exhaust)', type: 'I', sets: 1, reps: '8-12', rest: 120 },
+      { id: 'hit_d1_2', name: 'Chest press (maszyna)', type: 'Z', sets: 1, reps: '8-10', rest: 150, star: true },
+      { id: 'hit_d1_3', name: 'Skos dodatni (maszyna / Smith)', type: 'Z', sets: 1, reps: '8-10', rest: 150 },
+      { id: 'hit_d1_4', name: 'Pushdown triceps (lina)', type: 'I', sets: 1, reps: '10-12', rest: 120, star: true },
+      { id: 'hit_d1_5', name: 'Wznosy bokiem (wyciąg)', type: 'I', sets: 1, reps: '12-15', rest: 90 }
     ]
   },
   {
-    id: 'hp_pull',
-    title: 'Dzień 2 — Pull (plecy priorytet)',
+    id: 'hit_d2',
+    title: 'Dzień 2 — Plecy + biceps',
     exercises: [
-      { id: 'hp_d2_1', name: 'Wiosło Hammer z podparciem klatki', type: 'K', sets: 4, reps: '8-10', rest: 150, variantM2: 'Wiosło T-bar z podparciem klatki' },
-      { id: 'hp_d2_2', name: 'Ściąganie drążka szeroko', type: 'W', sets: 3, reps: '8-12', rest: 120, plus: true, variantM2: 'Ściąganie jednorącz wyciąg górny' },
-      { id: 'hp_d2_3', name: 'Wiosło jednorącz wyciąg / maszyna', type: 'W', sets: 3, reps: '10-12', rest: 90, variantM2: 'Wiosło siedząc wyciąg, V-bar' },
-      { id: 'hp_d2_4', name: 'Przyciąganie prostymi ramionami, wyciąg', type: 'I', sets: 2, reps: '12-15', rest: 60, variantM2: 'Pullover maszyna' },
-      { id: 'hp_d2_5', name: 'Odwrotne rozpiętki maszyna', type: 'I', sets: 3, reps: '15-20', rest: 60, variantM2: 'Rear delt wyciąg krzyżowo' },
-      { id: 'hp_d2_6', name: 'Uginania hantle na ławce skośnej', type: 'I', sets: 3, reps: '10-12', rest: 75, plus: true, variantM2: 'Uginania wyciąg „Bayesian”' },
-      { id: 'hp_d2_7', name: 'Hammer curl', type: 'I', sets: 3, reps: '12-15', rest: 60, variantM2: 'Hammer curl lina' }
+      { id: 'hit_d2_1', name: 'Ściąganie drążka szeroko', type: 'Z', sets: 1, reps: '8-10', rest: 150, star: true },
+      { id: 'hit_d2_2', name: 'Wiosło Hammer z podparciem klatki', type: 'Z', sets: 1, reps: '8-10', rest: 150, star: true },
+      { id: 'hit_d2_3', name: 'Ściąganie jednorącz (wyciąg górny)', type: 'I', sets: 1, reps: '10-12', rest: 120 },
+      { id: 'hit_d2_4', name: 'Odwrotne rozpiętki (rear delt)', type: 'I', sets: 1, reps: '12-15', rest: 90 },
+      { id: 'hit_d2_5', name: 'Uginanie ramion (wyciąg / EZ)', type: 'I', sets: 1, reps: '8-12', rest: 120, star: true }
     ]
   },
   {
-    id: 'hp_legs',
-    title: 'Dzień 3 — Nogi (maszynowe, bez przysiadu/MC)',
-    exercises: [
-      { id: 'hp_d3_1', name: 'Suwnica (leg press)', type: 'K', sets: 3, reps: '10-12', rest: 180, warning: true },
-      { id: 'hp_d3_2', name: 'Hack / pendulum', type: 'W', sets: 3, reps: '10-12', rest: 150, plus: true, variantM2: 'Drugi z pary (hack ↔ pendulum)' },
-      { id: 'hp_d3_3', name: 'Uginanie nóg siedząc', type: 'I', sets: 4, reps: '10-15', rest: 75, variantM2: 'Uginanie nóg leżąc' },
-      { id: 'hp_d3_4', name: 'Prostowniki nóg', type: 'I', sets: 3, reps: '12-15', rest: 75 },
-      { id: 'hp_d3_5', name: 'Hip thrust maszyna', type: 'W', sets: 2, reps: '10-12', rest: 120, warning: true },
-      { id: 'hp_d3_6', name: 'Łydki stojąc', type: 'I', sets: 4, reps: '10-15', rest: 60, variantM2: 'Łydki siedząc' }
-    ]
-  },
-  {
-    id: 'hp_upper',
-    title: 'Dzień 4 — Upper (klatka/plecy/barki/ramiona)',
-    exercises: [
-      { id: 'hp_d4_1', name: 'Chest press maszyna', type: 'K', sets: 3, reps: '8-12', rest: 120 },
-      { id: 'hp_d4_2', name: 'Ściąganie wyciągu, chwyt neutralny (V-bar)', type: 'W', sets: 3, reps: '10-12', rest: 120, variantM2: 'Podciąganie z asystą' },
-      { id: 'hp_d4_3', name: 'Wiosło siedząc wyciąg', type: 'W', sets: 3, reps: '10-12', rest: 90, variantM2: 'Wiosło maszyna jednorącz' },
-      { id: 'hp_d4_4', name: 'Wznosy bokiem hantle / maszyna', type: 'I', sets: 4, reps: '12-20', rest: 60, plus: true, variantM2: 'Wznosy bokiem wyciąg' },
-      { id: 'hp_d4_5', name: 'Face pull', type: 'I', sets: 3, reps: '15-20', rest: 45 },
-      { id: 'hp_d4_6', name: 'SS · Uginania modlitewnik', type: 'I', sets: 4, reps: '12-15', rest: 15, supersetGroup: 'ssE', variantM2: 'Uginania wyciąg' },
-      { id: 'hp_d4_7', name: 'SS · Pushdown lina', type: 'I', sets: 4, reps: '12-15', rest: 60, supersetGroup: 'ssE', variantM2: 'Pushdown drążek' }
-    ]
+    id: 'hit_d3',
+    title: 'Dzień 3 — zmienny (A: Barki+łydki / B: Nogi)',
+    variable: true,
+    exercises: []
   }
+];
+
+// D3A — Barki + łydki (T1, T3, T5)
+const D3A = [
+  { id: 'hit_d3a_1', name: 'Wyciskanie barków (maszyna)', type: 'Z', sets: 1, reps: '8-10', rest: 150, star: true },
+  { id: 'hit_d3a_2', name: 'Wznosy bokiem (wyciąg jednorącz)', type: 'I', sets: 1, setsLabel: '1-2', reps: '12-15', rest: 90, star: true },
+  { id: 'hit_d3a_3', name: 'Łydki (stojąc / siedząc)', type: 'I', sets: 1, reps: '12-15', rest: 90 },
+  { id: 'hit_d3a_4', name: 'Francuskie na wyciągu', type: 'I', sets: 1, reps: '10-12', rest: 90, optional: true },
+  { id: 'hit_d3a_5', name: 'Incline curl', type: 'I', sets: 1, reps: '10-12', rest: 90, optional: true }
+];
+
+// D3B — Nogi (T2, T4, T6)
+const D3B = [
+  { id: 'hit_d3b_1', name: 'Prostowniki nóg', type: 'I', sets: 1, reps: '10-12', rest: 120 },
+  { id: 'hit_d3b_2', name: 'Suwnica (wydech, bez bezdechu)', type: 'N', sets: 1, reps: '10-12', rest: 150, star: true, warning: true },
+  { id: 'hit_d3b_3', name: 'Hack / pendulum', type: 'N', sets: 1, reps: '10-12', rest: 150 },
+  { id: 'hit_d3b_4', name: 'Uginanie nóg (leżąc / siedząc)', type: 'I', sets: 1, reps: '10-12', rest: 120, star: true },
+  { id: 'hit_d3b_5', name: 'Łydki (stojąc / siedząc)', type: 'I', sets: 1, reps: '12-15', rest: 90 }
 ];
 
 const SUPERSET_LABELS = { ssB: 'Superseria', ssC: 'Superseria', ssD: 'Superseria', ssE: 'Superseria' };
@@ -208,84 +203,82 @@ const STOP_SIGNS = [
 function phaseForWeek(w) { return w <= 3 ? 1 : (w <= 7 ? 2 : 3); }
 function isDeloadWeek(w) { return w === 6 || w === 11; }
 
-/* ---------- Hypertrophy-cut cycle engine (RIR by week×type, ➕ sets, M2 variants) ---------- */
-const ACTIVE_CYCLE_ID = 'hyptcut_2026_10';
-const CYCLE_NAME = 'Hypertrophy Cut 12w';
-const CYCLE_START_DATE = '2026-10-19';
+/* ---------- HIT (Yates/Mentzer) cycle engine — 6 weeks, 1 working set ---------- */
+const ACTIVE_CYCLE_ID = 'hit_2026_11';
+const CYCLE_NAME = 'HIT (Yates/Mentzer) 6w';
+const CYCLE_START_DATE = '2026-11-09';
 
-// RIR per week × type (WK = wielostaw/kotwica, I = izolacja)
-const RIR_SCHEDULE = {
-  1: { WK: '3', I: '3' }, 2: { WK: '2-3', I: '2' }, 3: { WK: '2', I: '2' },
-  4: { WK: '2', I: '1-2' }, 5: { WK: '2', I: '1' }, 6: { WK: '4', I: '3-4' },
-  7: { WK: '3', I: '3' }, 8: { WK: '2-3', I: '2' }, 9: { WK: '2', I: '2' },
-  10: { WK: '2', I: '1-2' }, 11: { WK: '2', I: '1' }, 12: { WK: '4', I: '3-4' }
-};
-const PLUS_WEEKS = [3, 4, 5, 9, 10, 11];   // ➕ = +1 seria
-const DELOAD_WEEKS = [6, 12];
-// strength anchors (K) → {session, exercise}
-const ANCHORS = [
-  { sid: 'hp_push', ex: 'hp_d1_1' },
-  { sid: 'hp_pull', ex: 'hp_d2_1' },
-  { sid: 'hp_legs', ex: 'hp_d3_1' },
-  { sid: 'hp_upper', ex: 'hp_d4_1' }
+const HIT_HEADER = 'HIT · 1 seria robocza · RIR wg tabeli · tempo 2 s w górę / 3 s w dół · ' +
+  'wydech na fazie wysiłku · bez Valsalvy/bezdechu · nie siadaj gwałtownie po serii · ' +
+  'po treningu cardio Zone 2 20–30 min ze stopniowym wygaszaniem (ostatnie 3–5 min rampa w dół).';
+const HIT_WARMUP = 'Rozgrzewka (nie liczy się jako seria robocza): pierwsze ćwiczenie na partię — ' +
+  '2 serie rampy (~50% i ~70–75% ciężaru roboczego, 6–8 powt., RIR 4+); kolejne ćwiczenia tej partii — 1 seria rozgrzewkowa.';
+
+const GUARDRAILS = [
+  'Tempo 2 s koncentryka / 3 s ekscentryka; wydech na fazie wysiłku, bez Valsalvy/bezdechu.',
+  'RIR 0 = brak kolejnej powtórki z czystą techniką — bez wymuszania (forced reps).',
+  'Suwnica / hack (typ N): zawsze RIR 1–2, nigdy RIR 0; wydech, bez bezdechu.',
+  'Nie siadaj gwałtownie po serii.',
+  'Po treningu cardio Zone 2 20–30 min z rampą w dół (ostatnie 3–5 min).'
 ];
 
-const HYP_GUARDRAILS = [
-  'Wydech na fazie wysiłku — bez wstrzymywania oddechu (bez Valsalvy), także na ostatnich powtórzeniach.',
-  'RIR 2 = podłoga dla wielostawów i kotwic, RIR 1 = podłoga dla izolacji; zero serii do upadku, zero grindu.',
-  'Wyciskanie sztangą: zabezpieczenia na stojaku zawsze; przy cięższych seriach asekuracja.',
-  'Przysiad i martwy ciąg sztangą wykluczone; suwnica i hip thrust (⚠) zawsze submaksymalnie.',
-  'Przy braku czasu skracaj przerwy na izolacjach, nie na kotwicach.',
-  'Nie siadaj gwałtownie po serii; po treningu cardio Zone 2 20–30 min z rampą w dół 3–5 min.',
-  'Bez nikotyny (woreczki) w oknie okołotreningowym.',
-  'Kołatanie / nieregularne bicie serca → przerwij sesję, zapis EKG w Apple Watch.'
-];
-
-// Legacy exercise id → name (for cross-cycle "last weight by name" placeholders)
-const KNOWN_NAMES = {
-  d1_bench: 'Wyciskanie sztangą leżąc', d1_a1: 'Wyciskanie hantle skos dodatni', d1_a2: 'Chest press maszyna / dipsy maszyna', d1_a3: 'Pushdown triceps', d1_a4: 'Face pull',
-  d2_1: 'Wiosło Hammer z podparciem', d2_2: 'Ściąganie drążka szeroko', d2_3: 'Wiosło jednorącz hantel', d2_4: 'Rear delt / odwrotne rozpiętki', d2_5: 'Uginania EZ', d2_6: 'Hammer curl',
-  d4_bench: 'Wyciskanie leżąc (wariant)', d4_a1: 'Wyciskanie barków maszyna', d4_a2: 'Wznosy bokiem wyciąg', d4_a3: 'Francuskie / triceps nad głowę', d4_ss1: 'Uginania modlitewnik (biceps)', d4_ss2: 'Triceps pushdown lina',
-  legs_1: 'Suwnica (leg press)', legs_2: 'Hack / pendulum lub wykroki bułgarskie', legs_3: 'Prostowniki nóg', legs_4: 'Uginanie nóg (leżąc / siedząc)', legs_5: 'Hip thrust maszyna', legs_6: 'Łydki (stojąc / siedząc)'
-};
-
-function halfSetsUp(n) { return Math.max(1, Math.ceil(n / 2)); }
+// Target RIR by exercise type and week (section 5 of the brief)
 function rirFor(type, week) {
-  const r = RIR_SCHEDULE[week] || { WK: '', I: '' };
-  return type === 'I' ? r.I : r.WK;
-}
-function phaseLabel(w) {
-  return ({
-    1: 'M1 · wprowadzenie', 2: 'M1 · akumulacja', 3: 'M1 · akumulacja', 4: 'M1 · akumulacja',
-    5: 'M1 · szczyt', 6: 'Deload', 7: 'M2 · wprowadzenie (warianty)', 8: 'M2 · akumulacja',
-    9: 'M2 · akumulacja', 10: 'M2 · akumulacja', 11: 'M2 · szczyt', 12: 'Deload'
-  })[w] || '';
+  if (type === 'N') return '1-2';
+  if (week <= 2) return '1';
+  return type === 'Z' ? '0-1' : '0';
 }
 
 // Resolve the effective prescription for an exercise in a given week.
 function effectivePrescription(ex, week) {
-  const deload = DELOAD_WEEKS.indexOf(week) >= 0;
-  let setsCount = ex.sets;
-  const plusActive = !deload && ex.plus && PLUS_WEEKS.indexOf(week) >= 0;
-  if (deload) setsCount = halfSetsUp(ex.sets);
-  else if (plusActive) setsCount = ex.sets + 1;
-  const useVariant = week >= 7 && ex.variantM2;
-  const displayName = useVariant ? ex.variantM2 : ex.name;
-  let note = null;
-  if (deload) note = 'Deload — 50% serii (w górę), −10% ciężaru vs ostatni tydzień roboczy.';
-  else if (week === 7 && ex.variantM2) note = 'Nowy wariant M2 — ustal ciężar przy RIR 3 (baseline wariantu), potem double progression.';
+  const setsCount = ex.sets || 1;
   return {
-    setsCount: setsCount, setsLabel: String(setsCount), reps: ex.reps, rir: rirFor(ex.type, week),
-    rest: ex.rest, displayName: displayName, note: note, type: ex.type || null,
-    deload: deload, plusActive: plusActive
+    setsCount: setsCount,
+    setsLabel: ex.setsLabel || String(setsCount),
+    reps: ex.reps,
+    rir: rirFor(ex.type, week),
+    rest: ex.rest,
+    displayName: ex.name,
+    type: ex.type || null,
+    star: !!ex.star,
+    optional: !!ex.optional,
+    note: ex.optional ? 'Opcjonalne (tryb pełny)' : null
   };
 }
 
-/* ----- starting-weight placeholder by exercise name (current + archived cycles) ----- */
+/* ----- D3 variant + mode resolution ----- */
+function d3IsA(week) { return week % 2 === 1; } // A in T1/T3/T5, B in T2/T4/T6
+function sessionTitle(session, week) {
+  if (session.id === 'hit_d3') return d3IsA(week) ? 'Dzień 3 — Barki + łydki' : 'Dzień 3 — Nogi';
+  return session.title;
+}
+function rawExercises(session, week) {
+  if (session.id === 'hit_d3') return d3IsA(week) ? D3A : D3B;
+  return session.exercises;
+}
+function hitMode() { return state.settings.hitMode === 'short' ? 'short' : 'full'; }
+function resolvedExercises(session, week) {
+  const list = rawExercises(session, week);
+  return hitMode() === 'short' ? list.filter(e => e.star) : list;
+}
+
+/* ----- Legacy exercise id → name (cross-cycle "last weight by name" placeholders) ----- */
+const KNOWN_NAMES = {
+  // hypertrophy-cut cycle (2026-10)
+  hp_d1_1: 'Wyciskanie sztangą leżąc', hp_d1_2: 'Wyciskanie hantle skos+ (~30°)', hp_d1_3: 'Rozpiętki wyciąg', hp_d1_4: 'Wyciskanie barków maszyna', hp_d1_5: 'Wznosy bokiem wyciąg jednorącz', hp_d1_6: 'Triceps nad głową, lina', hp_d1_7: 'Pushdown triceps, drążek',
+  hp_d2_1: 'Wiosło Hammer z podparciem klatki', hp_d2_2: 'Ściąganie drążka szeroko', hp_d2_3: 'Wiosło jednorącz wyciąg / maszyna', hp_d2_4: 'Przyciąganie prostymi ramionami, wyciąg', hp_d2_5: 'Odwrotne rozpiętki maszyna', hp_d2_6: 'Uginania hantle na ławce skośnej', hp_d2_7: 'Hammer curl',
+  hp_d3_1: 'Suwnica (leg press)', hp_d3_2: 'Hack / pendulum', hp_d3_3: 'Uginanie nóg siedząc', hp_d3_4: 'Prostowniki nóg', hp_d3_5: 'Hip thrust maszyna', hp_d3_6: 'Łydki stojąc',
+  hp_d4_1: 'Chest press maszyna', hp_d4_2: 'Ściąganie wyciągu, chwyt neutralny (V-bar)', hp_d4_3: 'Wiosło siedząc wyciąg', hp_d4_4: 'Wznosy bokiem hantle / maszyna', hp_d4_5: 'Face pull', hp_d4_6: 'SS · Uginania modlitewnik', hp_d4_7: 'SS · Pushdown lina',
+  // bench cycle (2026-09)
+  d1_bench: 'Wyciskanie sztangą leżąc', d4_a1: 'Wyciskanie barków maszyna', d4_a2: 'Wznosy bokiem wyciąg',
+  legs_1: 'Suwnica (leg press)', legs_3: 'Prostowniki nóg'
+};
+
 function normName(s) { return String(s || '').toLowerCase().replace(/\s+/g, ' ').trim(); }
 function allKnownNames() {
   const m = Object.assign({}, KNOWN_NAMES);
-  PLAN.forEach(s => s.exercises.forEach(e => { m[e.id] = e.name; }));
+  PLAN.forEach(s => (s.exercises || []).forEach(e => { m[e.id] = e.name; }));
+  D3A.concat(D3B).forEach(e => { m[e.id] = e.name; });
   return m;
 }
 function scanLogForName(log, names, target) {
@@ -319,42 +312,32 @@ function lastWeightByName(name) {
   return null;
 }
 
-/* ----- strength-drop alert for anchors (e1RM = weight × (1 + (reps+RIR)/30)) ----- */
-function anchorBestE1RM(log, sid, week, exId) {
-  const l = log[sid] && log[sid][week] && log[sid][week][exId];
-  if (!l || !l.sets) return null;
-  const rir = parseFloat(String(rirFor('K', week) || '2').split('-')[0]) || 2;
-  let best = null;
-  l.sets.forEach(s => {
-    if (s.weight != null && s.reps != null) {
-      const e = s.weight * (1 + (s.reps + rir) / 30);
-      if (best == null || e > best) best = e;
-    }
-  });
-  return best;
-}
-function strengthAlertActive() {
-  const W = state.week;
-  const start = W <= 6 ? 1 : 7;
-  let flagged = 0;
-  ANCHORS.forEach(a => {
-    const vals = [];
-    for (let w = start; w <= W; w++) {
-      const e = anchorBestE1RM(state.log, a.sid, w, a.ex);
-      if (e != null) vals.push(e);
-    }
-    if (vals.length < 2) return;
-    const mx = Math.max.apply(null, vals);
-    const last2 = vals.slice(-2);
-    if (last2.length === 2 && last2.every(v => v < mx * 0.95)) flagged++;
-  });
-  return flagged >= 2;
-}
-
 
 
 /* ---------- Exercise metadata: target muscles (for graphic) + technique cues ---------- */
 const EX_META = {
+  // HIT cycle (2026-11) exercises
+  hit_d1_1: { muscles: ['chest'] },
+  hit_d1_2: { muscles: ['chest', 'frontdelt'] },
+  hit_d1_3: { muscles: ['upperchest', 'frontdelt'] },
+  hit_d1_4: { muscles: ['triceps'] },
+  hit_d1_5: { muscles: ['sidedelt'] },
+  hit_d2_1: { muscles: ['lats'] },
+  hit_d2_2: { muscles: ['lats', 'midback'] },
+  hit_d2_3: { muscles: ['lats'] },
+  hit_d2_4: { muscles: ['reardelt'] },
+  hit_d2_5: { muscles: ['biceps'] },
+  hit_d3a_1: { muscles: ['frontdelt', 'sidedelt'] },
+  hit_d3a_2: { muscles: ['sidedelt'] },
+  hit_d3a_3: { muscles: ['calves'] },
+  hit_d3a_4: { muscles: ['triceps'] },
+  hit_d3a_5: { muscles: ['biceps'] },
+  hit_d3b_1: { muscles: ['quads'] },
+  hit_d3b_2: { muscles: ['quads', 'glutes'] },
+  hit_d3b_3: { muscles: ['quads', 'glutes'] },
+  hit_d3b_4: { muscles: ['hamstrings'] },
+  hit_d3b_5: { muscles: ['calves'] },
+
   // Hypertrophy-cut cycle (2026-10) exercises
   hp_d1_1: { muscles: ['chest', 'frontdelt'] },
   hp_d1_2: { muscles: ['upperchest', 'frontdelt'] },
@@ -679,7 +662,7 @@ function saveLog(log) {
 }
 
 function loadSettings() {
-  const def = { currentWeek: 1, cycleId: '', baseline5rm: null, path: 'base', echoDone: false, cardioApproval: false };
+  const def = { currentWeek: 1, cycleId: '', baseline5rm: null, path: 'base', echoDone: false, cardioApproval: false, hitMode: 'full' };
   try {
     const raw = localStorage.getItem(SETTINGS_KEY);
     const s = raw ? JSON.parse(raw) : {};
@@ -689,7 +672,8 @@ function loadSettings() {
       baseline5rm: (typeof s.baseline5rm === 'number' && s.baseline5rm > 0) ? s.baseline5rm : null,
       path: s.path === 'extended' ? 'extended' : 'base',
       echoDone: !!s.echoDone,
-      cardioApproval: !!s.cardioApproval
+      cardioApproval: !!s.cardioApproval,
+      hitMode: s.hitMode === 'short' ? 'short' : 'full'
     };
   } catch (e) {
     return def;
@@ -716,6 +700,7 @@ function saveArchive() {
 // One-time: archive the previous cycle (non-destructive snapshot) and start
 // the active cycle with empty active stores.
 function cycleDisplayName(id) {
+  if (id === 'hyptcut_2026_10') return 'Hypertrophy Cut 12w';
   if (id === 'bench_2026_09') return 'Bench Specialization 12w';
   if (id && id.indexOf('ppl') >= 0) return 'PPL maszynowy 12w';
   return id || 'Poprzedni cykl';
@@ -738,7 +723,8 @@ function migrateToActiveCycle() {
       id: 'cycle_' + Date.now(),
       cycleId: prevId,
       name: cycleDisplayName(prevId),
-      status: prevId === 'bench_2026_09' ? 'przerwany — zmiana celu (redukcja)' : 'zakończony',
+      status: prevId === 'bench_2026_09' ? 'przerwany — zmiana celu (redukcja)'
+        : (prevId === 'hyptcut_2026_10' ? 'przerwany — zmiana planu (HIT)' : 'zakończony'),
       lastWeek: lastLoggedWeek(),
       baseline5rm: state.settings.baseline5rm || null,
       archivedAt: todayISO(),
@@ -758,6 +744,7 @@ function migrateToActiveCycle() {
   state.settings.path = 'base';
   state.settings.echoDone = false;
   state.settings.cardioApproval = false;
+  state.settings.hitMode = 'full';
   saveSettings(state.settings);
 }
 
@@ -908,12 +895,14 @@ function render() {
 }
 
 /* ----- View: Start ----- */
-function strengthAlertBanner() {
-  if (!strengthAlertActive()) return null;
-  const b = document.createElement('div');
-  b.className = 'alert-banner';
-  b.textContent = '⚠ Spadek siły na redukcji — sprawdź deficyt i sen; rozważ wcześniejszy deload.';
-  return b;
+function hitHeaderSection() {
+  const det = document.createElement('details');
+  det.className = 'block-section';
+  det.open = false;
+  det.innerHTML = '<summary>ℹ️ Wykonanie HIT + rozgrzewka</summary>' +
+    '<div class="block-note">' + escapeHtml(HIT_HEADER) + '</div>' +
+    '<div class="block-note">🔥 ' + escapeHtml(HIT_WARMUP) + '</div>';
+  return det;
 }
 
 function cyclePanel() {
@@ -922,18 +911,32 @@ function cyclePanel() {
 
   const head = document.createElement('div');
   head.innerHTML = '<div class="cycle-name">🏋︎ ' + escapeHtml(CYCLE_NAME) + '</div>' +
-    '<div class="cycle-sub">12 tyg. · 4 dni · start ' + escapeHtml(CYCLE_START_DATE) +
-    ' · hipertrofia na redukcji</div>';
+    '<div class="cycle-sub">6 tyg. · 3 dni/tydz. · start ' + escapeHtml(CYCLE_START_DATE) +
+    ' · 1 seria robocza, wysoka intensywność</div>';
   wrap.appendChild(head);
 
   const ph = document.createElement('div');
   ph.className = 'cycle-e1rm';
-  ph.textContent = 'Tydzień ' + state.week + '/' + TOTAL_WEEKS + ' · ' + phaseLabel(state.week) +
-    ' · RIR W/K ' + rirFor('W', state.week) + ' · I ' + rirFor('I', state.week);
+  const d3 = d3IsA(state.week) ? 'D3A Barki+łydki' : 'D3B Nogi';
+  ph.textContent = 'Tydzień ' + state.week + '/' + TOTAL_WEEKS + ' · ' + d3;
   wrap.appendChild(ph);
 
-  const alert = strengthAlertBanner();
-  if (alert) wrap.appendChild(alert);
+  // tryb pełny / skrócony
+  const row = document.createElement('div');
+  row.className = 'cycle-path';
+  const label = document.createElement('span');
+  label.className = 'cycle-label';
+  label.textContent = 'Tryb:';
+  const full = document.createElement('button');
+  full.className = 'mini-btn' + (hitMode() === 'full' ? ' mode-on' : '');
+  full.textContent = 'Pełny (Yates)';
+  full.addEventListener('click', () => { state.settings.hitMode = 'full'; saveSettings(state.settings); render(); });
+  const short = document.createElement('button');
+  short.className = 'mini-btn' + (hitMode() === 'short' ? ' mode-on' : '');
+  short.textContent = 'Skrócony (Mentzer ⭐)';
+  short.addEventListener('click', () => { state.settings.hitMode = 'short'; saveSettings(state.settings); render(); });
+  row.append(label, full, short);
+  wrap.appendChild(row);
 
   return wrap;
 }
@@ -962,8 +965,8 @@ function renderStart() {
       statusHtml = '<div class="tile-done">✓ Masz wpisy w tym tygodniu</div>';
     }
     tile.innerHTML = `
-      <div class="tile-title">${escapeHtml(session.title)}</div>
-      <div class="tile-sub">${session.exercises.length} ćwiczeń</div>
+      <div class="tile-title">${escapeHtml(sessionTitle(session, state.week))}</div>
+      <div class="tile-sub">${resolvedExercises(session, state.week).length} ćwiczeń</div>
       ${statusHtml}
     `;
     tile.addEventListener('click', () => {
@@ -1032,7 +1035,7 @@ function renderSession() {
   const session = PLAN.find(s => s.id === state.sessionId);
   if (!session) { state.view = 'start'; renderStart(); return; }
 
-  const shortTitle = session.title.split('—')[1] ? session.title.split('—')[1].trim() : session.title;
+  const shortTitle = sessionTitle(session, state.week).split('—')[1] ? sessionTitle(session, state.week).split('—')[1].trim() : sessionTitle(session, state.week);
   headerTitle.textContent = `${shortTitle.split('·')[0].trim()} · Tydzień ${state.week}/${TOTAL_WEEKS}`;
 
   const frag = document.createElement('div');
@@ -1047,7 +1050,7 @@ function renderSession() {
 
   const titleEl = document.createElement('div');
   titleEl.className = 'section-h';
-  titleEl.textContent = session.title;
+  titleEl.textContent = sessionTitle(session, state.week);
   frag.appendChild(titleEl);
 
   const completedDate = isCompleted(session.id, state.week);
@@ -1077,18 +1080,15 @@ function renderSession() {
     frag.appendChild(banner);
   }
 
-  // 🔷 Blok A — rozgrzewka + plyo (tylko tam, gdzie jest rozpiska)
-  if (PLYO[session.id]) frag.appendChild(blokASection(session, locked));
-
-  // alert spadku siły (jeśli aktywny) + guardraile przy każdym dniu
-  const alert = strengthAlertBanner();
-  if (alert) frag.appendChild(alert);
+  // HIT header + rozgrzewka + guardraile przy każdym dniu
+  frag.appendChild(hitHeaderSection());
   frag.appendChild(dayGuardrailsSection());
 
   // Group consecutive exercises by supersetGroup
+  const sessionExs = resolvedExercises(session, state.week);
   let i = 0;
-  while (i < session.exercises.length) {
-    const ex = session.exercises[i];
+  while (i < sessionExs.length) {
+    const ex = sessionExs[i];
     if (ex.supersetGroup) {
       const group = ex.supersetGroup;
       const wrap = document.createElement('div');
@@ -1097,8 +1097,8 @@ function renderSession() {
       label.className = 'superset-label';
       label.textContent = SUPERSET_LABELS[group] || 'Superseria';
       wrap.appendChild(label);
-      while (i < session.exercises.length && session.exercises[i].supersetGroup === group) {
-        wrap.appendChild(exerciseCard(session, session.exercises[i], locked));
+      while (i < sessionExs.length && sessionExs[i].supersetGroup === group) {
+        wrap.appendChild(exerciseCard(session, sessionExs[i], locked));
         i++;
       }
       frag.appendChild(wrap);
@@ -1261,7 +1261,7 @@ function dayGuardrailsSection() {
   det.innerHTML = '<summary>⚠️ Guardraile bezpieczeństwa</summary>';
   const ul = document.createElement('ul');
   ul.className = 'safety-list';
-  HYP_GUARDRAILS.forEach(r => { const li = document.createElement('li'); li.textContent = r; ul.appendChild(li); });
+  GUARDRAILS.forEach(r => { const li = document.createElement('li'); li.textContent = r; ul.appendChild(li); });
   det.appendChild(ul);
   return det;
 }
@@ -1285,26 +1285,18 @@ function exerciseCard(session, ex, locked) {
 
   const info = document.createElement('div');
   info.className = 'ex-info';
-  const dispName = eff.displayName || ex.name;
-  const isVariant = dispName !== ex.name;
-  const typeTxt = eff.type === 'K' ? '💪 Kotwica siły (K)' : (eff.type === 'W' ? 'Wielostaw (W)' : (eff.type === 'I' ? 'Izolacja (I)' : ''));
+  const dispName = (eff.star ? '⭐ ' : '') + (eff.displayName || ex.name);
+  const typeTxt = eff.type === 'N' ? '🦵 Nogi złożone (N)' : (eff.type === 'Z' ? 'Złożone góra (Z)' : (eff.type === 'I' ? 'Izolacja (I)' : ''));
   const prescLine = `${eff.setsLabel} × ${escapeHtml(eff.reps)} powt.` +
-    (eff.plusActive ? ' · ➕ seria' : '') +
     (eff.rir ? ` · RIR ${escapeHtml(eff.rir)}` : '') +
     (eff.rest ? ` · ⏱ ${formatTime(eff.rest)} przerwy` : '');
   info.innerHTML = `
     <div class="exercise-name">${escapeHtml(dispName)}</div>
-    ${typeTxt ? `<div class="type-chip ${eff.type === 'K' ? 'k' : ''}">${escapeHtml(typeTxt)}</div>` : ''}
+    ${typeTxt ? `<div class="type-chip ${eff.type === 'N' ? 'k' : ''}">${escapeHtml(typeTxt)}</div>` : ''}
     <div class="exercise-presc">${prescLine}</div>
-    ${isVariant ? `<div class="variant-chip">🎚 Wariant M2 (bazowo: ${escapeHtml(ex.name)})</div>` : ''}
+    ${eff.optional ? '<div class="variant-chip">opcjonalne (tryb pełny)</div>' : ''}
     ${meta.muscles ? `<div class="target-chip">🎯 ${escapeHtml(muscleChipText(meta.muscles))}</div>` : ''}
   `;
-  if (eff.note) {
-    const nt = document.createElement('div');
-    nt.className = 'prog-note' + (eff.deload ? ' special' : '');
-    nt.textContent = (eff.deload ? '▼ ' : '★ ') + eff.note;
-    info.appendChild(nt);
-  }
   const hint = progressionHint(ex, prevLog);
   if (hint) {
     const h = document.createElement('div');
@@ -1347,7 +1339,7 @@ function exerciseCard(session, ex, locked) {
 
   const colHead = document.createElement('div');
   colHead.className = 'col-head';
-  colHead.innerHTML = '<span>#</span><span>Ciężar (kg)</span><span>Powt.</span><span>' + (locked ? '' : '✓') + '</span>';
+  colHead.innerHTML = '<span>#</span><span>Ciężar (kg)</span><span>Powt.</span><span>RIR</span><span>' + (locked ? '' : '✓') + '</span>';
   setsWrap.appendChild(colHead);
 
   // live stats (tonnage + estimated 1RM)
@@ -1483,9 +1475,24 @@ function renderSetRows(container, sessionId, ex, log, prevLog, onChange, locked,
       scheduleSave();
     });
 
+    // achieved RIR for this working set (0 / 1 / 2+)
+    const rir = document.createElement('input');
+    rir.type = 'text';
+    rir.inputMode = 'numeric';
+    rir.maxLength = 2;
+    rir.className = 'rir-input';
+    rir.placeholder = 'RIR';
+    rir.value = set.rir != null ? set.rir : '';
+    rir.readOnly = !!locked;
+    rir.title = 'Osiągnięte RIR (0 / 1 / 2+)';
+    if (!locked) rir.addEventListener('input', () => {
+      set.rir = rir.value.trim() === '' ? null : rir.value.trim();
+      scheduleSave();
+    });
+
     if (locked) {
       const blank = document.createElement('div');
-      row.append(num, weight, reps, blank);
+      row.append(num, weight, reps, rir, blank);
     } else {
       const done = document.createElement('button');
       done.className = 'set-done-btn';
@@ -1513,7 +1520,7 @@ function renderSetRows(container, sessionId, ex, log, prevLog, onChange, locked,
         scheduleSave();
         startRest(restSeconds || ex.rest || 90, ex.name);
       });
-      row.append(num, weight, reps, done);
+      row.append(num, weight, reps, rir, done);
     }
     container.appendChild(row);
   });
@@ -1593,7 +1600,7 @@ function showSummary(session) {
   let totalTon = 0, totalSets = 0, doneExercises = 0, totalPRs = 0;
   const rows = [];
 
-  session.exercises.forEach(ex => {
+  resolvedExercises(session, week).forEach(ex => {
     const s = summarizeExercise(session.id, ex.id, week);
     if (!s.hasData) return;
     doneExercises++;
@@ -1611,7 +1618,8 @@ function showSummary(session) {
   const modal = document.createElement('div');
   modal.className = 'modal';
 
-  const sub = session.title.split('—')[1] ? session.title.split('—')[1].trim() : session.title;
+  const t = sessionTitle(session, week);
+  const sub = t.split('—')[1] ? t.split('—')[1].trim() : t;
   let html = `<div class="modal-head">
       <h2>Podsumowanie treningu</h2>
       <div class="modal-sub">${escapeHtml(sub.split('·')[0].trim())} · Tydzień ${week}/${TOTAL_WEEKS}</div>
@@ -1674,8 +1682,9 @@ function renderProgress() {
   select.id = 'prog-select';
   PLAN.forEach(session => {
     const og = document.createElement('optgroup');
-    og.label = session.title;
-    session.exercises.forEach(ex => {
+    og.label = session.id === 'hit_d3' ? 'Dzień 3 (A/B)' : session.title;
+    const list = session.id === 'hit_d3' ? D3A.concat(D3B) : session.exercises;
+    list.forEach(ex => {
       const opt = document.createElement('option');
       opt.value = `${session.id}::${ex.id}`;
       opt.textContent = ex.name;
@@ -1946,7 +1955,8 @@ function importData(file) {
           baseline5rm: (typeof incomingSettings.baseline5rm === 'number' && incomingSettings.baseline5rm > 0) ? incomingSettings.baseline5rm : null,
           path: incomingSettings.path === 'extended' ? 'extended' : 'base',
           echoDone: !!incomingSettings.echoDone,
-          cardioApproval: !!incomingSettings.cardioApproval
+          cardioApproval: !!incomingSettings.cardioApproval,
+          hitMode: incomingSettings.hitMode === 'short' ? 'short' : 'full'
         };
         state.week = state.settings.currentWeek;
       }
