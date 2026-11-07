@@ -11,7 +11,7 @@ const SETTINGS_KEY = 'workout-settings-v1';
 const COMPLETED_KEY = 'workout-completed-v1';
 const EXTRAS_KEY = 'workout-extras-v1';
 const ARCHIVE_KEY = 'workout-archive-v1';
-const APP_VERSION = 'v18';
+const APP_VERSION = 'v19';
 const TOTAL_WEEKS = 6;
 const SAVE_DEBOUNCE_MS = 500;
 
@@ -1080,9 +1080,8 @@ function renderSession() {
     frag.appendChild(banner);
   }
 
-  // HIT header + rozgrzewka + guardraile przy każdym dniu
+  // HIT header + rozgrzewka
   frag.appendChild(hitHeaderSection());
-  frag.appendChild(dayGuardrailsSection());
 
   // Group consecutive exercises by supersetGroup
   const sessionExs = resolvedExercises(session, state.week);
@@ -1256,14 +1255,8 @@ function blokBSection(session, locked) {
 }
 
 function dayGuardrailsSection() {
-  const det = document.createElement('details');
-  det.className = 'safety-box';
-  det.innerHTML = '<summary>⚠️ Guardraile bezpieczeństwa</summary>';
-  const ul = document.createElement('ul');
-  ul.className = 'safety-list';
-  GUARDRAILS.forEach(r => { const li = document.createElement('li'); li.textContent = r; ul.appendChild(li); });
-  det.appendChild(ul);
-  return det;
+  // guardrails box removed from the UI per request (kept for export/reference only)
+  return document.createDocumentFragment();
 }
 
 function exerciseCard(session, ex, locked) {
