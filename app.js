@@ -11,7 +11,7 @@ const SETTINGS_KEY = 'workout-settings-v1';
 const COMPLETED_KEY = 'workout-completed-v1';
 const EXTRAS_KEY = 'workout-extras-v1';
 const ARCHIVE_KEY = 'workout-archive-v1';
-const APP_VERSION = 'v19';
+const APP_VERSION = 'v20';
 const TOTAL_WEEKS = 6;
 const SAVE_DEBOUNCE_MS = 500;
 
@@ -25,7 +25,10 @@ const PLAN = [
       { id: 'hit_d1_2', name: 'Chest press (maszyna)', type: 'Z', sets: 1, reps: '8-10', rest: 150, star: true },
       { id: 'hit_d1_3', name: 'Skos dodatni (maszyna / Smith)', type: 'Z', sets: 1, reps: '8-10', rest: 150 },
       { id: 'hit_d1_4', name: 'Pushdown triceps (lina)', type: 'I', sets: 1, reps: '10-12', rest: 120, star: true },
-      { id: 'hit_d1_5', name: 'Wznosy bokiem (wyciąg)', type: 'I', sets: 1, reps: '12-15', rest: 90 }
+      { id: 'hit_d1_5', name: 'Wznosy bokiem (wyciąg)', type: 'I', sets: 1, reps: '12-15', rest: 90 },
+      { id: 'hit_d1_f', name: 'Rzut piłką lekarską od klatki o ścianę', type: 'F', sets: 3, reps: '5', rest: 60,
+        cues: ['piłka 3–5 kg · maksymalna szybkość', 'wydech przy rzucie', 'przerwij serię, gdy rzuty zwalniają'],
+        sub: { name: 'Wyciskanie na wyciągu stojąc, eksplozywnie', cues: ['eksplozywnie, maksymalna szybkość', 'wydech przy wypchnięciu', 'przerwij, gdy tempo spada'] } }
     ]
   },
   {
@@ -36,7 +39,10 @@ const PLAN = [
       { id: 'hit_d2_2', name: 'Wiosło Hammer z podparciem klatki', type: 'Z', sets: 1, reps: '8-10', rest: 150, star: true },
       { id: 'hit_d2_3', name: 'Ściąganie jednorącz (wyciąg górny)', type: 'I', sets: 1, reps: '10-12', rest: 120 },
       { id: 'hit_d2_4', name: 'Odwrotne rozpiętki (rear delt)', type: 'I', sets: 1, reps: '12-15', rest: 90 },
-      { id: 'hit_d2_5', name: 'Uginanie ramion (wyciąg / EZ)', type: 'I', sets: 1, reps: '8-12', rest: 120, star: true }
+      { id: 'hit_d2_5', name: 'Uginanie ramion (wyciąg / EZ)', type: 'I', sets: 1, reps: '8-12', rest: 120, star: true },
+      { id: 'hit_d2_f', name: 'Suitcase carry (hantla w jednej ręce)', type: 'F', sets: 3, reps: '30–40 m/stronę', rest: 60,
+        cues: ['umiarkowany ciężar', 'tułów prosto, bez przechylania', 'ciągły oddech, możesz mówić'],
+        sub: { name: "Farmer's carry (2 hantle)", cues: ['umiarkowany ciężar', 'tułów prosto', 'ciągły oddech'] } }
     ]
   },
   {
@@ -53,7 +59,10 @@ const D3A = [
   { id: 'hit_d3a_2', name: 'Wznosy bokiem (wyciąg jednorącz)', type: 'I', sets: 1, setsLabel: '1-2', reps: '12-15', rest: 90, star: true },
   { id: 'hit_d3a_3', name: 'Łydki (stojąc / siedząc)', type: 'I', sets: 1, reps: '12-15', rest: 90 },
   { id: 'hit_d3a_4', name: 'Francuskie na wyciągu', type: 'I', sets: 1, reps: '10-12', rest: 90, optional: true },
-  { id: 'hit_d3a_5', name: 'Incline curl', type: 'I', sets: 1, reps: '10-12', rest: 90, optional: true }
+  { id: 'hit_d3a_5', name: 'Incline curl', type: 'I', sets: 1, reps: '10-12', rest: 90, optional: true },
+  { id: 'hit_d3a_f', name: 'Swing kettlebell', type: 'F', sets: 3, reps: '10', rest: 60,
+    cues: ['16–24 kg · ruch z bioder, nie z rąk', 'wydech przy wyproście', 'przerwij serię, gdy spada szybkość'],
+    sub: { name: 'Pull-through na wyciągu dolnym', cues: ['ruch z bioder, nie z rąk', 'wydech przy wyproście', 'przerwij, gdy tempo spada'] } }
 ];
 
 // D3B — Nogi (T2, T4, T6)
@@ -62,7 +71,9 @@ const D3B = [
   { id: 'hit_d3b_2', name: 'Suwnica (wydech, bez bezdechu)', type: 'N', sets: 1, reps: '10-12', rest: 150, star: true, warning: true },
   { id: 'hit_d3b_3', name: 'Hack / pendulum', type: 'N', sets: 1, reps: '10-12', rest: 150 },
   { id: 'hit_d3b_4', name: 'Uginanie nóg (leżąc / siedząc)', type: 'I', sets: 1, reps: '10-12', rest: 120, star: true },
-  { id: 'hit_d3b_5', name: 'Łydki (stojąc / siedząc)', type: 'I', sets: 1, reps: '12-15', rest: 90 }
+  { id: 'hit_d3b_5', name: 'Łydki (stojąc / siedząc)', type: 'I', sets: 1, reps: '12-15', rest: 90 },
+  { id: 'hit_d3b_f', name: '90/90 hip switches', type: 'F', sets: 2, reps: '8/stronę', rest: 30,
+    cues: ['powoli, kontrola', 'bez podpierania rękami, gdy dasz radę'], sub: null }
 ];
 
 const SUPERSET_LABELS = { ssB: 'Superseria', ssC: 'Superseria', ssD: 'Superseria', ssE: 'Superseria' };
@@ -224,24 +235,33 @@ const GUARDRAILS = [
 
 // Target RIR by exercise type and week (section 5 of the brief)
 function rirFor(type, week) {
+  if (type === 'F') return '3+';
   if (type === 'N') return '1-2';
   if (week <= 2) return '1';
   return type === 'Z' ? '0-1' : '0';
 }
 
+function subActive(exId) { return !!(state.settings.subs && state.settings.subs[exId]); }
+
 // Resolve the effective prescription for an exercise in a given week.
 function effectivePrescription(ex, week) {
   const setsCount = ex.sets || 1;
+  const functional = ex.type === 'F';
+  const useSub = functional && ex.sub && subActive(ex.id);
   return {
     setsCount: setsCount,
     setsLabel: ex.setsLabel || String(setsCount),
     reps: ex.reps,
     rir: rirFor(ex.type, week),
     rest: ex.rest,
-    displayName: ex.name,
+    displayName: useSub ? ex.sub.name : ex.name,
     type: ex.type || null,
     star: !!ex.star,
     optional: !!ex.optional,
+    functional: functional,
+    cues: useSub ? (ex.sub.cues || []) : (ex.cues || []),
+    hasSub: functional && !!ex.sub,
+    usingSub: useSub,
     note: ex.optional ? 'Opcjonalne (tryb pełny)' : null
   };
 }
@@ -259,7 +279,26 @@ function rawExercises(session, week) {
 function hitMode() { return state.settings.hitMode === 'short' ? 'short' : 'full'; }
 function resolvedExercises(session, week) {
   const list = rawExercises(session, week);
-  return hitMode() === 'short' ? list.filter(e => e.star) : list;
+  // short mode keeps ⭐ core lifts + functional (F) movements
+  return hitMode() === 'short' ? list.filter(e => e.star || e.type === 'F') : list;
+}
+
+// Functional (F) manual progression: suggest +load only after 3 consecutive
+// logged sessions whose every set was quality "good".
+function functionalProgressionHint(sessionId, exId) {
+  const weeks = [];
+  for (let w = 1; w <= TOTAL_WEEKS; w++) {
+    const l = getExerciseLog(sessionId, w, exId);
+    if (!l || !l.sets) continue;
+    const logged = l.sets.filter(s => s.quality);
+    if (!logged.length) continue;
+    weeks.push(logged.every(s => s.quality === 'good'));
+  }
+  const last3 = weeks.slice(-3);
+  if (last3.length === 3 && last3.every(Boolean)) {
+    return 'Jakość „dobra" przez 3 sesje — rozważ +ciężar.';
+  }
+  return null;
 }
 
 /* ----- Legacy exercise id → name (cross-cycle "last weight by name" placeholders) ----- */
@@ -662,7 +701,7 @@ function saveLog(log) {
 }
 
 function loadSettings() {
-  const def = { currentWeek: 1, cycleId: '', baseline5rm: null, path: 'base', echoDone: false, cardioApproval: false, hitMode: 'full' };
+  const def = { currentWeek: 1, cycleId: '', baseline5rm: null, path: 'base', echoDone: false, cardioApproval: false, hitMode: 'full', subs: {} };
   try {
     const raw = localStorage.getItem(SETTINGS_KEY);
     const s = raw ? JSON.parse(raw) : {};
@@ -673,7 +712,8 @@ function loadSettings() {
       path: s.path === 'extended' ? 'extended' : 'base',
       echoDone: !!s.echoDone,
       cardioApproval: !!s.cardioApproval,
-      hitMode: s.hitMode === 'short' ? 'short' : 'full'
+      hitMode: s.hitMode === 'short' ? 'short' : 'full',
+      subs: (s.subs && typeof s.subs === 'object') ? s.subs : {}
     };
   } catch (e) {
     return def;
@@ -1278,24 +1318,56 @@ function exerciseCard(session, ex, locked) {
 
   const info = document.createElement('div');
   info.className = 'ex-info';
-  const dispName = (eff.star ? '⭐ ' : '') + (eff.displayName || ex.name);
-  const typeTxt = eff.type === 'N' ? '🦵 Nogi złożone (N)' : (eff.type === 'Z' ? 'Złożone góra (Z)' : (eff.type === 'I' ? 'Izolacja (I)' : ''));
-  const prescLine = `${eff.setsLabel} × ${escapeHtml(eff.reps)} powt.` +
+  const dispName = (eff.star ? '⭐ ' : '') + (eff.functional ? '⚡ ' : '') + (eff.displayName || ex.name);
+  const typeTxt = eff.type === 'F' ? '⚡ Funkcjonalne (F)' : (eff.type === 'N' ? '🦵 Nogi złożone (N)' : (eff.type === 'Z' ? 'Złożone góra (Z)' : (eff.type === 'I' ? 'Izolacja (I)' : '')));
+  const unit = eff.functional ? '' : ' powt.';
+  const prescLine = `${eff.setsLabel} × ${escapeHtml(eff.reps)}${unit}` +
     (eff.rir ? ` · RIR ${escapeHtml(eff.rir)}` : '') +
     (eff.rest ? ` · ⏱ ${formatTime(eff.rest)} przerwy` : '');
   info.innerHTML = `
     <div class="exercise-name">${escapeHtml(dispName)}</div>
-    ${typeTxt ? `<div class="type-chip ${eff.type === 'N' ? 'k' : ''}">${escapeHtml(typeTxt)}</div>` : ''}
+    ${typeTxt ? `<div class="type-chip ${eff.type === 'F' ? 'f' : (eff.type === 'N' ? 'k' : '')}">${escapeHtml(typeTxt)}</div>` : ''}
     <div class="exercise-presc">${prescLine}</div>
     ${eff.optional ? '<div class="variant-chip">opcjonalne (tryb pełny)</div>' : ''}
     ${meta.muscles ? `<div class="target-chip">🎯 ${escapeHtml(muscleChipText(meta.muscles))}</div>` : ''}
   `;
-  const hint = progressionHint(ex, prevLog);
-  if (hint) {
-    const h = document.createElement('div');
-    h.className = 'prog-hint ' + hint.kind;
-    h.textContent = hint.text;
-    info.appendChild(h);
+  if (eff.functional) {
+    // substitute toggle
+    if (eff.hasSub) {
+      const subBtn = document.createElement('button');
+      subBtn.className = 'mini-btn sub-toggle' + (eff.usingSub ? ' mode-on' : '');
+      subBtn.textContent = eff.usingSub ? '↩ wróć do bazowego' : '🔁 zamiennik (brak sprzętu)';
+      subBtn.addEventListener('click', () => {
+        if (!state.settings.subs) state.settings.subs = {};
+        state.settings.subs[ex.id] = !subActive(ex.id);
+        saveSettings(state.settings);
+        render();
+      });
+      info.appendChild(subBtn);
+    }
+    // cues
+    if (eff.cues && eff.cues.length) {
+      const ul = document.createElement('ul');
+      ul.className = 'cue-list';
+      eff.cues.forEach(c => { const li = document.createElement('li'); li.textContent = c; ul.appendChild(li); });
+      info.appendChild(ul);
+    }
+    // manual progression hint (only after 3 good sessions)
+    const fh = functionalProgressionHint(session.id, ex.id);
+    if (fh) {
+      const h = document.createElement('div');
+      h.className = 'prog-hint up';
+      h.textContent = fh;
+      info.appendChild(h);
+    }
+  } else {
+    const hint = progressionHint(ex, prevLog);
+    if (hint) {
+      const h = document.createElement('div');
+      h.className = 'prog-hint ' + hint.kind;
+      h.textContent = hint.text;
+      info.appendChild(h);
+    }
   }
   if (ex.warning) {
     const w = document.createElement('span');
@@ -1332,7 +1404,7 @@ function exerciseCard(session, ex, locked) {
 
   const colHead = document.createElement('div');
   colHead.className = 'col-head';
-  colHead.innerHTML = '<span>#</span><span>Ciężar (kg)</span><span>Powt.</span><span>RIR</span><span>' + (locked ? '' : '✓') + '</span>';
+  colHead.innerHTML = '<span>#</span><span>Ciężar (kg)</span><span>Powt.</span><span>' + (eff.functional ? 'Jakość' : 'RIR') + '</span><span>' + (locked ? '' : '✓') + '</span>';
   setsWrap.appendChild(colHead);
 
   // live stats (tonnage + estimated 1RM)
@@ -1468,24 +1540,47 @@ function renderSetRows(container, sessionId, ex, log, prevLog, onChange, locked,
       scheduleSave();
     });
 
-    // achieved RIR for this working set (0 / 1 / 2+)
-    const rir = document.createElement('input');
-    rir.type = 'text';
-    rir.inputMode = 'numeric';
-    rir.maxLength = 2;
-    rir.className = 'rir-input';
-    rir.placeholder = 'RIR';
-    rir.value = set.rir != null ? set.rir : '';
-    rir.readOnly = !!locked;
-    rir.title = 'Osiągnięte RIR (0 / 1 / 2+)';
-    if (!locked) rir.addEventListener('input', () => {
-      set.rir = rir.value.trim() === '' ? null : rir.value.trim();
-      scheduleSave();
-    });
+    // 4th column: RIR input (normal) OR movement-quality selector (functional)
+    const functional = ex.type === 'F';
+    let fourth;
+    if (functional) {
+      fourth = document.createElement('button');
+      fourth.type = 'button';
+      const QV = { good: { t: 'D', label: 'dobra' }, mid: { t: 'Ś', label: 'średnia' }, bad: { t: 'S', label: 'słaba' } };
+      const paint = () => {
+        const q = set.quality;
+        fourth.textContent = q ? QV[q].t : '–';
+        fourth.className = 'qual-btn' + (q ? ' ' + q : '');
+        fourth.title = 'Jakość ruchu: ' + (q ? QV[q].label : 'dotknij, aby ustawić (dobra/średnia/słaba)');
+      };
+      paint();
+      if (locked) { fourth.disabled = true; }
+      else fourth.addEventListener('click', () => {
+        const order = [null, 'good', 'mid', 'bad'];
+        set.quality = order[(order.indexOf(set.quality || null) + 1) % order.length];
+        paint();
+        scheduleSave();
+      });
+    } else {
+      // achieved RIR for this working set (0 / 1 / 2+)
+      fourth = document.createElement('input');
+      fourth.type = 'text';
+      fourth.inputMode = 'numeric';
+      fourth.maxLength = 2;
+      fourth.className = 'rir-input';
+      fourth.placeholder = 'RIR';
+      fourth.value = set.rir != null ? set.rir : '';
+      fourth.readOnly = !!locked;
+      fourth.title = 'Osiągnięte RIR (0 / 1 / 2+)';
+      if (!locked) fourth.addEventListener('input', () => {
+        set.rir = fourth.value.trim() === '' ? null : fourth.value.trim();
+        scheduleSave();
+      });
+    }
 
     if (locked) {
       const blank = document.createElement('div');
-      row.append(num, weight, reps, rir, blank);
+      row.append(num, weight, reps, fourth, blank);
     } else {
       const done = document.createElement('button');
       done.className = 'set-done-btn';
@@ -1500,20 +1595,22 @@ function renderSetRows(container, sessionId, ex, log, prevLog, onChange, locked,
           scheduleSave();
           return;
         }
-        const weightFilled = weight.value.trim() !== '' && set.weight != null;
-        const repsFilled = reps.value.trim() !== '' && set.reps != null;
-        if (!weightFilled || !repsFilled) {
-          if (!weightFilled) weight.classList.add('invalid');
-          if (!repsFilled) reps.classList.add('invalid');
-          showToast('Uzupełnij ciężar i powtórzenia');
-          return;
+        if (!functional) {
+          const weightFilled = weight.value.trim() !== '' && set.weight != null;
+          const repsFilled = reps.value.trim() !== '' && set.reps != null;
+          if (!weightFilled || !repsFilled) {
+            if (!weightFilled) weight.classList.add('invalid');
+            if (!repsFilled) reps.classList.add('invalid');
+            showToast('Uzupełnij ciężar i powtórzenia');
+            return;
+          }
         }
         row.classList.add('done');
         set.done = true;
         scheduleSave();
         startRest(restSeconds || ex.rest || 90, ex.name);
       });
-      row.append(num, weight, reps, rir, done);
+      row.append(num, weight, reps, fourth, done);
     }
     container.appendChild(row);
   });
@@ -1949,7 +2046,8 @@ function importData(file) {
           path: incomingSettings.path === 'extended' ? 'extended' : 'base',
           echoDone: !!incomingSettings.echoDone,
           cardioApproval: !!incomingSettings.cardioApproval,
-          hitMode: incomingSettings.hitMode === 'short' ? 'short' : 'full'
+          hitMode: incomingSettings.hitMode === 'short' ? 'short' : 'full',
+          subs: (incomingSettings.subs && typeof incomingSettings.subs === 'object') ? incomingSettings.subs : {}
         };
         state.week = state.settings.currentWeek;
       }

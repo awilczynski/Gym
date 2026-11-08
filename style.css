@@ -366,6 +366,21 @@ body {
 .set-row input.rir-input { padding: 6px 2px; }
 .set-row input.rir-input::placeholder { font-size: 11px; }
 .mini-btn.mode-on { background: var(--accent); color: #04201a; border-color: var(--accent); }
+.sub-toggle { margin-top: 8px; font-size: 12px; }
+.qual-btn {
+  min-height: var(--tap);
+  border: 1px solid var(--border);
+  background: var(--bg-elev-2);
+  color: var(--text-dim);
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.qual-btn.good { background: var(--accent); color: #04201a; border-color: var(--accent); }
+.qual-btn.mid { background: var(--warn-bg); color: var(--warn); border-color: var(--warn); }
+.qual-btn.bad { background: rgba(255,107,107,0.12); color: var(--danger); border-color: var(--danger); }
+.type-chip.f { color: var(--superset); border-color: var(--superset); background: rgba(108,123,255,0.10); font-weight: 600; }
 .set-row input::placeholder { color: #5a6270; }
 
 .set-controls { display: flex; gap: 8px; margin-top: 4px; }
