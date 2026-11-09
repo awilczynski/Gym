@@ -11,7 +11,7 @@ const SETTINGS_KEY = 'workout-settings-v1';
 const COMPLETED_KEY = 'workout-completed-v1';
 const EXTRAS_KEY = 'workout-extras-v1';
 const ARCHIVE_KEY = 'workout-archive-v1';
-const APP_VERSION = 'v21';
+const APP_VERSION = 'v22';
 const TOTAL_WEEKS = 6;
 const SAVE_DEBOUNCE_MS = 500;
 
@@ -294,14 +294,8 @@ function rawExercises(session, week) {
   if (session.id === 'hit_s4') return s4IsA(week) ? S4A : S4B;
   return session.exercises;
 }
-// mode is per session+week (settings.sessModes["sid:week"] = 'short'); default 'full'
-function sessMode(sid, week) {
-  return (state.settings.sessModes && state.settings.sessModes[sid + ':' + week] === 'short') ? 'short' : 'full';
-}
 function resolvedExercises(session, week) {
-  const list = rawExercises(session, week);
-  // short mode keeps ⭐ core lifts + functional (F) movements
-  return sessMode(session.id, week) === 'short' ? list.filter(e => e.star || e.type === 'F') : list;
+  return rawExercises(session, week);
 }
 
 // Functional (F) manual progression: suggest +load only after 3 consecutive
@@ -1009,39 +1003,6 @@ function hitHeaderSection() {
   return det;
 }
 
-function sessionModeToggle(session) {
-  const row = document.createElement('div');
-  row.className = 'cycle-path';
-  const key = session.id + ':' + state.week;
-  const cur = sessMode(session.id, state.week);
-  const label = document.createElement('span');
-  label.className = 'cycle-label';
-  label.textContent = 'Tryb sesji:';
-  const full = document.createElement('button');
-  full.className = 'mini-btn' + (cur === 'full' ? ' mode-on' : '');
-  full.textContent = 'Pełny';
-  full.addEventListener('click', () => {
-    if (!state.settings.sessModes) state.settings.sessModes = {};
-    delete state.settings.sessModes[key];
-    saveSettings(state.settings); render();
-  });
-  const short = document.createElement('button');
-  short.className = 'mini-btn' + (cur === 'short' ? ' mode-on' : '');
-  short.textContent = 'Skrócony ⭐';
-  short.addEventListener('click', () => {
-    if (!state.settings.sessModes) state.settings.sessModes = {};
-    state.settings.sessModes[key] = 'short';
-    saveSettings(state.settings); render();
-  });
-  row.append(label, full, short);
-  return row;
-}
-
-function shortSessionCount() {
-  const sm = state.settings.sessModes || {};
-  return Object.keys(sm).filter(k => sm[k] === 'short').length;
-}
-
 function cyclePanel() {
   const wrap = document.createElement('div');
   wrap.className = 'cycle-panel';
@@ -1054,9 +1015,7 @@ function cyclePanel() {
   const ph = document.createElement('div');
   ph.className = 'cycle-e1rm';
   const s4 = s4IsA(state.week) ? 'S4A Ramiona+brzuch+nogi' : 'S4B Nogi';
-  const sc = shortSessionCount();
-  ph.textContent = 'Tydzień ' + state.week + '/' + TOTAL_WEEKS + ' · ' + s4 +
-    (sc ? ' · sesje skrócone: ' + sc : '');
+  ph.textContent = 'Tydzień ' + state.week + '/' + TOTAL_WEEKS + ' · ' + s4;
   wrap.appendChild(ph);
 
   return wrap;
@@ -1203,7 +1162,6 @@ function renderSession() {
 
   // HIT header + rozgrzewka + przełącznik trybu (per sesja)
   frag.appendChild(hitHeaderSection());
-  if (!locked) frag.appendChild(sessionModeToggle(session));
 
   // Group consecutive exercises by supersetGroup
   const sessionExs = resolvedExercises(session, state.week);
