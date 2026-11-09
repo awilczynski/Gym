@@ -11,69 +11,87 @@ const SETTINGS_KEY = 'workout-settings-v1';
 const COMPLETED_KEY = 'workout-completed-v1';
 const EXTRAS_KEY = 'workout-extras-v1';
 const ARCHIVE_KEY = 'workout-archive-v1';
-const APP_VERSION = 'v20';
+const APP_VERSION = 'v21';
 const TOTAL_WEEKS = 6;
 const SAVE_DEBOUNCE_MS = 500;
 
 /* ---------- Plan (seed data, static) ---------- */
+const F_THROW = { cues: ['piłka 3–5 kg · maksymalna szybkość', 'wydech przy rzucie', 'przerwij serię, gdy rzuty zwalniają'],
+  sub: { name: 'Wyciskanie na wyciągu stojąc, eksplozywnie', cues: ['eksplozywnie, maksymalna szybkość', 'wydech przy wypchnięciu', 'przerwij, gdy tempo spada'] } };
+const F_CARRY = { cues: ['umiarkowany ciężar', 'tułów prosto, bez przechylania', 'ciągły oddech, możesz mówić'],
+  sub: { name: "Farmer's carry (2 hantle)", cues: ['umiarkowany ciężar', 'tułów prosto', 'ciągły oddech'] } };
+const F_SWING = { cues: ['16–24 kg · ruch z bioder, nie z rąk', 'wydech przy wyproście', 'przerwij serię, gdy spada szybkość'],
+  sub: { name: 'Pull-through na wyciągu dolnym', cues: ['ruch z bioder, nie z rąk', 'wydech przy wyproście', 'przerwij, gdy tempo spada'] } };
+const F_9090 = { cues: ['powoli, kontrola', 'bez podpierania rękami, gdy dasz radę'], sub: null };
+
 const PLAN = [
   {
-    id: 'hit_d1',
-    title: 'Dzień 1 — Klatka + triceps',
+    id: 'hit_s1',
+    title: 'S1 — Barki + triceps',
     exercises: [
-      { id: 'hit_d1_1', name: 'Pec deck / rozpiętki wyciąg (pre-exhaust)', type: 'I', sets: 1, reps: '8-12', rest: 120 },
-      { id: 'hit_d1_2', name: 'Chest press (maszyna)', type: 'Z', sets: 1, reps: '8-10', rest: 150, star: true },
-      { id: 'hit_d1_3', name: 'Skos dodatni (maszyna / Smith)', type: 'Z', sets: 1, reps: '8-10', rest: 150 },
-      { id: 'hit_d1_4', name: 'Pushdown triceps (lina)', type: 'I', sets: 1, reps: '10-12', rest: 120, star: true },
-      { id: 'hit_d1_5', name: 'Wznosy bokiem (wyciąg)', type: 'I', sets: 1, reps: '12-15', rest: 90 },
-      { id: 'hit_d1_f', name: 'Rzut piłką lekarską od klatki o ścianę', type: 'F', sets: 3, reps: '5', rest: 60,
-        cues: ['piłka 3–5 kg · maksymalna szybkość', 'wydech przy rzucie', 'przerwij serię, gdy rzuty zwalniają'],
-        sub: { name: 'Wyciskanie na wyciągu stojąc, eksplozywnie', cues: ['eksplozywnie, maksymalna szybkość', 'wydech przy wypchnięciu', 'przerwij, gdy tempo spada'] } }
+      { id: 'hit_s1_1', name: 'Wyciskanie barków (maszyna)', type: 'Z', sets: 1, reps: '8-10', rest: 150, star: true },
+      { id: 'hit_s1_2', name: 'Wznosy bokiem hantlami siedząc', type: 'I', sets: 1, reps: '10-12', rest: 90, star: true },
+      { id: 'hit_s1_3', name: 'Wznosy bokiem jednorącz (wyciąg)', type: 'I', sets: 1, reps: '12-15', rest: 90 },
+      { id: 'hit_s1_4', name: 'Pushdown triceps (lina)', type: 'I', sets: 1, reps: '10-12', rest: 120, star: true },
+      { id: 'hit_s1_5', name: 'Francuskie na wyciągu (nad głowę)', type: 'I', sets: 1, reps: '10-12', rest: 90 },
+      { id: 'hit_s1_6', name: 'Pushdown jednorącz', type: 'I', sets: 1, reps: '10-12', rest: 90 },
+      Object.assign({ id: 'hit_s1_f', name: 'Rzut piłką lekarską od klatki o ścianę', type: 'F', sets: 3, reps: '5', rest: 60 }, F_THROW)
     ]
   },
   {
-    id: 'hit_d2',
-    title: 'Dzień 2 — Plecy + biceps',
+    id: 'hit_s2',
+    title: 'S2 — Plecy + tył barków',
     exercises: [
-      { id: 'hit_d2_1', name: 'Ściąganie drążka szeroko', type: 'Z', sets: 1, reps: '8-10', rest: 150, star: true },
-      { id: 'hit_d2_2', name: 'Wiosło Hammer z podparciem klatki', type: 'Z', sets: 1, reps: '8-10', rest: 150, star: true },
-      { id: 'hit_d2_3', name: 'Ściąganie jednorącz (wyciąg górny)', type: 'I', sets: 1, reps: '10-12', rest: 120 },
-      { id: 'hit_d2_4', name: 'Odwrotne rozpiętki (rear delt)', type: 'I', sets: 1, reps: '12-15', rest: 90 },
-      { id: 'hit_d2_5', name: 'Uginanie ramion (wyciąg / EZ)', type: 'I', sets: 1, reps: '8-12', rest: 120, star: true },
-      { id: 'hit_d2_f', name: 'Suitcase carry (hantla w jednej ręce)', type: 'F', sets: 3, reps: '30–40 m/stronę', rest: 60,
-        cues: ['umiarkowany ciężar', 'tułów prosto, bez przechylania', 'ciągły oddech, możesz mówić'],
-        sub: { name: "Farmer's carry (2 hantle)", cues: ['umiarkowany ciężar', 'tułów prosto', 'ciągły oddech'] } }
+      { id: 'hit_s2_1', name: 'Ściąganie drążka szeroko', type: 'Z', sets: 1, reps: '8-10', rest: 150, star: true },
+      { id: 'hit_s2_2', name: 'Wiosło Hammer z podparciem klatki', type: 'Z', sets: 1, reps: '8-10', rest: 150, star: true },
+      { id: 'hit_s2_3', name: 'Ściąganie jednorącz (wyciąg górny)', type: 'I', sets: 1, reps: '10-12', rest: 120 },
+      { id: 'hit_s2_4', name: 'Wiosło na wyciągu dolnym, nachwyt', type: 'Z', sets: 1, reps: '8-10', rest: 120 },
+      { id: 'hit_s2_5', name: 'Rear delt (maszyna)', type: 'I', sets: 1, reps: '12-15', rest: 90 },
+      { id: 'hit_s2_6', name: 'Prostowanie tułowia (hyperextension)', type: 'N', sets: 1, reps: '12-15', rest: 90 },
+      Object.assign({ id: 'hit_s2_f', name: 'Suitcase carry (hantla w jednej ręce)', type: 'F', sets: 3, reps: '30–40 m/stronę', rest: 60 }, F_CARRY)
     ]
   },
   {
-    id: 'hit_d3',
-    title: 'Dzień 3 — zmienny (A: Barki+łydki / B: Nogi)',
+    id: 'hit_s3',
+    title: 'S3 — Klatka + biceps',
+    exercises: [
+      { id: 'hit_s3_1', name: 'Pec deck / rozpiętki wyciąg (pre-exhaust)', type: 'I', sets: 1, reps: '8-12', rest: 120 },
+      { id: 'hit_s3_2', name: 'Chest press (maszyna)', type: 'Z', sets: 1, reps: '8-10', rest: 150, star: true },
+      { id: 'hit_s3_3', name: 'Skos dodatni (maszyna / Smith)', type: 'Z', sets: 1, reps: '8-10', rest: 150 },
+      { id: 'hit_s3_4', name: 'Krzyżowanie linek wyciągu', type: 'I', sets: 1, reps: '10-12', rest: 90 },
+      { id: 'hit_s3_5', name: 'Uginanie hantlami na skosie (incline curl)', type: 'I', sets: 1, reps: '8-10', rest: 120, star: true },
+      { id: 'hit_s3_6', name: 'Uginanie ramion (wyciąg / EZ)', type: 'I', sets: 1, reps: '8-12', rest: 90 },
+      Object.assign({ id: 'hit_s3_f', name: 'Swing kettlebell', type: 'F', sets: 3, reps: '10', rest: 60 }, F_SWING)
+    ]
+  },
+  {
+    id: 'hit_s4',
+    title: 'S4 — zmienna (A: Ramiona+brzuch+nogi / B: Nogi)',
     variable: true,
     exercises: []
   }
 ];
 
-// D3A — Barki + łydki (T1, T3, T5)
-const D3A = [
-  { id: 'hit_d3a_1', name: 'Wyciskanie barków (maszyna)', type: 'Z', sets: 1, reps: '8-10', rest: 150, star: true },
-  { id: 'hit_d3a_2', name: 'Wznosy bokiem (wyciąg jednorącz)', type: 'I', sets: 1, setsLabel: '1-2', reps: '12-15', rest: 90, star: true },
-  { id: 'hit_d3a_3', name: 'Łydki (stojąc / siedząc)', type: 'I', sets: 1, reps: '12-15', rest: 90 },
-  { id: 'hit_d3a_4', name: 'Francuskie na wyciągu', type: 'I', sets: 1, reps: '10-12', rest: 90, optional: true },
-  { id: 'hit_d3a_5', name: 'Incline curl', type: 'I', sets: 1, reps: '10-12', rest: 90, optional: true },
-  { id: 'hit_d3a_f', name: 'Swing kettlebell', type: 'F', sets: 3, reps: '10', rest: 60,
-    cues: ['16–24 kg · ruch z bioder, nie z rąk', 'wydech przy wyproście', 'przerwij serię, gdy spada szybkość'],
-    sub: { name: 'Pull-through na wyciągu dolnym', cues: ['ruch z bioder, nie z rąk', 'wydech przy wyproście', 'przerwij, gdy tempo spada'] } }
+// S4A — Ramiona + brzuch + nogi uzupełniająco (T1, T3, T5)
+const S4A = [
+  { id: 'hit_s4a_1', name: 'Hammer curl', type: 'I', sets: 1, reps: '10-12', rest: 90, star: true },
+  { id: 'hit_s4a_2', name: 'Prostowanie ramion na maszynie (dip machine)', type: 'Z', sets: 1, reps: '8-12', rest: 120, star: true },
+  { id: 'hit_s4a_3', name: 'Uginanie nóg (leżąc / siedząc)', type: 'I', sets: 1, reps: '10-12', rest: 90, star: true },
+  { id: 'hit_s4a_4', name: 'Prostowniki nóg', type: 'I', sets: 1, reps: '10-12', rest: 90 },
+  { id: 'hit_s4a_5', name: 'Spięcia brzucha na wyciągu (crunch)', type: 'I', sets: 1, reps: '12-15', rest: 90 },
+  { id: 'hit_s4a_6', name: 'Łydki (stojąc / siedząc)', type: 'I', sets: 1, reps: '12-15', rest: 90 },
+  Object.assign({ id: 'hit_s4a_f', name: '90/90 hip switches', type: 'F', sets: 2, reps: '8/stronę', rest: 30 }, F_9090)
 ];
 
-// D3B — Nogi (T2, T4, T6)
-const D3B = [
-  { id: 'hit_d3b_1', name: 'Prostowniki nóg', type: 'I', sets: 1, reps: '10-12', rest: 120 },
-  { id: 'hit_d3b_2', name: 'Suwnica (wydech, bez bezdechu)', type: 'N', sets: 1, reps: '10-12', rest: 150, star: true, warning: true },
-  { id: 'hit_d3b_3', name: 'Hack / pendulum', type: 'N', sets: 1, reps: '10-12', rest: 150 },
-  { id: 'hit_d3b_4', name: 'Uginanie nóg (leżąc / siedząc)', type: 'I', sets: 1, reps: '10-12', rest: 120, star: true },
-  { id: 'hit_d3b_5', name: 'Łydki (stojąc / siedząc)', type: 'I', sets: 1, reps: '12-15', rest: 90 },
-  { id: 'hit_d3b_f', name: '90/90 hip switches', type: 'F', sets: 2, reps: '8/stronę', rest: 30,
-    cues: ['powoli, kontrola', 'bez podpierania rękami, gdy dasz radę'], sub: null }
+// S4B — Nogi (T2, T4, T6)
+const S4B = [
+  { id: 'hit_s4b_1', name: 'Prostowniki nóg (pre-exhaust)', type: 'I', sets: 1, reps: '10-12', rest: 120 },
+  { id: 'hit_s4b_2', name: 'Suwnica (wydech, bez bezdechu)', type: 'N', sets: 1, reps: '10-12', rest: 150, star: true, warning: true },
+  { id: 'hit_s4b_3', name: 'Hack / pendulum', type: 'N', sets: 1, reps: '10-12', rest: 150 },
+  { id: 'hit_s4b_4', name: 'Uginanie nóg leżąc', type: 'I', sets: 1, reps: '10-12', rest: 120, star: true },
+  { id: 'hit_s4b_5', name: 'Uginanie nóg jednonóż', type: 'I', sets: 1, reps: '10-12', rest: 90 },
+  { id: 'hit_s4b_6', name: 'Łydki (stojąc / siedząc)', type: 'I', sets: 1, reps: '12-15', rest: 90 },
+  Object.assign({ id: 'hit_s4b_f', name: '90/90 hip switches', type: 'F', sets: 2, reps: '8/stronę', rest: 30 }, F_9090)
 ];
 
 const SUPERSET_LABELS = { ssB: 'Superseria', ssC: 'Superseria', ssD: 'Superseria', ssE: 'Superseria' };
@@ -221,9 +239,9 @@ const CYCLE_START_DATE = '2026-11-09';
 
 const HIT_HEADER = 'HIT · 1 seria robocza · RIR wg tabeli · tempo 2 s w górę / 3 s w dół · ' +
   'wydech na fazie wysiłku · bez Valsalvy/bezdechu · nie siadaj gwałtownie po serii · ' +
-  'po treningu cardio Zone 2 20–30 min ze stopniowym wygaszaniem (ostatnie 3–5 min rampa w dół).';
+  'ćwiczenie funkcjonalne na koniec · po treningu cardio Zone 2 20–30 min ze stopniowym wygaszaniem (ostatnie 3–5 min rampa w dół).';
 const HIT_WARMUP = 'Rozgrzewka (nie liczy się jako seria robocza): pierwsze ćwiczenie na partię — ' +
-  '2 serie rampy (~50% i ~70–75% ciężaru roboczego, 6–8 powt., RIR 4+); kolejne ćwiczenia tej partii — 1 seria rozgrzewkowa.';
+  '2 serie rampy (~50% i ~70–75% ciężaru roboczego, 6–8 powt., RIR 4+); kolejne ćwiczenia tej partii — 1 seria rozgrzewkowa. Typ F — bez rozgrzewki.';
 
 const GUARDRAILS = [
   'Tempo 2 s koncentryka / 3 s ekscentryka; wydech na fazie wysiłku, bez Valsalvy/bezdechu.',
@@ -266,21 +284,24 @@ function effectivePrescription(ex, week) {
   };
 }
 
-/* ----- D3 variant + mode resolution ----- */
-function d3IsA(week) { return week % 2 === 1; } // A in T1/T3/T5, B in T2/T4/T6
+/* ----- S4 variant + per-session mode resolution ----- */
+function s4IsA(week) { return week % 2 === 1; } // A in T1/T3/T5, B in T2/T4/T6
 function sessionTitle(session, week) {
-  if (session.id === 'hit_d3') return d3IsA(week) ? 'Dzień 3 — Barki + łydki' : 'Dzień 3 — Nogi';
+  if (session.id === 'hit_s4') return s4IsA(week) ? 'S4 — Ramiona + brzuch + nogi' : 'S4 — Nogi';
   return session.title;
 }
 function rawExercises(session, week) {
-  if (session.id === 'hit_d3') return d3IsA(week) ? D3A : D3B;
+  if (session.id === 'hit_s4') return s4IsA(week) ? S4A : S4B;
   return session.exercises;
 }
-function hitMode() { return state.settings.hitMode === 'short' ? 'short' : 'full'; }
+// mode is per session+week (settings.sessModes["sid:week"] = 'short'); default 'full'
+function sessMode(sid, week) {
+  return (state.settings.sessModes && state.settings.sessModes[sid + ':' + week] === 'short') ? 'short' : 'full';
+}
 function resolvedExercises(session, week) {
   const list = rawExercises(session, week);
   // short mode keeps ⭐ core lifts + functional (F) movements
-  return hitMode() === 'short' ? list.filter(e => e.star || e.type === 'F') : list;
+  return sessMode(session.id, week) === 'short' ? list.filter(e => e.star || e.type === 'F') : list;
 }
 
 // Functional (F) manual progression: suggest +load only after 3 consecutive
@@ -301,6 +322,33 @@ function functionalProgressionHint(sessionId, exId) {
   return null;
 }
 
+// Plateau rule (I/Z/N): no progress (neither weight nor reps) for 2 consecutive
+// logged sessions before the current week → suggest one session at RIR 2.
+function topOf(sessionId, week, exId) {
+  const l = getExerciseLog(sessionId, week, exId);
+  if (!l || !l.sets) return null;
+  let best = null;
+  l.sets.forEach(s => {
+    if (s.weight == null || s.reps == null) return;
+    if (!best || s.weight > best.w || (s.weight === best.w && s.reps > best.r)) best = { w: s.weight, r: s.reps };
+  });
+  return best;
+}
+function improved(cur, prev) {
+  if (!cur || !prev) return true; // unknown → not a plateau
+  return cur.w > prev.w || (cur.w === prev.w && cur.r > prev.r);
+}
+function plateauActive(sessionId, exId, week) {
+  const tops = [];
+  for (let w = 1; w < week; w++) {
+    const t = topOf(sessionId, w, exId);
+    if (t) tops.push(t);
+  }
+  if (tops.length < 3) return false;
+  const a = tops[tops.length - 3], b = tops[tops.length - 2], c = tops[tops.length - 1];
+  return !improved(b, a) && !improved(c, b);
+}
+
 /* ----- Legacy exercise id → name (cross-cycle "last weight by name" placeholders) ----- */
 const KNOWN_NAMES = {
   // hypertrophy-cut cycle (2026-10)
@@ -310,14 +358,19 @@ const KNOWN_NAMES = {
   hp_d4_1: 'Chest press maszyna', hp_d4_2: 'Ściąganie wyciągu, chwyt neutralny (V-bar)', hp_d4_3: 'Wiosło siedząc wyciąg', hp_d4_4: 'Wznosy bokiem hantle / maszyna', hp_d4_5: 'Face pull', hp_d4_6: 'SS · Uginania modlitewnik', hp_d4_7: 'SS · Pushdown lina',
   // bench cycle (2026-09)
   d1_bench: 'Wyciskanie sztangą leżąc', d4_a1: 'Wyciskanie barków maszyna', d4_a2: 'Wznosy bokiem wyciąg',
-  legs_1: 'Suwnica (leg press)', legs_3: 'Prostowniki nóg'
+  legs_1: 'Suwnica (leg press)', legs_3: 'Prostowniki nóg',
+  // HIT v2 ids (2026-11) — for previous-result by name after v3 restructure
+  hit_d1_1: 'Pec deck / rozpiętki wyciąg (pre-exhaust)', hit_d1_2: 'Chest press (maszyna)', hit_d1_3: 'Skos dodatni (maszyna / Smith)', hit_d1_4: 'Pushdown triceps (lina)', hit_d1_5: 'Wznosy bokiem (wyciąg)', hit_d1_f: 'Rzut piłką lekarską od klatki o ścianę',
+  hit_d2_1: 'Ściąganie drążka szeroko', hit_d2_2: 'Wiosło Hammer z podparciem klatki', hit_d2_3: 'Ściąganie jednorącz (wyciąg górny)', hit_d2_4: 'Odwrotne rozpiętki (rear delt)', hit_d2_5: 'Uginanie ramion (wyciąg / EZ)', hit_d2_f: 'Suitcase carry (hantla w jednej ręce)',
+  hit_d3a_1: 'Wyciskanie barków (maszyna)', hit_d3a_2: 'Wznosy bokiem (wyciąg jednorącz)', hit_d3a_3: 'Łydki (stojąc / siedząc)', hit_d3a_4: 'Francuskie na wyciągu', hit_d3a_5: 'Incline curl', hit_d3a_f: 'Swing kettlebell',
+  hit_d3b_1: 'Prostowniki nóg', hit_d3b_2: 'Suwnica (wydech, bez bezdechu)', hit_d3b_3: 'Hack / pendulum', hit_d3b_4: 'Uginanie nóg (leżąc / siedząc)', hit_d3b_5: 'Łydki (stojąc / siedząc)', hit_d3b_f: '90/90 hip switches'
 };
 
 function normName(s) { return String(s || '').toLowerCase().replace(/\s+/g, ' ').trim(); }
 function allKnownNames() {
   const m = Object.assign({}, KNOWN_NAMES);
   PLAN.forEach(s => (s.exercises || []).forEach(e => { m[e.id] = e.name; }));
-  D3A.concat(D3B).forEach(e => { m[e.id] = e.name; });
+  S4A.concat(S4B).forEach(e => { m[e.id] = e.name; });
   return m;
 }
 function scanLogForName(log, names, target) {
@@ -355,27 +408,37 @@ function lastWeightByName(name) {
 
 /* ---------- Exercise metadata: target muscles (for graphic) + technique cues ---------- */
 const EX_META = {
-  // HIT cycle (2026-11) exercises
-  hit_d1_1: { muscles: ['chest'] },
-  hit_d1_2: { muscles: ['chest', 'frontdelt'] },
-  hit_d1_3: { muscles: ['upperchest', 'frontdelt'] },
-  hit_d1_4: { muscles: ['triceps'] },
-  hit_d1_5: { muscles: ['sidedelt'] },
-  hit_d2_1: { muscles: ['lats'] },
-  hit_d2_2: { muscles: ['lats', 'midback'] },
-  hit_d2_3: { muscles: ['lats'] },
-  hit_d2_4: { muscles: ['reardelt'] },
-  hit_d2_5: { muscles: ['biceps'] },
-  hit_d3a_1: { muscles: ['frontdelt', 'sidedelt'] },
-  hit_d3a_2: { muscles: ['sidedelt'] },
-  hit_d3a_3: { muscles: ['calves'] },
-  hit_d3a_4: { muscles: ['triceps'] },
-  hit_d3a_5: { muscles: ['biceps'] },
-  hit_d3b_1: { muscles: ['quads'] },
-  hit_d3b_2: { muscles: ['quads', 'glutes'] },
-  hit_d3b_3: { muscles: ['quads', 'glutes'] },
-  hit_d3b_4: { muscles: ['hamstrings'] },
-  hit_d3b_5: { muscles: ['calves'] },
+  // HIT v3 cycle (2026-11) exercises
+  hit_s1_1: { muscles: ['frontdelt', 'sidedelt'] },
+  hit_s1_2: { muscles: ['sidedelt'] },
+  hit_s1_3: { muscles: ['sidedelt'] },
+  hit_s1_4: { muscles: ['triceps'] },
+  hit_s1_5: { muscles: ['triceps'] },
+  hit_s1_6: { muscles: ['triceps'] },
+  hit_s2_1: { muscles: ['lats'] },
+  hit_s2_2: { muscles: ['lats', 'midback'] },
+  hit_s2_3: { muscles: ['lats'] },
+  hit_s2_4: { muscles: ['midback', 'lats'] },
+  hit_s2_5: { muscles: ['reardelt'] },
+  hit_s2_6: { muscles: ['glutes', 'hamstrings'] },
+  hit_s3_1: { muscles: ['chest'] },
+  hit_s3_2: { muscles: ['chest', 'frontdelt'] },
+  hit_s3_3: { muscles: ['upperchest', 'frontdelt'] },
+  hit_s3_4: { muscles: ['chest'] },
+  hit_s3_5: { muscles: ['biceps'] },
+  hit_s3_6: { muscles: ['biceps'] },
+  hit_s4a_1: { muscles: ['biceps', 'forearm'] },
+  hit_s4a_2: { muscles: ['triceps'] },
+  hit_s4a_3: { muscles: ['hamstrings'] },
+  hit_s4a_4: { muscles: ['quads'] },
+  hit_s4a_5: {},
+  hit_s4a_6: { muscles: ['calves'] },
+  hit_s4b_1: { muscles: ['quads'] },
+  hit_s4b_2: { muscles: ['quads', 'glutes'] },
+  hit_s4b_3: { muscles: ['quads', 'glutes'] },
+  hit_s4b_4: { muscles: ['hamstrings'] },
+  hit_s4b_5: { muscles: ['hamstrings'] },
+  hit_s4b_6: { muscles: ['calves'] },
 
   // Hypertrophy-cut cycle (2026-10) exercises
   hp_d1_1: { muscles: ['chest', 'frontdelt'] },
@@ -701,7 +764,7 @@ function saveLog(log) {
 }
 
 function loadSettings() {
-  const def = { currentWeek: 1, cycleId: '', baseline5rm: null, path: 'base', echoDone: false, cardioApproval: false, hitMode: 'full', subs: {} };
+  const def = { currentWeek: 1, cycleId: '', baseline5rm: null, path: 'base', echoDone: false, cardioApproval: false, hitMode: 'full', subs: {}, sessModes: {} };
   try {
     const raw = localStorage.getItem(SETTINGS_KEY);
     const s = raw ? JSON.parse(raw) : {};
@@ -713,7 +776,8 @@ function loadSettings() {
       echoDone: !!s.echoDone,
       cardioApproval: !!s.cardioApproval,
       hitMode: s.hitMode === 'short' ? 'short' : 'full',
-      subs: (s.subs && typeof s.subs === 'object') ? s.subs : {}
+      subs: (s.subs && typeof s.subs === 'object') ? s.subs : {},
+      sessModes: (s.sessModes && typeof s.sessModes === 'object') ? s.sessModes : {}
     };
   } catch (e) {
     return def;
@@ -945,38 +1009,55 @@ function hitHeaderSection() {
   return det;
 }
 
+function sessionModeToggle(session) {
+  const row = document.createElement('div');
+  row.className = 'cycle-path';
+  const key = session.id + ':' + state.week;
+  const cur = sessMode(session.id, state.week);
+  const label = document.createElement('span');
+  label.className = 'cycle-label';
+  label.textContent = 'Tryb sesji:';
+  const full = document.createElement('button');
+  full.className = 'mini-btn' + (cur === 'full' ? ' mode-on' : '');
+  full.textContent = 'Pełny';
+  full.addEventListener('click', () => {
+    if (!state.settings.sessModes) state.settings.sessModes = {};
+    delete state.settings.sessModes[key];
+    saveSettings(state.settings); render();
+  });
+  const short = document.createElement('button');
+  short.className = 'mini-btn' + (cur === 'short' ? ' mode-on' : '');
+  short.textContent = 'Skrócony ⭐';
+  short.addEventListener('click', () => {
+    if (!state.settings.sessModes) state.settings.sessModes = {};
+    state.settings.sessModes[key] = 'short';
+    saveSettings(state.settings); render();
+  });
+  row.append(label, full, short);
+  return row;
+}
+
+function shortSessionCount() {
+  const sm = state.settings.sessModes || {};
+  return Object.keys(sm).filter(k => sm[k] === 'short').length;
+}
+
 function cyclePanel() {
   const wrap = document.createElement('div');
   wrap.className = 'cycle-panel';
 
   const head = document.createElement('div');
   head.innerHTML = '<div class="cycle-name">🏋︎ ' + escapeHtml(CYCLE_NAME) + '</div>' +
-    '<div class="cycle-sub">6 tyg. · 3 dni/tydz. · start ' + escapeHtml(CYCLE_START_DATE) +
-    ' · 1 seria robocza, wysoka intensywność</div>';
+    '<div class="cycle-sub">6 tyg. · 4 dni/tydz. (pon S1 · wt S2 · czw S3 · sob S4) · 1 seria robocza, wysoka intensywność</div>';
   wrap.appendChild(head);
 
   const ph = document.createElement('div');
   ph.className = 'cycle-e1rm';
-  const d3 = d3IsA(state.week) ? 'D3A Barki+łydki' : 'D3B Nogi';
-  ph.textContent = 'Tydzień ' + state.week + '/' + TOTAL_WEEKS + ' · ' + d3;
+  const s4 = s4IsA(state.week) ? 'S4A Ramiona+brzuch+nogi' : 'S4B Nogi';
+  const sc = shortSessionCount();
+  ph.textContent = 'Tydzień ' + state.week + '/' + TOTAL_WEEKS + ' · ' + s4 +
+    (sc ? ' · sesje skrócone: ' + sc : '');
   wrap.appendChild(ph);
-
-  // tryb pełny / skrócony
-  const row = document.createElement('div');
-  row.className = 'cycle-path';
-  const label = document.createElement('span');
-  label.className = 'cycle-label';
-  label.textContent = 'Tryb:';
-  const full = document.createElement('button');
-  full.className = 'mini-btn' + (hitMode() === 'full' ? ' mode-on' : '');
-  full.textContent = 'Pełny (Yates)';
-  full.addEventListener('click', () => { state.settings.hitMode = 'full'; saveSettings(state.settings); render(); });
-  const short = document.createElement('button');
-  short.className = 'mini-btn' + (hitMode() === 'short' ? ' mode-on' : '');
-  short.textContent = 'Skrócony (Mentzer ⭐)';
-  short.addEventListener('click', () => { state.settings.hitMode = 'short'; saveSettings(state.settings); render(); });
-  row.append(label, full, short);
-  wrap.appendChild(row);
 
   return wrap;
 }
@@ -1120,8 +1201,9 @@ function renderSession() {
     frag.appendChild(banner);
   }
 
-  // HIT header + rozgrzewka
+  // HIT header + rozgrzewka + przełącznik trybu (per sesja)
   frag.appendChild(hitHeaderSection());
+  if (!locked) frag.appendChild(sessionModeToggle(session));
 
   // Group consecutive exercises by supersetGroup
   const sessionExs = resolvedExercises(session, state.week);
@@ -1321,8 +1403,10 @@ function exerciseCard(session, ex, locked) {
   const dispName = (eff.star ? '⭐ ' : '') + (eff.functional ? '⚡ ' : '') + (eff.displayName || ex.name);
   const typeTxt = eff.type === 'F' ? '⚡ Funkcjonalne (F)' : (eff.type === 'N' ? '🦵 Nogi złożone (N)' : (eff.type === 'Z' ? 'Złożone góra (Z)' : (eff.type === 'I' ? 'Izolacja (I)' : '')));
   const unit = eff.functional ? '' : ' powt.';
+  const plateau = !eff.functional && plateauActive(session.id, ex.id, state.week);
+  const shownRir = plateau ? '2' : eff.rir;
   const prescLine = `${eff.setsLabel} × ${escapeHtml(eff.reps)}${unit}` +
-    (eff.rir ? ` · RIR ${escapeHtml(eff.rir)}` : '') +
+    (shownRir ? ` · RIR ${escapeHtml(shownRir)}` : '') +
     (eff.rest ? ` · ⏱ ${formatTime(eff.rest)} przerwy` : '');
   info.innerHTML = `
     <div class="exercise-name">${escapeHtml(dispName)}</div>
@@ -1361,12 +1445,19 @@ function exerciseCard(session, ex, locked) {
       info.appendChild(h);
     }
   } else {
-    const hint = progressionHint(ex, prevLog);
-    if (hint) {
-      const h = document.createElement('div');
-      h.className = 'prog-hint ' + hint.kind;
-      h.textContent = hint.text;
-      info.appendChild(h);
+    if (plateau) {
+      const z = document.createElement('div');
+      z.className = 'prog-note special';
+      z.textContent = '▼ Zastój — nie dokładaj serii; sprawdź sen i tempo redukcji. Ta sesja na RIR 2, potem powrót do normy.';
+      info.appendChild(z);
+    } else {
+      const hint = progressionHint(ex, prevLog);
+      if (hint) {
+        const h = document.createElement('div');
+        h.className = 'prog-hint ' + hint.kind;
+        h.textContent = hint.text;
+        info.appendChild(h);
+      }
     }
   }
   if (ex.warning) {
@@ -1772,8 +1863,8 @@ function renderProgress() {
   select.id = 'prog-select';
   PLAN.forEach(session => {
     const og = document.createElement('optgroup');
-    og.label = session.id === 'hit_d3' ? 'Dzień 3 (A/B)' : session.title;
-    const list = session.id === 'hit_d3' ? D3A.concat(D3B) : session.exercises;
+    og.label = session.id === 'hit_s4' ? 'S4 (A/B)' : session.title;
+    const list = session.id === 'hit_s4' ? S4A.concat(S4B) : session.exercises;
     list.forEach(ex => {
       const opt = document.createElement('option');
       opt.value = `${session.id}::${ex.id}`;
@@ -2047,7 +2138,8 @@ function importData(file) {
           echoDone: !!incomingSettings.echoDone,
           cardioApproval: !!incomingSettings.cardioApproval,
           hitMode: incomingSettings.hitMode === 'short' ? 'short' : 'full',
-          subs: (incomingSettings.subs && typeof incomingSettings.subs === 'object') ? incomingSettings.subs : {}
+          subs: (incomingSettings.subs && typeof incomingSettings.subs === 'object') ? incomingSettings.subs : {},
+          sessModes: (incomingSettings.sessModes && typeof incomingSettings.sessModes === 'object') ? incomingSettings.sessModes : {}
         };
         state.week = state.settings.currentWeek;
       }
